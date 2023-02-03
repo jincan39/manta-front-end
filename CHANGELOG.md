@@ -125,3 +125,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 - [\#353](https://github.com/Manta-Network/manta-front-end/pull/353) Wallet modal closes upon connection to a wallet
 - [\#355](https://github.com/Manta-Network/manta-front-end/pull/355) Refactored icons
+
+
+## [4.0.2] - 2023-2-02
+
+### Fixed
+- [\#369](https://github.com/Manta-Network/manta-front-end/pull/369) Fix bridge page balance not refreshing
+- [\#368](https://github.com/Manta-Network/manta-front-end/pull/368) Fix p0x labs footer text and link
+- [\#337](https://github.com/Manta-Network/manta-front-end/pull/337) Remove block explorer links from tx success notifications for internal testnet parachains
+
+### Changed
+- [\#367](https://github.com/Manta-Network/manta-front-end/pull/367) Change Dolphin home page to zkTransact

@@ -25,7 +25,7 @@ const CalamariFooter = () => {
           <span>by </span>
           <span
             className="cursor-pointer text-white duration-200 hover:text-secondary dark:hover:text-secondary"
-            onClick={() => window.open('https://p0xeidon.xyz/')}
+            onClick={() => window.open('https://p0xlabs.xyz/')}
           >
             &nbsp;p0x labs
           </span>
