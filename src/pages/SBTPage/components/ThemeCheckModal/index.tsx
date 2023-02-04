@@ -29,15 +29,12 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
       return;
     }
     toggleLoading(true);
-
-    await reserveSBT();
-
+    try {
+      await reserveSBT();
+    } catch (e) {
+      console.error(e);
+    }
     toggleLoading(false);
-
-    hideModal();
-    setTimeout(() => {
-      setCurrentStep(Step.Generating);
-    });
   };
 
   useEffect(() => {
