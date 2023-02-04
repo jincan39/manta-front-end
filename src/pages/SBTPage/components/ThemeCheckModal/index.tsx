@@ -34,7 +34,6 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
     } catch (e) {
       console.error(e);
     }
-    toggleLoading(false);
   };
 
   useEffect(() => {
