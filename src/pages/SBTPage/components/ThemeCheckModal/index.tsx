@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import BN from 'bn.js';
 
 import DotLoader from 'components/Loaders/DotLoader';
 import { Step, useSBT } from 'pages/SBTPage/SBTContext';
@@ -9,7 +10,6 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import { useSBTTheme } from 'pages/SBTPage/SBTContext/sbtThemeContext';
 import Balance from 'types/Balance';
-import BN from 'bn.js';
 
 const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
   const [loading, toggleLoading] = useState(false);
