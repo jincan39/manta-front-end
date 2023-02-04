@@ -85,11 +85,9 @@ export const SBTThemeContextProvider = ({
     () => ({
       themeList,
       checkedThemeItems,
-      toggleCheckedThemeItem,
-      generateImgs,
-      modelId
+      toggleCheckedThemeItem
     }),
-    [themeList, checkedThemeItems, generateImgs, modelId]
+    [themeList, checkedThemeItems]
   );
 
   return (
