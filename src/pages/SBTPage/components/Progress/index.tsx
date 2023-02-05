@@ -39,7 +39,7 @@ const Progress = () => {
     return () => {
       clearInterval(timer);
     };
-  }, []);
+  }, [remainTime]);
 
   useEffect(() => {
     if (generateStatus === 'finish') {

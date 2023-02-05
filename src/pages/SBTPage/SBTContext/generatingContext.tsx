@@ -14,7 +14,7 @@ import { useSBTTheme } from './sbtThemeContext';
 
 type GenerateStatus = 'finish' | 'doing';
 
-type GeneratedImg = {
+export type GeneratedImg = {
   style: string;
   url: string;
 };
