@@ -67,7 +67,6 @@ const GeneratedImgs = () => {
       const activeSlide = wraper.querySelector(
         '.swiper-slide-active'
       ) as unknown as HTMLDivElement;
-
       if (!activeSlide) {
         return;
       }
