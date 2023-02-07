@@ -17,7 +17,8 @@ import ZkAccountModal from '../Accounts/ZkAccountModal';
 const ZkAccountDisplay = () => {
   const [showZkModal, setShowZkModal] = useState(false);
   const { apiState } = useSubstrate();
-  const isDisconnected = apiState === API_STATE.DISCONNECTED  || apiState === API_STATE.ERROR;
+  const isDisconnected =
+    apiState === API_STATE.DISCONNECTED || apiState === API_STATE.ERROR;
 
   return (
     <div className="relative">
@@ -41,7 +42,7 @@ const ZkAccountDisplay = () => {
   );
 };
 
-const ZkAccountWarning = ({
+export const ZkAccountWarning = ({
   title,
   text,
   showInstallButton,

@@ -55,7 +55,7 @@ export const SBTThemeContextProvider = ({
       }
     };
     getThemes();
-  }, [config.SBT_NODE_SERVICE, themeGender]);
+  }, [config, themeGender]);
 
   const generateImgs = useCallback(async () => {
     const url = `${config.SBT_NODE_SERVICE}/npo/gen`;
@@ -64,7 +64,8 @@ export const SBTThemeContextProvider = ({
       name: externalAccount?.address,
       category_id: 1,
       artist_style: [...checkedThemeItems.keys()],
-      images: imgList.map((imgFile) => imgFile?.url)
+      images: imgList.map((imgFile) => imgFile?.url),
+      gender: themeGender
     };
     const ret = await axios.post<{
       model_id: string;
@@ -72,7 +73,7 @@ export const SBTThemeContextProvider = ({
     if (ret.status === 200 || ret.status === 201) {
       setModelId(ret?.data?.model_id);
     }
-  }, [checkedThemeItems, config, externalAccount, imgList]);
+  }, [checkedThemeItems, config, externalAccount, imgList, themeGender]);
 
   const value = useMemo(
     () => ({
