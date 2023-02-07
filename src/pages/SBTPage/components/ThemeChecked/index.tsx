@@ -2,13 +2,9 @@ import { Navigation, type Swiper as SwiperRefType } from 'swiper';
 import { MutableRefObject } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
-import 'swiper/swiper.scss'; // core Swiper
-import 'swiper/modules/navigation/navigation.scss'; // Navigation module
-import 'swiper/modules/pagination/pagination.scss'; // Pagination module
-
 import {
-  ThemeItem,
-  useSBTTheme
+  useSBTTheme,
+  ThemeItem
 } from 'pages/SBTPage/SBTContext/sbtThemeContext';
 
 const Item = ({ item }: { item: ThemeItem }) => {

@@ -1,3 +1,4 @@
+import Generated from './components/Generated';
 import Generating from './components/Generating';
 import Home from './components/Home';
 import ThemePanel from './components/ThemePanel';
@@ -18,7 +19,9 @@ const Main = () => {
   if (currentStep === Step.Generating) {
     return <Generating />;
   }
-
+  if (currentStep === Step.Generated) {
+    return <Generated />;
+  }
   return <Home />;
 };
 

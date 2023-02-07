@@ -55,7 +55,7 @@ export const SBTThemeContextProvider = ({
       }
     };
     getThemes();
-  }, [config, themeGender]);
+  }, [config.SBT_NODE_SERVICE, themeGender]);
 
   const generateImgs = useCallback(async () => {
     const url = `${config.SBT_NODE_SERVICE}/npo/gen`;
@@ -73,7 +73,13 @@ export const SBTThemeContextProvider = ({
     if (ret.status === 200 || ret.status === 201) {
       setModelId(ret?.data?.model_id);
     }
-  }, [checkedThemeItems, config, externalAccount, imgList, themeGender]);
+  }, [
+    checkedThemeItems,
+    config.SBT_NODE_SERVICE,
+    externalAccount,
+    imgList,
+    themeGender
+  ]);
 
   const value = useMemo(
     () => ({
