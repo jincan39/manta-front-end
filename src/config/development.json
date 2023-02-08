@@ -16,5 +16,5 @@
       "explorer": "dolphin.subscan.io"
     }
   ],
-  "SBT_NODE_SERVICE": "http://47.100.96.241:3000"
+  "SBT_NODE_SERVICE": "http://101.35.56.91:3000"
 }

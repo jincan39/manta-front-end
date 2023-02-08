@@ -128,7 +128,7 @@ export const SBTPrivateContextProvider = ({
               const decoded = api.registry.findMetaError(
                 error.asModule.toU8a()
               );
-              const { docs, method, section } = decoded;··
+              const { docs, method, section } = decoded;
               console.error(`${section}.${method}: ${docs.join(' ')}`);
             } else {
               console.error(error.toString());
