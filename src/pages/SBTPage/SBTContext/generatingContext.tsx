@@ -14,7 +14,7 @@ import { useSBTTheme } from './sbtThemeContext';
 
 type GenerateStatus = 'finish' | 'doing';
 
-type GeneratedImg = {
+export type GeneratedImg = {
   style: string;
   url: string;
 };
@@ -49,7 +49,7 @@ export const GeneratingContextProvider = ({
     if (ret.status === 200 || ret.status === 201) {
       if (ret?.data?.length) {
         setGeneratedImgs(ret?.data);
-        setGenerateStatus('');
+        setGenerateStatus('finish');
       }
     }
   }, [config.SBT_NODE_SERVICE, externalAccount?.address, modelId]);

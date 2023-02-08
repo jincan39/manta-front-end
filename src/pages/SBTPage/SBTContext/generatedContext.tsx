@@ -1,8 +1,9 @@
 import { createContext, ReactNode, useState, useMemo, useContext } from 'react';
+import { GeneratedImg } from './generatingContext';
 
 type GeneratedContextValue = {
-  mintSet: Set<string>;
-  setMintSet: (mintSet: Set<string>) => void;
+  mintSet: Set<GeneratedImg>;
+  setMintSet: (mintSet: Set<GeneratedImg>) => void;
 };
 
 const GeneratedContext = createContext<GeneratedContextValue | null>(null);
@@ -12,7 +13,7 @@ export const GeneratedContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [mintSet, setMintSet] = useState<Set<string>>(new Set(''));
+  const [mintSet, setMintSet] = useState<Set<GeneratedImg>>(new Set());
 
   const value = useMemo(
     () => ({
