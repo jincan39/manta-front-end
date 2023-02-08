@@ -4,33 +4,36 @@ import { useEffect, useRef } from 'react';
 import { type Swiper as SwiperRef } from 'swiper';
 
 import { useGenerated } from 'pages/SBTPage/SBTContext/generatedContext';
-import { useGenerating } from 'pages/SBTPage/SBTContext/generatingContext';
+import {
+  GeneratedImg,
+  useGenerating
+} from 'pages/SBTPage/SBTContext/generatingContext';
 import { MAX_MINT_SIZE } from '../Generated';
 
 const PRE_SCALE = 0.07;
 const MAX_Z_INDEX = 30;
 
 type ItemType = {
-  imgUrl: string;
-  toggleMint: (imgUrl: string) => void;
+  generatedImg: GeneratedImg;
+  toggleMint: (generatedImg: GeneratedImg) => void;
 };
-const Item = ({ imgUrl, toggleMint }: ItemType) => {
+const GeneratedImgItem = ({ generatedImg, toggleMint }: ItemType) => {
   const { mintSet } = useGenerated();
 
-  const checkedStyle = mintSet.has(imgUrl) ? 'border-4 border-check' : '';
+  const checkedStyle = mintSet.has(generatedImg) ? 'border-4 border-check' : '';
   const disabledStyle =
-    mintSet.size >= MAX_MINT_SIZE && !mintSet.has(imgUrl)
+    mintSet.size >= MAX_MINT_SIZE && !mintSet.has(generatedImg)
       ? 'cursor-not-allowed'
       : 'cursor-pointer';
 
   return (
     <>
       <img
-        src={imgUrl}
+        src={generatedImg?.url}
         className={`rounded-xl ${checkedStyle} ${disabledStyle}`}
-        onClick={() => toggleMint(imgUrl)}
+        onClick={() => toggleMint(generatedImg)}
       />
-      {mintSet.has(imgUrl) && (
+      {mintSet.has(generatedImg) && (
         <Icon name="greenCheck" className="absolute bottom-4 left-4" />
       )}
     </>
@@ -41,15 +44,15 @@ const GeneratedImgs = () => {
   const { generatedImgs } = useGenerating();
   const { mintSet, setMintSet } = useGenerated();
 
-  const toggleMint = (imgUrl: string) => {
+  const toggleMint = (generatedImg: GeneratedImg) => {
     const newMintSet = new Set(mintSet);
-    if (newMintSet.has(imgUrl)) {
-      newMintSet.delete(imgUrl);
+    if (newMintSet.has(generatedImg)) {
+      newMintSet.delete(generatedImg);
     } else {
       if (newMintSet.size >= MAX_MINT_SIZE) {
         return;
       }
-      newMintSet.add(imgUrl);
+      newMintSet.add(generatedImg);
     }
     setMintSet(newMintSet);
   };
@@ -112,12 +115,15 @@ const GeneratedImgs = () => {
           }, 100)
         }
         loop={true}>
-        {generatedImgs.map(({ url }, index) => {
+        {generatedImgs.map((generatedImg, index) => {
           return (
             <SwiperSlide
               key={index}
               className="transform scale-75 transition-transform opacity-90">
-              <Item imgUrl={url} toggleMint={toggleMint} />
+              <GeneratedImgItem
+                generatedImg={generatedImg}
+                toggleMint={toggleMint}
+              />
             </SwiperSlide>
           );
         })}

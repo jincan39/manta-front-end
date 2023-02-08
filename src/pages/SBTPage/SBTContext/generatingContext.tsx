@@ -49,7 +49,7 @@ export const GeneratingContextProvider = ({
     if (ret.status === 200 || ret.status === 201) {
       if (ret?.data?.length) {
         setGeneratedImgs(ret?.data);
-        setGenerateStatus('finish');
+        setGenerateStatus('');
       }
     }
   }, [config.SBT_NODE_SERVICE, externalAccount?.address, modelId]);

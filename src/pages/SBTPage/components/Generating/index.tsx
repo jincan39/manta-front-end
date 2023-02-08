@@ -9,6 +9,32 @@ import WalletButton from '../WalletButton';
 
 const INTERVAL_TIME = 4000;
 
+const UploadedImg = ({
+  url,
+  index,
+  length
+}: {
+  url: string;
+  index: number;
+  length: number;
+}) => {
+  const transformStyle = `scale(${Math.pow(0.9, index)})`;
+  const left = `${6 * index}rem`;
+  return (
+    <img
+      src={url}
+      className={'w-60 h-60 rounded-lg transform absolute'}
+      style={{
+        transform: transformStyle,
+        left,
+        zIndex: length - index,
+        opacity: 0.9
+      }}
+      key={index}
+    />
+  );
+};
+
 const Generating = () => {
   const { imgList } = useSBT();
   const { queryGenerateResult } = useGenerating();
@@ -30,19 +56,12 @@ const Generating = () => {
       <h1 className="text-3xl my-6">Analyzing...</h1>
       <div className="relative w-full h-60">
         {imgList.map(({ url }, index) => {
-          const transformStyle = `scale(${Math.pow(0.9, index)})`;
-          const left = `${6 * index}rem`;
           return (
-            <img
-              src={url}
-              className={'w-60 h-60 rounded-lg transform absolute'}
-              style={{
-                transform: transformStyle,
-                left,
-                zIndex: imgList.length - index,
-                opacity: 0.9
-              }}
+            <UploadedImg
               key={index}
+              url={url ?? ''}
+              index={index}
+              length={imgList.length}
             />
           );
         })}
