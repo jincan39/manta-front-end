@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Balance from 'types/Balance';
 import Decimal from 'decimal.js';
 import BN from 'bn.js';
@@ -14,6 +14,7 @@ const SendBalanceInput = () => {
   const { apiState } = useSubstrate();
   const {
     senderAssetCurrentBalance,
+    senderAssetTargetBalance,
     setSenderAssetTargetBalance,
     senderAssetType,
     senderIsPrivate,
@@ -42,10 +43,21 @@ const SendBalanceInput = () => {
   );
   const shouldShowLoader = senderIsPrivate() ? shouldShowPrivateLoader : shouldShowPublicLoader;
 
+  const inputValueIsTooLong = (value) => {
+    const decimalIndex = value.indexOf('.');
+    if (decimalIndex === -1) {
+      return false;
+    }
+    const decimalPlaces = value.length - decimalIndex - 1;
+    return decimalPlaces > senderAssetType?.numberOfDecimals;
+  };
+
   const onChangeSendAmountInput = (value) => {
     if (value === '') {
       setSenderAssetTargetBalance(null);
       setInputValue('');
+    } else if (inputValueIsTooLong(value)) {
+      setInputValue(inputValue);
     } else {
       try {
         const targetBalance = Balance.fromBaseUnits(
@@ -63,6 +75,14 @@ const SendBalanceInput = () => {
       }
     }
   };
+
+  useEffect(() => {
+    const truncateDecimalsOnChangeAssetType = () => {
+      senderAssetTargetBalance && onChangeSendAmountInput(senderAssetTargetBalance.toStringUnrounded());
+    };
+    truncateDecimalsOnChangeAssetType();
+  }, [senderAssetType]);
+
 
   const onClickMax = () => {
     const maxSendableBalance = getMaxSendableBalance();

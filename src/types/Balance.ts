@@ -30,7 +30,9 @@ export default class Balance {
     const atomicUnitsPerBaseUnit = new Decimal(10).pow(
       new Decimal(assetType.numberOfDecimals)
     );
-    const valueAtomicUnits = atomicUnitsPerBaseUnit.mul(new Decimal(valueBaseUnits.toString()));
+    const valueAtomicUnits = atomicUnitsPerBaseUnit
+      .mul(new Decimal(valueBaseUnits.toString()))
+      .floor();
     // This conversion to BN doesn't work if our valueAtomicUnits Decimal
     // is formatted as an exponent
     Decimal.set({ toExpPos: 1000 });
