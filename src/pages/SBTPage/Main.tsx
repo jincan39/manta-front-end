@@ -1,6 +1,7 @@
 import Generated from './components/Generated';
 import Generating from './components/Generating';
 import Home from './components/Home';
+import MintPanel from './components/MintPanel';
 import ThemePanel from './components/ThemePanel';
 import UploadPanel from './components/UploadPanel';
 import { Step, useSBT } from './SBTContext';
@@ -21,6 +22,9 @@ const Main = () => {
   }
   if (currentStep === Step.Generated) {
     return <Generated />;
+  }
+  if (currentStep === Step.Mint) {
+    return <MintPanel />;
   }
   return <Home />;
 };

@@ -1,11 +1,11 @@
 {
-    "NETWORK_NAME": "Dolphin",
-    "SS58_FORMAT": 42,
-    "SUBSCAN_URL": "https://dolphin.subscan.io",
-    "TWITTER_URL": "https://twitter.com/mantanetwork",
-    "DOLPHIN_SOCKET": "wss://ws.calamari.seabird.systems",
-    "KUSAMA_SOCKET": "wss://ws.internal.kusama.systems",
-    "KARURA_SOCKET": "wss://ws.archive.acala.seabird.systems",
-    "MOONRIVER_SOCKET": "wss://ws.moonriver.seabird.systems",
-    "MOONRIVER_RPC": "https://c2.moonriver.seabird.systems/rpc"
+  "NETWORK_NAME": "Dolphin",
+  "SS58_FORMAT": 42,
+  "SUBSCAN_URL": "https://dolphin.subscan.io",
+  "TWITTER_URL": "https://twitter.com/mantanetwork",
+  "DOLPHIN_SOCKET": "ws://127.0.0.1:9944",
+  "KUSAMA_SOCKET": "wss://ws.internal.kusama.systems",
+  "KARURA_SOCKET": "wss://ws.archive.acala.seabird.systems",
+  "MOONRIVER_SOCKET": "wss://ws.moonriver.seabird.systems",
+  "MOONRIVER_RPC": "https://c2.moonriver.seabird.systems/rpc"
 }

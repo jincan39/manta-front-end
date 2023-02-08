@@ -16,9 +16,9 @@ import {
   SignedBlock
 } from '@polkadot/types/interfaces';
 import type { ITuple } from '@polkadot/types/types';
-
 // @ts-ignore:next-line
 import { SbtMantaPrivateWallet, Environment, Network } from 'mantasbt.js';
+
 import TxStatus from 'types/TxStatus';
 import { useTxStatus } from 'contexts/txStatusContext';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
@@ -29,11 +29,16 @@ import { useConfig } from '../../../contexts/configContext';
 import { useSubstrate } from '../../../contexts/substrateContext';
 import { usePrivateWallet } from '../../../contexts/privateWalletContext';
 import { useExternalAccount } from '../../../contexts/externalAccountContext';
+import { useGenerated } from './generatedContext';
+import { GeneratedImg } from './generatingContext';
 
 export type SBTPrivateWalletValue = {
   reserveSBT: () => void;
   getReserveGasFee: () => void;
   reserveGasFee: Balance | null;
+  getMintGasFee: () => void;
+  mintGasFee: Balance | null;
+  mintSBT: (generatedImgs: Set<GeneratedImg>) => Promise<string[]>;
 };
 
 const SBTPrivateWalletContext = createContext<SBTPrivateWalletValue | null>(
@@ -49,14 +54,16 @@ export const SBTPrivateContextProvider = ({
     useState<SbtMantaPrivateWallet | null>(null);
   const isInitialSync = useRef(false);
   const [reserveGasFee, setReserveGasFee] = useState<Balance | null>(null);
+  const [mintGasFee, setMintGasFee] = useState<Balance | null>(null);
 
   const config = useConfig();
   const { api } = useSubstrate();
   const { isReady } = usePrivateWallet();
   const { extensionSigner, externalAccount } = useExternalAccount();
   const { setTxStatus } = useTxStatus();
+  const { mintSet } = useGenerated();
 
-  const nativeAsset = AssetType.Native(config);
+  const nativeAsset = useMemo(() => AssetType.Native(config), [config]);
 
   useEffect(() => {
     const canInitWallet = api && !isInitialSync.current && !sbtPrivateWallet;
@@ -121,13 +128,12 @@ export const SBTPrivateContextProvider = ({
               const decoded = api.registry.findMetaError(
                 error.asModule.toU8a()
               );
-              const { docs, method, section } = decoded;
+              const { docs, method, section } = decoded;··
               console.error(`${section}.${method}: ${docs.join(' ')}`);
             } else {
               console.error(error.toString());
             }
             setTxStatus(TxStatus.failed(''));
-            console.error('Transaction failed', event);
           } else if (api.events.system.ExtrinsicSuccess.is(event.event)) {
             try {
               const signedBlock: SignedBlock =
@@ -172,13 +178,144 @@ export const SBTPrivateContextProvider = ({
     setTxStatus
   ]);
 
+  // const getBatchMintTx = useCallback(async () => {
+  //   if (!sbtPrivateWallet || !externalAccount || !api?.query) {
+  //     return;
+  //   }
+  //   const assetIdRange = await api.query.mantaSBT.reservedIds(
+  //     externalAccount.address
+  //   );
+  //   if (assetIdRange.isNone) {
+  //     console.error('no assetId in storage mapped to this account');
+  //     return;
+  //   }
+  //   const assetId = assetIdRange.unwrap()[0];
+
+  //   console.log('assetId', assetId.toString());
+
+  //   await sbtPrivateWallet.getPrivateBalance(assetId);
+
+  //   const numberOfMints = mintSet.size;
+  //   const metadata = [...mintSet].map((genereatedImg) => genereatedImg?.cid);
+
+  //   const sbtMint = await sbtPrivateWallet.buildSbtBatch(
+  //     extensionSigner,
+  //     externalAccount.address,
+  //     assetId,
+  //     numberOfMints,
+  //     metadata
+  //   );
+  //   return sbtMint;
+  // }, [api?.query, extensionSigner, externalAccount, mintSet, sbtPrivateWallet]);
+
+  const mintSBT = useCallback(
+    async (newMintSet: Set<GeneratedImg>) => {
+      if (!sbtPrivateWallet || !externalAccount || !api?.query) {
+        return;
+      }
+      const assetIdRange =
+        await sbtPrivateWallet.api.query.mantaSbt.reservedIds(
+          externalAccount.address
+        );
+      if (assetIdRange.isNone) {
+        console.error('no assetId in storage mapped to this account');
+        return;
+      }
+      const assetId = assetIdRange.unwrap()[0];
+
+      console.log('mintSBT assetId', assetId.toString());
+
+      await sbtPrivateWallet.getPrivateBalance(assetId);
+
+      const numberOfMints = newMintSet.size;
+      const metadata = [...newMintSet].map(
+        (genereatedImg) => genereatedImg?.cid
+      );
+      console.log('mintSBT', numberOfMints, metadata);
+
+      await sbtPrivateWallet.initalWalletSync();
+
+      const sbtMint = await sbtPrivateWallet.buildSbtBatch(
+        extensionSigner,
+        externalAccount.address,
+        assetId,
+        numberOfMints,
+        metadata
+      );
+      const { batchTx, transactionDatas } = sbtMint;
+
+      await batchTx.signAndSend(externalAccount.address, handleTxRes);
+      console.log('transactionDatas', transactionDatas);
+
+      return transactionDatas;
+    },
+    [
+      api?.query,
+      extensionSigner,
+      externalAccount,
+      handleTxRes,
+      sbtPrivateWallet
+    ]
+  );
+
+  const getMintGasFee = useCallback(async () => {
+    if (!sbtPrivateWallet || !externalAccount || !api?.query) {
+      return;
+    }
+    const assetIdRange = await sbtPrivateWallet.api.query.mantaSbt.reservedIds(
+      externalAccount.address
+    );
+    if (assetIdRange.isNone) {
+      console.error('no assetId in storage mapped to this account');
+      return;
+    }
+    const assetId = assetIdRange.unwrap()[0];
+
+    console.log('assetId getMintGasFee', assetId.toString());
+
+    const numberOfMints = mintSet.size;
+    const metadata = [...mintSet].map((genereatedImg) => genereatedImg?.cid);
+
+    const sbtMint = await sbtPrivateWallet.buildSbtBatch(
+      extensionSigner,
+      externalAccount.address,
+      assetId,
+      numberOfMints,
+      metadata
+    );
+    const { batchTx } = sbtMint;
+    const { partialFee } = (await batchTx?.paymentInfo(
+      externalAccount.address
+    )) ?? { partialFee: '' };
+
+    const value = new Balance(nativeAsset, new BN(partialFee.toString()));
+    setMintGasFee(value);
+  }, [
+    api?.query,
+    extensionSigner,
+    externalAccount,
+    mintSet,
+    nativeAsset,
+    sbtPrivateWallet
+  ]);
+
   const value = useMemo(() => {
     return {
       reserveSBT,
       reserveGasFee,
-      getReserveGasFee
+      getReserveGasFee,
+      getMintGasFee,
+      mintGasFee,
+      mintSBT
     };
-  }, [reserveSBT, reserveGasFee, getReserveGasFee]);
+  }, [
+    reserveSBT,
+    reserveGasFee,
+    getReserveGasFee,
+    getMintGasFee,
+    mintGasFee,
+    mintSBT
+  ]);
   return (
     <SBTPrivateWalletContext.Provider value={value}>
       {children}

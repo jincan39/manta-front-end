@@ -7,7 +7,7 @@ import Progress from '../Progress';
 import SignerButton from '../SignerButton';
 import WalletButton from '../WalletButton';
 
-const INTERVAL_TIME = 4000;
+const INTERVAL_TIME = 1000;
 
 const Generating = () => {
   const { imgList } = useSBT();

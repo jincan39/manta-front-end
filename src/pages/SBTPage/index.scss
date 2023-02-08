@@ -1,0 +1,10 @@
+.sbt-page {
+  .el-popover {
+    border-radius: 0.5rem;
+    background: var(--color-bg-secondary);
+    border-color: var(--color-bg-secondary);
+  }
+  .el-popover[x-placement^='right'] .popper__arrow {
+    display: none;
+  }
+}

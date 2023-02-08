@@ -48,7 +48,7 @@
     "manta-polkawallet-bridge": "0.0.0",
     "manta-wasm-wallet-api": "^1.5.1-dev-2",
     "manta.js-kg-dev": "^2.0.16",
-    "mantasbt.js": "0.0.0",
+    "mantasbt.js": "file:../sdk/manta-js/package",
     "moonbeam-types-bundle": "2.0.8",
     "node-sass": "^7.0.1",
     "postcss": "^7.0.36",

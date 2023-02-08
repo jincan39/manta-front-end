@@ -77,6 +77,10 @@ import { ReactComponent as upDownArrow } from 'resources/icons/up-down-arrow.svg
 import { ReactComponent as defaultImg } from 'resources/icons/default-img.svg';
 import { ReactComponent as invalid } from 'resources/icons/invalid.svg';
 import { ReactComponent as circleArrow } from 'resources/icons/circle-arrow.svg';
+import { ReactComponent as question } from 'resources/icons/question.svg';
+
+// stb
+import { ReactComponent as masterManta } from 'resources/icons/sbt/master-manta.svg';
 
 const icons = {
   dolphin,
@@ -147,6 +151,8 @@ const icons = {
   upDownArrow,
   defaultImg,
   invalid,
-  circleArrow
+  circleArrow,
+  question,
+  masterManta
 };
 export default icons;

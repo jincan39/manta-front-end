@@ -17,6 +17,8 @@ type GenerateStatus = 'finish' | 'doing';
 export type GeneratedImg = {
   style: string;
   url: string;
+  cid?: string;
+  proofId?: string;
 };
 
 type GeneratingContextValue = {

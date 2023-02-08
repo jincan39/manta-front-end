@@ -119,14 +119,14 @@ const ChainSelector = () => {
           <div className="logo border-white w-14 h-14 flex items-center justify-center">
             <Icon
               className={classNames({
-                'rounded-full': activeNode.name === 'Calamari'
+                'rounded-full': activeNode?.name === 'Calamari'
               })}
-              name={(activeNode.name as string).toLowerCase()}
+              name={(activeNode?.name as string)?.toLowerCase()}
             />
           </div>
           <div>
             <h1 className="text-3xl mb-0 pl-2 font-semibold text-accent">
-              {activeNode.name}&nbsp;{activeNode.testnet ? 'testnet' : ''}
+              {activeNode?.name}&nbsp;{activeNode?.testnet ? 'testnet' : ''}
             </h1>
           </div>
           <div className="text-white text-lg ml-4">

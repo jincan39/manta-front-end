@@ -6,7 +6,7 @@ import { useFaceRecognition } from 'pages/SBTPage/SBTContext/faceRecognitionCont
 import UploadImg from '../UploadImg';
 
 export const MAX_UPLOAD_LEN = 20;
-const MIN_UPLOAD_LEN = 5;
+const MIN_UPLOAD_LEN = 0;
 
 const UploadItem = ({ file, index }: { file: File; index: number }) => {
   const { handleRemove, checkInvalid } = useFaceRecognition();

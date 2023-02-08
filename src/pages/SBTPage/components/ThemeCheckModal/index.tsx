@@ -32,6 +32,8 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
     try {
       await reserveSBT();
     } catch (e) {
+      toggleLoading(false);
+
       console.error(e);
     }
   };
@@ -49,6 +51,8 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
         setTimeout(() => {
           setCurrentStep(Step.Generating);
         }, 100);
+      } else if (txStatus?.isFailed()) {
+        toggleLoading(false);
       }
     };
 
@@ -95,7 +99,7 @@ const ThemeCheckModal = ({ hideModal }: { hideModal: () => void }) => {
         </div>
       </div>
       <p className="text-sm text-left">
-        {nativeTokenBalance?.toDisplayString() ?? '-'}
+        Balance: {nativeTokenBalance?.toDisplayString() ?? '-'}
       </p>
       <button
         onClick={toGeneratingPage}
