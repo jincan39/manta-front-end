@@ -320,7 +320,7 @@ export const SendContextProvider = (props) => {
     if (
       senderAssetCurrentBalance?.assetType.isNativeToken &&
       senderAssetTargetBalance?.assetType.isNativeToken &&
-      isToPrivate()
+      (isToPrivate() || isPublicTransfer())
     ) {
       const SUGGESTED_MIN_FEE_BALANCE = Balance.fromBaseUnits(AssetType.Native(config), 150);
       const balanceAfterTx = senderAssetCurrentBalance.sub(senderAssetTargetBalance);

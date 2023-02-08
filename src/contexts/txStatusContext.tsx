@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 const TxStatusContext = createContext();
 
 export const TxStatusContextProvider = (props) => {
+
   const [txStatus, _setTxStatus] = useState(null);
   const txStatusRef = useRef(null);
 

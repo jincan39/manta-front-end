@@ -88,7 +88,7 @@ const AccountSelectDropdown = ({ isMetamaskSelected }) => {
 
   return isMetamaskEnabled ? (
     <SingleAccountDisplay
-      accountName={'Metamask'}
+      accountName={'MetaMask'}
       accountAddress={ethAddress}
       isAccountSelected={true}
       isMetamaskSelected={isMetamaskEnabled}

@@ -26,6 +26,7 @@ const BalanceInput = ({
       <div className="flex flex-col justify-items-center">
         <input
           id="amountInput"
+          autoComplete="off"
           onChange={(e) => onChangeAmountInput(e.target.value)}
           className={classNames(
             'w-1/2 absolute left-4 bottom-7 p-2 text-xl placeholder-gray-500 dark:placeholder-gray-500 text-black dark:text-white manta-bg-gray bg-opacity-0 outline-none rounded-lg',

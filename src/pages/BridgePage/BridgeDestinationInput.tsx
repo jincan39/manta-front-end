@@ -77,7 +77,7 @@ const BridgeDestinationInput = () => {
 
   const getAccountName = () => {
     if (destinationChainIsEvm) {
-      return 'Metamask';
+      return 'MetaMask';
     } else {
       return externalAccount?.meta.name;
     }
@@ -113,6 +113,7 @@ const BridgeDestinationInput = () => {
     <div className="flex items-center flex-grow h-16 mt-6">
       <input
         id="recipientAddress"
+        autoComplete="off"
         className={classNames(
           'w-full h-full rounded-lg manta-bg-gray px-5',
           'text-sm text-black dark:text-white outline-none rounded-lg',

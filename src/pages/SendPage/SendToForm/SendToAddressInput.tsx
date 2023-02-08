@@ -56,6 +56,7 @@ const SendToAddressInput = () => {
         <input
           id="recipientAddress"
           className={classNames('w-full h-full rounded-lg manta-bg-gray px-5 text-black dark:text-white outline-none text-sm', { disabled: disabled })}
+          autoComplete="off"
           onChange={(e) => onChangeInput(e)}
           disabled={disabled}
           placeholder={placeholderMsg}

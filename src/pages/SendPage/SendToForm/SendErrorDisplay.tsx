@@ -11,7 +11,7 @@ const SendErrorDisplay = () => {
 
   const shouldShowRetainFeeWarning = txWouldDepleteSuggestedMinFeeBalance();
 
-  const shouldRetainFeeWarningText = `Please reserve some ${nativeTokenTicker} for future transaction fees. The current fee is 50 ${nativeTokenTicker} per transaction.`;
+  const shouldRetainFeeWarningText = `Please reserve some ${nativeTokenTicker} for future transaction fees. The current fee is about 50 ${nativeTokenTicker} per transaction.`;
 
   return (
     <>

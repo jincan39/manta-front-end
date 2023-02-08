@@ -33,7 +33,7 @@ const ChainDropdownItem = ({ node, activeNode }) => {
             {node.name}&nbsp;
             {node.testnet ? 'Testnet' : 'Network'}
           </div>
-          <div className='ml-1'>
+          <div className="ml-1">
             {selectedNetwork ? (
               <Icon name={'greenCheck'} className="w-4 h-4" />
             ) : (
@@ -56,11 +56,7 @@ const ChainSelector = () => {
   const [showNetworkList, setShowNetworkList] = useState(false);
 
   const disabled = txStatus?.isProcessing();
-  const onClickChainSelector = () => !disabled && setShowNetworkList(true);
-  const showNetworkListToggler = (e) => {
-    e.stopPropagation();
-    return setShowNetworkList((showNetworkList) => !showNetworkList);
-  }
+  const onClickChainSelector = () => !disabled && setShowNetworkList(!showNetworkList);
 
   return (
     <OutsideClickHandler onOutsideClick={() => setShowNetworkList(false)}>
@@ -72,7 +68,7 @@ const ChainSelector = () => {
             'logo-content flex items-center lg:flex relative cursor-pointer w-56',
             { disabled: disabled }
           )}
-          onClick={showNetworkListToggler}>
+        >
           <div className="logo">
             <Icon
               name={(activeNode.name as string).toLowerCase()}

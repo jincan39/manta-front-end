@@ -127,7 +127,7 @@ const MetamaskConnectWalletBlock = ({hideModal}) => {
   return (
     <ConnectWalletBlock
       key={'metamask'}
-      walletName={'Metamask (for Moonriver)'}
+      walletName={'MetaMask (for Moonriver)'}
       isWalletInstalled={metamaskIsInstalled}
       walletInstallLink={'https://metamask.io/'}
       walletLogo="metamask"
