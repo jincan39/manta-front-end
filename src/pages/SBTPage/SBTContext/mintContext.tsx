@@ -40,7 +40,7 @@ const mockData = [
 
 export const MintContextProvider = ({ children }: { children: ReactNode }) => {
   const config = useConfig();
-  const { mintSet } = useGenerated();
+  const { mintSet, setMintSet } = useGenerated();
 
   const getWatermarkedImgs = useCallback(async () => {
     const url = `${config.SBT_NODE_SERVICE}/npo/watermark`;
@@ -66,8 +66,9 @@ export const MintContextProvider = ({ children }: { children: ReactNode }) => {
         ...mockData[index]
       });
     });
+    setMintSet(newMintSet);
     return newMintSet;
-  }, [config.SBT_NODE_SERVICE, mintSet]);
+  }, [config.SBT_NODE_SERVICE, mintSet, setMintSet]);
 
   const value = useMemo(
     () => ({

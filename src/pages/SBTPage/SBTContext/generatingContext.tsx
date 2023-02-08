@@ -19,6 +19,7 @@ export type GeneratedImg = {
   url: string;
   cid?: string;
   proofId?: string;
+  blur_url?: string;
 };
 
 type GeneratingContextValue = {

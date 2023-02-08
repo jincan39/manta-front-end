@@ -18,10 +18,13 @@ const MintedModal = () => {
         IDs.
       </p>
       <div className="grid w-full gap-6 grid-cols-5 pb-12 mt-6">
-        {[...mintSet]?.map(({ url, proofId }, index) => {
+        {[...mintSet]?.map(({ blur_url, style, proofId }, index) => {
           return (
             <div className="relative w-max group" key={index}>
-              <img src={url} className="rounded-lg w-48 h-48" />
+              <img src={blur_url} className="rounded-lg w-48 h-48" />
+              <span className="text-white absolute bottom-16 left-2">
+                {style}
+              </span>
               <div className="bg-primary px-4 py-2 flex items-center mt-6 w-48 justify-between text-xs rounded-lg">
                 <p className="text-white text-opacity-60">SBT ID</p>
                 <p className="text-white">{`${proofId?.slice(

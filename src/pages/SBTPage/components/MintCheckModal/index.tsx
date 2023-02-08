@@ -36,7 +36,7 @@ const MintCheckModal = ({
 }) => {
   const [loading, toggleLoading] = useState(false);
 
-  const proofIdRef = useRef<string[] | null>();
+  const proofIdRef = useRef<string[]>();
 
   const { mintSet, setMintSet } = useGenerated();
   const { nativeTokenBalance } = useSBT();
@@ -63,11 +63,8 @@ const MintCheckModal = ({
     toggleLoading(true);
     try {
       const newMintSet = await getWatermarkedImgs();
-
       const proofIds = await mintSBT(newMintSet);
-      if (proofIdRef.current) {
-        proofIdRef.current = proofIds;
-      }
+      proofIdRef.current = proofIds;
     } catch (e) {
       console.error(e);
     }
@@ -77,7 +74,6 @@ const MintCheckModal = ({
     const handleTxFinalized = () => {
       if (txStatus?.isFinalized()) {
         toggleLoading(false);
-        hideModal();
         const proofIds = proofIdRef.current;
         const newMintSet = new Set<GeneratedImg>();
         [...mintSet].forEach((generatedImg, index) => {
@@ -86,6 +82,7 @@ const MintCheckModal = ({
             proofId: proofIds?.[index]
           });
         });
+        hideModal();
         setMintSet(newMintSet);
         setTimeout(() => {
           showMintedModal();
