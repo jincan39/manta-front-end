@@ -1,11 +1,12 @@
 // @ts-nocheck
-import React from 'react';
+import React, { useRef } from 'react';
+import { Popover } from 'element-react';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useZkAccountBalances } from 'contexts/zkAccountBalancesContext';
 import CopyPasteIcon from 'components/CopyPasteIcon';
+import { useOverFlow } from 'hooks';
 import Icon from 'components/Icon';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
-
 
 const ZkAddressDisplay = () => {
   const { privateAddress } = usePrivateWallet();
@@ -61,15 +62,32 @@ const PrivateTokenBalancesDisplay = () => {
 };
 
 const PrivateTokenBalancesDisplayItem = ({ balance }) => {
+  const privateBalanceRef = useRef(null);
+  const isOverflow = useOverFlow(privateBalanceRef);
+
   return (
     <div className="flex items-center justify-between mb-2">
       <div className="flex gap-3 items-center">
-        <Icon className="w-8 h-8 rounded-full" name={balance.assetType.icon} />
-        <div>
+        <div className="flex-shrink-0">
+          <Icon
+            className="w-8 h-8 rounded-full"
+            name={balance.assetType.icon}
+          />
+        </div>
+        <div className="overflow-hidden">
           <div className="text-white">{balance.assetType.ticker}</div>
-          <div className="text-secondary">
-            {balance.privateBalance.toString()}
-          </div>
+          <Popover
+            visible={isOverflow}
+            visibleArrow={false}
+            trigger="hover"
+            popperClass="zkAddressPopper"
+            content={balance.privateBalance.toStringUnrounded()}>
+            <div
+              ref={privateBalanceRef}
+              className="text-secondary overflow-hidden overflow-ellipsis">
+              {balance.privateBalance.toStringUnrounded()}
+            </div>
+          </Popover>
         </div>
       </div>
       <div className="text-white">{'$0.00'}</div>
@@ -103,12 +121,13 @@ const BalancesDisplay = () => {
 
 const ZkAccountModalContent = () => {
   const { apiState } = useSubstrate();
-  const isDisconnected = apiState === API_STATE.DISCONNECTED  || apiState === API_STATE.ERROR;
+  const isDisconnected =
+    apiState === API_STATE.DISCONNECTED || apiState === API_STATE.ERROR;
   return (
     <>
       <div className="flex flex-col gap-4 w-80 mt-3 bg-fifth rounded-lg p-4 absolute left-0 top-full z-50 border border-white border-opacity-20 text-secondary ">
         <ZkAddressDisplay />
-        {isDisconnected ?  <NetworkDisconnectedDisplay /> : <BalancesDisplay /> }
+        {isDisconnected ? <NetworkDisconnectedDisplay /> : <BalancesDisplay />}
       </div>
     </>
   );

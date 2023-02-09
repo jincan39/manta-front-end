@@ -120,3 +120,16 @@
     border: 0.25em solid;
     border-right-color: transparent;
 }
+
+
+.zkAddressPopper{
+    height: 16px;
+    color: rgba(255, 255, 255, 0.6) !important;
+    background: rgba(0, 6, 32, 0.8) !important;
+    border-radius: 4px !important;
+    border: unset !important;
+    font-size: 10px !important;
+    padding: 2px 4px !important;
+    line-height: 12px !important;
+    width: unset !important;
+}
