@@ -401,6 +401,11 @@ export const SendContextProvider = (props) => {
         }
       }
     } else if (status.isFinalized) {
+      for (const event of events) {
+        if (api.events.utility.BatchInterrupted.is(event.event)) {
+          return;
+        }
+      }
       try {
         const signedBlock = await api.rpc.chain.getBlock(status.asFinalized);
         const extrinsics = signedBlock.block.extrinsics;
