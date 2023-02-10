@@ -1,10 +1,9 @@
 // @ts-nocheck
-import React, { useRef } from 'react';
-import { Popover } from 'element-react';
+import React, { useLayoutEffect, useState } from 'react';
+import { Tooltip } from 'element-react';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useZkAccountBalances } from 'contexts/zkAccountBalancesContext';
 import CopyPasteIcon from 'components/CopyPasteIcon';
-import { useOverFlow } from 'hooks';
 import Icon from 'components/Icon';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 
@@ -27,9 +26,7 @@ const ZkAddressDisplay = () => {
 const UsdBalanceDisplay = () => {
   return (
     <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-1 text-secondary flex flex-col justify-center items-center">
-      <span className="pt-3 pb-1 text-base text-white">
-      Total Balance
-      </span>
+      <span className="pt-3 pb-1 text-base text-white">Total Balance</span>
       <div className="text-white pb-3 text-2xl font-bold">{'$0.00'}</div>
     </div>
   );
@@ -62,8 +59,21 @@ const PrivateTokenBalancesDisplay = () => {
 };
 
 const PrivateTokenBalancesDisplayItem = ({ balance }) => {
-  const privateBalanceRef = useRef(null);
-  const isOverflow = useOverFlow(privateBalanceRef);
+  const privateBalanceRef = React.createRef();
+  const [isOverflow, setIsOverFlow] = useState(false);
+
+  useLayoutEffect(() => {
+    const element = privateBalanceRef.current || {};
+    const { offsetWidth, scrollWidth } = element;
+    const isEllipsis = offsetWidth < scrollWidth;
+    setIsOverFlow(isEllipsis);
+  }, [privateBalanceRef.current]);
+
+  const tip = (
+    <div className="zkAddressTooltip">
+      {balance.privateBalance.toStringUnrounded()}
+    </div>
+  );
 
   return (
     <div className="flex items-center justify-between mb-2">
@@ -74,20 +84,18 @@ const PrivateTokenBalancesDisplayItem = ({ balance }) => {
             name={balance.assetType.icon}
           />
         </div>
-        <div className="overflow-hidden">
+        <div className="overflow-hidden zkAddressTooltipWrapper">
           <div className="text-white">{balance.assetType.ticker}</div>
-          <Popover
-            visible={isOverflow}
+          <Tooltip
             visibleArrow={false}
-            trigger="hover"
-            popperClass="zkAddressPopper"
-            content={balance.privateBalance.toStringUnrounded()}>
+            content={isOverflow ? tip : null}
+            placement="right-end">
             <div
               ref={privateBalanceRef}
               className="text-secondary overflow-hidden overflow-ellipsis">
               {balance.privateBalance.toStringUnrounded()}
             </div>
-          </Popover>
+          </Tooltip>
         </div>
       </div>
       <div className="text-white">{'$0.00'}</div>
