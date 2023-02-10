@@ -52,45 +52,40 @@ export const KeyringContextProvider = (props) => {
     setHasAuthToConnectWallet(walletNames);
   };
 
-  const subscribeWalletAccounts = async (wallet, saveToStorage = true) => {
-    let unsubscribe = () => {};
-    if (wallet) {
-      wallet.enable(APP_NAME).then(() => {
-        keyringIsBusy.current = true;
-        unsubscribe = wallet.subscribeAccounts(async (accounts) => {
-          let currentKeyringAddresses = keyring
-            .getAccounts()
-            .map((account) => account.address);
+  const refreshWalletAccounts = async (wallet) => {
+    await wallet.enable(APP_NAME);
+    keyringIsBusy.current = true;
+    let currentKeyringAddresses = keyring.getAccounts().map((account) => account.address);
 
-          const updatedAccounts = await wallet.getAccounts();
-          const updatedAddresses = updatedAccounts.map(
-            (account) => account.address
-          );
+    const updatedAccounts = await wallet.getAccounts();
+    const updatedAddresses = updatedAccounts.map(
+      (account) => account.address
+    );
+    currentKeyringAddresses.forEach((address) => {
+      keyring.forgetAccount(address);
+    });
+    // keyring has the possibility to still contain accounts
+    currentKeyringAddresses = keyring
+      .getAccounts()
+      .map((account) => account.address);
 
-          currentKeyringAddresses.forEach((address) => {
-            keyring.forgetAccount(address);
-          });
-
-          // keyring has the possibility to still contain accounts
-          currentKeyringAddresses = keyring
-            .getAccounts()
-            .map((account) => account.address);
-
-          if (currentKeyringAddresses.length === 0) {
-            updatedAccounts.forEach((account) => {
-              keyring.loadInjected(account.address, { ...account });
-            });
-
-            setSelectedWallet(wallet);
-            saveToStorage && setLastAccessedWallet(wallet);
-            setKeyringAddresses(updatedAddresses);
-          }
-          keyringIsBusy.current = false;
-        });
+    if (currentKeyringAddresses.length === 0) {
+      updatedAccounts.forEach((account) => {
+        keyring.loadInjected(account.address, { ...account });
       });
+
+      setSelectedWallet(wallet);
+      setKeyringAddresses(updatedAddresses);
     }
-    return unsubscribe;
+    keyringIsBusy.current = false;
   };
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      selectedWallet && refreshWalletAccounts(selectedWallet);
+    }, 1000);
+    return () => interval && clearInterval(interval);
+  }, [selectedWallet]);
 
   const triggerInitKeyringWhenWeb3ExtensionsInjected = async () => {
     if (!isKeyringInit) {
@@ -155,7 +150,8 @@ export const KeyringContextProvider = (props) => {
     if (!selectedWallet?.extension) {
       try {
         await selectedWallet.enable(APP_NAME);
-        subscribeWalletAccounts(selectedWallet, saveToStorage);
+        await refreshWalletAccounts(selectedWallet);
+        saveToStorage && setLastAccessedWallet(wallet);
         return true;
       } catch (e) {
         const walletNames = removeWalletName(
@@ -173,7 +169,6 @@ export const KeyringContextProvider = (props) => {
     if (!isKeyringInit) {
       return;
     }
-
     const withoutLastAccessedWallet = removeWalletName(
       getLastAccessedWallet()?.extensionName,
       hasAuthToConnectWallet
@@ -189,15 +184,15 @@ export const KeyringContextProvider = (props) => {
   }, [isKeyringInit]);
 
   const value = {
-    keyring: keyring, // keyring object would not change even if properties changed
-    isKeyringInit: isKeyringInit,
-    keyringAddresses: keyringAddresses, //keyring object would not change so use keyringAddresses to trigger re-render
-    web3ExtensionInjected: web3ExtensionInjected,
-    connectWalletExtension: connectWalletExtension,
-    subscribeWalletAccounts: subscribeWalletAccounts,
-    selectedWallet: selectedWallet,
-    connectWallet: connectWallet,
-    keyringIsBusy: keyringIsBusy
+    keyring, // keyring object would not change even if properties changed
+    isKeyringInit,
+    keyringAddresses, //keyring object would not change so use keyringAddresses to trigger re-render
+    web3ExtensionInjected,
+    selectedWallet,
+    keyringIsBusy,
+    connectWallet,
+    connectWalletExtension,
+    refreshWalletAccounts
   };
 
   return (
