@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { Tooltip } from 'element-react';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useZkAccountBalances } from 'contexts/zkAccountBalancesContext';
@@ -59,7 +59,7 @@ const PrivateTokenBalancesDisplay = () => {
 };
 
 const PrivateTokenBalancesDisplayItem = ({ balance }) => {
-  const privateBalanceRef = React.createRef();
+  const privateBalanceRef = useRef();
   const [isOverflow, setIsOverFlow] = useState(false);
 
   useLayoutEffect(() => {
