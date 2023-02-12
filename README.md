@@ -32,6 +32,7 @@ Web app for interacting with Manta Network, Calamari Network, and Dolphin Testne
     ```
 
 7. Open the local disable-cors version of manta-signer by following [guides](https://docs.manta.network/docs/guides/MantaSigner).
+
 8. Follow [guides](https://docs.manta.network/docs/guides/DolphinPay) and try MantaPay on Dolphin Testnet.
 
 9. Happy coding!
