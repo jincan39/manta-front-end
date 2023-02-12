@@ -1,8 +1,9 @@
 // @ts-nocheck
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Tooltip } from 'element-react';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useZkAccountBalances } from 'contexts/zkAccountBalancesContext';
+import { useEllipsis } from 'hooks';
 import CopyPasteIcon from 'components/CopyPasteIcon';
 import Icon from 'components/Icon';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
@@ -60,14 +61,7 @@ const PrivateTokenBalancesDisplay = () => {
 
 const PrivateTokenBalancesDisplayItem = ({ balance }) => {
   const privateBalanceRef = useRef();
-  const [isOverflow, setIsOverFlow] = useState(false);
-
-  useLayoutEffect(() => {
-    const element = privateBalanceRef.current || {};
-    const { offsetWidth, scrollWidth } = element;
-    const isEllipsis = offsetWidth < scrollWidth;
-    setIsOverFlow(isEllipsis);
-  }, [privateBalanceRef.current]);
+  const isEllipsis = useEllipsis(privateBalanceRef);
 
   const tip = (
     <div className="zkAddressTooltip">
@@ -88,7 +82,7 @@ const PrivateTokenBalancesDisplayItem = ({ balance }) => {
           <div className="text-white">{balance.assetType.ticker}</div>
           <Tooltip
             visibleArrow={false}
-            content={isOverflow ? tip : null}
+            content={isEllipsis ? tip : null}
             placement="right-end">
             <div
               ref={privateBalanceRef}
