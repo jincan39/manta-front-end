@@ -26,9 +26,9 @@ Web app for interacting with Manta Network, Calamari Network, and Dolphin Testne
 6. Install tauri and build manta-signer locally.
 
     ```bash
-    cargo install tauri
+    cargo install tauri-cli && cd manta-signer/ui/src-tauri
 
-    cargo run --example test_server --features 'unsafe-disable-cors' --release
+    cargo tauri build --features=unsafe-disable-cors 
     ```
 
 7. Open the local disable-cors version of manta-signer by following [guides](https://docs.manta.network/docs/guides/MantaSigner).
