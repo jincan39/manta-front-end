@@ -1,14 +1,17 @@
-// @ts-nocheck
-import { useLayoutEffect, useState } from 'react';
+import { MutableRefObject, useEffect, useState } from 'react';
 
-export const useEllipsis = (ref, callback) => {
-  const [isEllipsis, setIsEllipsis] = useState(undefined);
+export const useEllipsis = (
+  ref: MutableRefObject<HTMLDivElement | null>,
+  callback: <T>(arg: T | null) => T
+) => {
+  const [isEllipsis, setIsEllipsis] = useState<boolean>(false);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const { current } = ref;
     const trigger = () => {
       const { offsetWidth, scrollWidth } = current || {};
-      const isEllipsis = offsetWidth < scrollWidth;
+      const isEllipsis =
+        offsetWidth && scrollWidth ? offsetWidth < scrollWidth : false;
 
       current && setIsEllipsis(isEllipsis);
       if (callback) callback(isEllipsis);
@@ -16,13 +19,11 @@ export const useEllipsis = (ref, callback) => {
 
     if (current) {
       if ('ResizeObserver' in window) {
-        const observer = new ResizeObserver(trigger).observe(current);
-        return () => observer && observer.disconnect();
+        new ResizeObserver(trigger).observe(current);
       }
 
       trigger();
     }
-    return () => null;
   }, [callback, ref.current]);
 
   return isEllipsis;
