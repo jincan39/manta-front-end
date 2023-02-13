@@ -1,4 +1,4 @@
-import { MutableRefObject, useLayoutEffect, useState } from 'react';
+import { MutableRefObject, useEffect, useState } from 'react';
 
 export const useEllipsis = (
   ref: MutableRefObject<HTMLDivElement | null>,
@@ -6,7 +6,7 @@ export const useEllipsis = (
 ) => {
   const [isEllipsis, setIsEllipsis] = useState<boolean>(false);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const { current } = ref;
     const trigger = () => {
       const { offsetWidth, scrollWidth } = current || {};
