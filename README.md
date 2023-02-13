@@ -19,14 +19,14 @@ Web app for interacting with Manta Network, Calamari Network, and Dolphin Testne
 
    `git clone git@github.com:Manta-Network/manta-signer.git`
 
-5. Change to the repo directory.
+5. Change to the tauri-ui directory.
 
-   `cd manta-signer/example`
+   `cd manta-signer/ui/src-tauri`
 
 6. Install tauri and build manta-signer locally.
 
     ```bash
-    cargo install tauri-cli && cd manta-signer/ui/src-tauri
+    cargo install tauri-cli
 
     cargo tauri build --features=unsafe-disable-cors 
     ```
