@@ -12,7 +12,7 @@ const ZkAddressDisplay = () => {
   const { privateAddress } = usePrivateWallet();
   const privateAddressDisplayString = `zkAddress ${privateAddress.slice(0,6)}..${privateAddress.slice(-4)}`;
   return (
-    <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-2 text-secondary flex items-center justify-center gap-4">
+    <div className="border border-white-light bg-white bg-opacity-5 rounded-lg p-2 text-secondary flex items-center justify-center gap-4">
       <div className="flex items-center gap-2">
         <Icon className="w-6 h-6" name="manta" />
         <span className="text-white font-light">
@@ -26,7 +26,7 @@ const ZkAddressDisplay = () => {
 
 const UsdBalanceDisplay = () => {
   return (
-    <div className="border border-secondary bg-white bg-opacity-5 rounded-lg p-1 text-secondary flex flex-col justify-center items-center">
+    <div className="border border-white-light bg-white bg-opacity-5 rounded-lg p-1 text-secondary flex flex-col justify-center items-center">
       <span className="pt-3 pb-1 text-base text-white">Total Balance</span>
       <div className="text-white pb-3 text-2xl font-bold">{'$0.00'}</div>
     </div>
@@ -53,7 +53,7 @@ const PrivateTokenBalancesDisplay = () => {
   }
 
   return (
-    <div className="border border-secondary rounded-lg px-6 py-4 text-secondary overflow-y-auto h-48 bg-white bg-opacity-5">
+    <div className="border border-white-light rounded-lg px-6 py-4 text-secondary overflow-y-auto h-48 bg-white bg-opacity-5">
       {contents}
     </div>
   );
@@ -127,7 +127,7 @@ const ZkAccountModalContent = () => {
     apiState === API_STATE.DISCONNECTED || apiState === API_STATE.ERROR;
   return (
     <>
-      <div className="flex flex-col gap-4 w-80 mt-3 bg-fifth rounded-lg p-4 absolute left-0 top-full z-50 border border-white border-opacity-20 text-secondary ">
+      <div className="flex flex-col gap-4 w-80 mt-3 bg-fifth rounded-lg p-4 absolute left-0 top-full z-50 border border-white-light text-secondary">
         <ZkAddressDisplay />
         {isDisconnected ? <NetworkDisconnectedDisplay /> : <BalancesDisplay />}
       </div>
@@ -137,7 +137,7 @@ const ZkAccountModalContent = () => {
 
 const NoZkAccountModal = () => {
   return (
-    <div className="w-80 mt-3 bg-fifth rounded-lg p-4 absolute left-0 top-full z-50 border border-white border-opacity-20 text-secondary ">
+    <div className="w-80 mt-3 bg-fifth rounded-lg p-4 absolute left-0 top-full z-50 border border-white-light text-secondary ">
       <div className="whitespace-nowrap text-center">
         You have no zkAccount yet.
       </div>

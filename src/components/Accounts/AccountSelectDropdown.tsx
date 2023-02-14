@@ -46,7 +46,7 @@ const SingleAccountDisplay = ({
     <div
       key={accountAddress}
       className={classNames(
-        'bg-white bg-opacity-5 cursor-pointer flex items-center gap-5 justify-between border border-white border-opacity-20 rounded-lg px-3 text-green w-68 h-16',
+        'bg-white bg-opacity-5 cursor-pointer flex items-center gap-5 justify-between border border-white-light rounded-lg px-3 text-green w-68 h-16',
         { disabled: disabled }
       )}
       onClick={onClickAccountHandler}>

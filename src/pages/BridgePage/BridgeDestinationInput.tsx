@@ -110,7 +110,7 @@ const BridgeDestinationInput = () => {
   const placeholderMsg = `Enter ${originChainIsEvm ? 'substrate' : 'EVM'} address`;
 
   return (
-    <div className="flex items-center flex-grow h-16 mx-1">
+    <div className="flex items-center flex-grow h-16 mt-6">
       <input
         id="recipientAddress"
         autoComplete="off"

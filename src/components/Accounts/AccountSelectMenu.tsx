@@ -49,7 +49,7 @@ const DisplayAccountsButton = () => {
       <OutsideClickHandler onOutsideClick={() => setShowAccountList(false)}>
         <div
           className={classNames(
-            `flex flex-row justify-center h-12 gap-3 border border-white border-opacity-20 bg-fifth dark:text-black dark:text-white font-medium cursor-pointer rounded-lg items-center ${
+            `flex flex-row justify-center h-10 gap-3 border border-white-light bg-fifth dark:text-black dark:text-white font-red-hat-mono text-sm cursor-pointer rounded-lg items-center ${
               isMetamaskEnabled ? 'w-44' : 'w-36'
             }`
           )}
@@ -59,7 +59,7 @@ const DisplayAccountsButton = () => {
           />
         </div>
         {showAccountList && (
-          <div className="w-80 flex flex-col mt-3 absolute right-0 top-full border border-white border-opacity-20 rounded-lg text-black dark:text-white">
+          <div className="w-80 flex flex-col mt-3 absolute right-0 top-full border border-white-light rounded-lg text-black dark:text-white">
             <div className="flex flex-row items-center justify-between bg-fourth rounded-t-lg">
               <div className="flex flex-row items-center">
                 <WalletSelectBar
@@ -93,7 +93,7 @@ const AccountSelectMenu = () => {
     <ConnectWallet
       isButtonShape={true}
       className={
-        'bg-connect-wallet-button text-white h-12 w-36 font-medium cursor-pointer rounded-lg'
+        'bg-connect-wallet-button text-white font-red-hat-mono text-sm h-10 w-36 cursor-pointer rounded-lg'
       }
     />
   );
