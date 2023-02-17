@@ -14,12 +14,10 @@ import {
 } from 'utils/persistence/externalAccountStorage';
 import { useSubstrate } from './substrateContext';
 import { useKeyring } from './keyringContext';
-import { useConfig } from './configContext';
 
 const ExternalAccountContext = createContext();
 
 export const ExternalAccountContextProvider = (props) => {
-  const config = useConfig();
   const { api } = useSubstrate();
   const { keyring, isKeyringInit, keyringAddresses } = useKeyring();
   const externalAccountRef = useRef(null);
@@ -28,7 +26,6 @@ export const ExternalAccountContextProvider = (props) => {
   const [extensionSigner, setExtensionSigner] = useState(null);
   const [externalAccountOptions, setExternalAccountOptions] = useState([]);
   const [isInitialAccountSet, setIsInitialAccountSet] = useState(false);
-
 
   const setApiSigner = (api) => {
     api?.setSigner(null);
@@ -60,12 +57,12 @@ export const ExternalAccountContextProvider = (props) => {
     setSignerOnChangeExternalAccount();
   }, [api, externalAccount]);
 
-  const setStateWhenRemoveActiveExternalAccount = () => {
+  const setStateWhenRemoveActiveExternalAccount = (account) => {
     if (keyringAddresses.length > 0) {
       // reset state if account(s) exist after disable selected external account
       const externalAccountOptions = keyring.getPairs();
       changeExternalAccountOptions(
-        externalAccountOptions[0],
+        account||externalAccountOptions[0],
         externalAccountOptions
       );
     } else {
@@ -84,13 +81,16 @@ export const ExternalAccountContextProvider = (props) => {
         keyringAddresses.length > 0
       ) {
         const keyringExternalAccountOptions = keyring.getPairs();
+        const {
+          meta: { source }
+        } = keyringExternalAccountOptions[0] || { meta: {} };
         if (keyringExternalAccountOptions.length === 0) {
           return;
         }
         // The user's default account is either their last accessed polkadot.js account,
         // or, as a fallback, the first account in their polkadot.js wallet
         const initialAccount =
-          getLastAccessedExternalAccount(config, keyring) ||
+          getLastAccessedExternalAccount(keyring, source) ||
           keyringExternalAccountOptions[0];
         changeExternalAccountOptions(
           initialAccount,
@@ -113,14 +113,19 @@ export const ExternalAccountContextProvider = (props) => {
         return;
       }
       // ensure newly added account after removing all accounts can be updated
+      const accounts = keyring.getPairs();
+      const {
+        meta: { source }
+      } = accounts[0] || { meta: {} };
+      const account =
+        getLastAccessedExternalAccount(keyring, source) || accounts[0];
       if (!externalAccount) {
-        const accounts = keyring.getPairs();
-        changeExternalAccountOptions(accounts[0], accounts);
+        changeExternalAccountOptions(account, accounts);
       } else if (!keyring.getAccount(externalAccount.address)) {
-        setStateWhenRemoveActiveExternalAccount();
+        setStateWhenRemoveActiveExternalAccount(account);
       } else {
         setExternalAccountOptions(
-          orderExternalAccountOptions(externalAccount, keyring.getPairs() || [])
+          orderExternalAccountOptions(account, keyring.getPairs() || [])
         );
       }
     };
@@ -144,7 +149,7 @@ export const ExternalAccountContextProvider = (props) => {
 
   const changeExternalAccount = async (account) => {
     changeExternalAccountOptions(account, externalAccountOptions);
-    setLastAccessedExternalAccountAddress(config, account?.address);
+    setLastAccessedExternalAccountAddress(account);
   };
 
   const changeExternalAccountOptions = async (account, newExternalAccounts) => {
@@ -162,7 +167,8 @@ export const ExternalAccountContextProvider = (props) => {
     externalAccountRef,
     externalAccountSigner,
     externalAccountOptions: externalAccountOptions,
-    changeExternalAccount
+    changeExternalAccount,
+    changeExternalAccountOptions
   };
 
   return (

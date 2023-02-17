@@ -1,24 +1,20 @@
 // @ts-nocheck
+import keyring from '@polkadot/ui-keyring';
+import { getWallets } from '@talismn/connect-wallets';
 import APP_NAME from 'constants/AppConstants';
 import { SS58 } from 'constants/NetworkConstants';
+import { useExternalAccount } from 'contexts/externalAccountContext';
 import PropTypes from 'prop-types';
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useRef
-} from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
-  setHasAuthToConnectWalletStorage,
-  getHasAuthToConnectWalletStorage
+  getHasAuthToConnectWalletStorage,
+  setHasAuthToConnectWalletStorage
 } from 'utils/persistence/connectAuthorizationStorage';
+import { getLastAccessedExternalAccount } from 'utils/persistence/externalAccountStorage';
 import {
   getLastAccessedWallet,
   setLastAccessedWallet
 } from 'utils/persistence/walletStorage';
-import keyring from '@polkadot/ui-keyring';
-import { getWallets } from '@talismn/connect-wallets';
 
 const KeyringContext = createContext();
 const MAX_WAIT_COUNT = 5;
@@ -52,15 +48,15 @@ export const KeyringContextProvider = (props) => {
     setHasAuthToConnectWallet(walletNames);
   };
 
-  const refreshWalletAccounts = async (wallet) => {
+  const refreshWalletAccounts = async (wallet, reselected = false) => {
     await wallet.enable(APP_NAME);
     keyringIsBusy.current = true;
-    let currentKeyringAddresses = keyring.getAccounts().map((account) => account.address);
+    let currentKeyringAddresses = keyring
+      .getAccounts()
+      .map((account) => account.address);
 
     const updatedAccounts = await wallet.getAccounts();
-    const updatedAddresses = updatedAccounts.map(
-      (account) => account.address
-    );
+    const updatedAddresses = updatedAccounts.map((account) => account.address);
     currentKeyringAddresses.forEach((address) => {
       keyring.forgetAccount(address);
     });
@@ -77,7 +73,18 @@ export const KeyringContextProvider = (props) => {
       setSelectedWallet(wallet);
       setKeyringAddresses(updatedAddresses);
     }
+
     keyringIsBusy.current = false;
+
+    if (reselected) {
+      const pairs = keyring.getPairs();
+      const {
+        meta: { source }
+      } = pairs[0] || { meta: {} };
+      const account =
+        getLastAccessedExternalAccount(keyring, source) || pairs[0];
+      return { account, pairs };
+    }
   };
 
   useEffect(() => {
@@ -151,7 +158,7 @@ export const KeyringContextProvider = (props) => {
       try {
         await selectedWallet.enable(APP_NAME);
         await refreshWalletAccounts(selectedWallet);
-        saveToStorage && setLastAccessedWallet(wallet);
+        saveToStorage && setLastAccessedWallet(selectedWallet);
         return true;
       } catch (e) {
         const walletNames = removeWalletName(

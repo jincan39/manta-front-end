@@ -1,20 +1,26 @@
 // @ts-nocheck
-import React from 'react';
-import classNames from 'classnames';
-import { useMetamask } from 'contexts/metamaskContext';
 import { getWallets } from '@talismn/connect-wallets';
-import { useKeyring } from 'contexts/keyringContext';
-import { useTxStatus } from 'contexts/txStatusContext';
+import classNames from 'classnames';
 import Icon from 'components/Icon';
+import { useExternalAccount } from 'contexts/externalAccountContext';
+import { useKeyring } from 'contexts/keyringContext';
+import { useMetamask } from 'contexts/metamaskContext';
+import { useTxStatus } from 'contexts/txStatusContext';
+import {
+  setLastAccessedWallet
+} from 'utils/persistence/walletStorage';
 
 const SubstrateWallets = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
+  const { changeExternalAccountOptions } = useExternalAccount();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const { refreshWalletAccounts, selectedWallet, keyringIsBusy } = useKeyring();
   const enabledWallet = getWallets().filter((wallet) => wallet.extension);
-  const onClickWalletIconHandler = (wallet) => () => {
+  const onClickWalletIconHandler = (wallet) => async () => {
     if (keyringIsBusy.current === false && !disabled) {
-      refreshWalletAccounts(wallet);
+      const { account, pairs } = await refreshWalletAccounts(wallet, true);
+      changeExternalAccountOptions(account, pairs);
+      setLastAccessedWallet(wallet)
       setIsMetamaskSelected(false);
     }
   };
