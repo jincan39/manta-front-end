@@ -1,5 +1,3 @@
-// @ts-nocheck
-// TODO https://github.com/facebook/react/issues/24304
 import Icon, { IconName } from 'components/Icon';
 import { ZkAccountBalance } from 'contexts/zkAccountBalancesContext';
 import { Tooltip } from 'element-react';
@@ -32,7 +30,7 @@ const PrivateAssetItem = ({ balance }: PrivateAssetItemProps) => {
           <div className="text-white">{balance.assetType.ticker}</div>
           <Tooltip
             visibleArrow={false}
-            content={isEllipsis ? tip : null}
+            content={isEllipsis ? tip : ''}
             placement="right-end">
             <div
               ref={privateBalanceRef}
