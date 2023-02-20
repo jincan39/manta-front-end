@@ -30,7 +30,9 @@ export const useEllipsis = (
       trigger();
     }
 
-    return observerRef.current.disconnect();
+    return () => {
+      observerRef.current.disconnect();
+    };
   }, [callback, ref.current]);
 
   return isEllipsis;
