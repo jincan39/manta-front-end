@@ -2,7 +2,7 @@ import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 export const useEllipsis = (
   ref: MutableRefObject<HTMLDivElement | null>,
-  callback: <T>(arg: T | null) => T
+  callback?: <T>(arg: T | null) => T
 ) => {
   const [isEllipsis, setIsEllipsis] = useState<boolean>(false);
   const observerRef: MutableRefObject<ResizeObserver> = useRef(
