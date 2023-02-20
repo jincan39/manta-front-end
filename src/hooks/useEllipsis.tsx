@@ -1,10 +1,13 @@
-import { MutableRefObject, useEffect, useState } from 'react';
+import { MutableRefObject, useEffect, useRef, useState } from 'react';
 
 export const useEllipsis = (
   ref: MutableRefObject<HTMLDivElement | null>,
   callback: <T>(arg: T | null) => T
 ) => {
   const [isEllipsis, setIsEllipsis] = useState<boolean>(false);
+  const observerRef: MutableRefObject<ResizeObserver> = useRef(
+    new ResizeObserver(() => null)
+  );
 
   useEffect(() => {
     const { current } = ref;
@@ -19,11 +22,15 @@ export const useEllipsis = (
 
     if (current) {
       if ('ResizeObserver' in window) {
-        new ResizeObserver(trigger).observe(current);
+        const observer: ResizeObserver = new ResizeObserver(trigger);
+        observer.observe(current);
+        observerRef.current = observer;
       }
 
       trigger();
     }
+
+    return observerRef.current.disconnect();
   }, [callback, ref.current]);
 
   return isEllipsis;
