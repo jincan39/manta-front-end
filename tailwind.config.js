@@ -35,8 +35,9 @@ module.exports = {
         '22':'5.5rem',
         '34':'8.5rem',
         '38':'9.5rem',
-        '70':'17.5rem',
+        '50':'12.5rem',
         '67':'16.75rem',
+        '70':'17.5rem',
       },
       width: {
         '68': '272px'
@@ -89,6 +90,9 @@ module.exports = {
         warning: '#FF8A00',
         'white-light': '#FFFFFF1A',
         'public-private-toggle': '#2B49EA'
+      },
+      colors: {
+        'manta-gray-secondary': '#4A516B',
       },
       divideColor: {
         'white-light': '#FFFFFF1A'

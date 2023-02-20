@@ -11,8 +11,8 @@ import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import classNames from 'classnames';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import Icon from 'components/Icon';
-import ZkAccountInfoModal from '../Accounts/ZkAccountInfoModal';
-import ZkAccountModal from '../Accounts/ZkAccountModal';
+import ZkAccountInstallGuideModal from '../ZkAccount/ZkAccountInstallGuideModal';
+import ZkAccountModal from '../ZkAccount/ZkAccountModal';
 
 const ZkAccountDisplay = () => {
   const [showZkModal, setShowZkModal] = useState(false);
@@ -65,7 +65,7 @@ const ZkAccountWarning = ({
           zkAddress
         </div>
         {showZkModal && (
-          <ZkAccountInfoModal
+          <ZkAccountInstallGuideModal
             title={title}
             text={text}
             showInstallButton={showInstallButton}

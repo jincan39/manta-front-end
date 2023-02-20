@@ -175,7 +175,7 @@ export const BridgeTxContextProvider = (props) => {
       if (txHash) {
         setTxStatus(TxStatus.finalized(txHash));
       } else {
-        setTxStatus(TxStatus.failed());
+        setTxStatus(TxStatus.failed('Transaction declined'));
       }
     }
   };

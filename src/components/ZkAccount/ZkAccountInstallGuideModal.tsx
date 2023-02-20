@@ -1,6 +1,6 @@
 //@ts-nocheck
 
-const ZkAccountInfoModal = ({title, text, showInstallButton}) => {
+const ZkAccountInstallGuideModal = ({title, text, showInstallButton}) => {
   return (
     <div className="flex flex-col items-center w-80 mt-3 bg-primary rounded-lg p-4 absolute right-0 top-full z-50 border border-white-light">
       <h1 className="text-center pt-3 pb-2 text-white font-medium text-xl">
@@ -24,4 +24,4 @@ const ZkAccountInfoModal = ({title, text, showInstallButton}) => {
   );
 };
 
-export default ZkAccountInfoModal;
+export default ZkAccountInstallGuideModal;

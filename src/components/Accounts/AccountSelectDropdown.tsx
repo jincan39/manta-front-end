@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
+import getAbbreviatedName from 'utils/display/getAbbreviatedName';
 import Identicon from '@polkadot/react-identicon';
 import makeBlockie from 'ethereum-blockies-base64';
 import CopyPasteIcon from 'components/CopyPasteIcon';
@@ -16,10 +17,7 @@ const SingleAccountDisplay = ({
   isMetamaskSelected,
   onClickAccountHandler
 }) => {
-  const succinctAddress = `${accountAddress?.slice(
-    0,
-    5
-  )}...${accountAddress?.slice(-5)}`;
+  const succinctAddress = getAbbreviatedName(accountAddress, 5, 5);
 
   const succinctAccountName =
     accountName.length > 12 ? `${accountName?.slice(0, 12)}...` : accountName;
