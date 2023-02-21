@@ -3,6 +3,7 @@ import { localStorageKeys } from 'constants/LocalStorageConstants';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import Chain from 'types/Chain';
+import { setLocalStorage } from 'utils/persistence/storage';
 import BRIDGE_ACTIONS from './bridgeActions';
 
 const getDestinationChainOptions = (originChain, originChainOptions) => {
@@ -152,7 +153,7 @@ const setBridge = (state, { bridge }) => {
 };
 
 const setSelectedAssetType = (state, action) => {
-  localStorage.setItem(localStorageKeys.CurrentToken,action.selectedAssetType.baseTicker);
+  setLocalStorage(localStorageKeys.CurrentToken,action.selectedAssetType.baseTicker);
   const senderAssetType = action.selectedAssetType;
   let senderAssetTargetBalance = null;
   if (state.senderAssetTargetBalance) {

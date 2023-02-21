@@ -3,11 +3,11 @@ import { themeType } from 'constants/ThemeConstants';
 import { localStorageKeys } from 'constants/LocalStorageConstants';
 import React, { createContext, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
+import { getFromLocalStorage, setLocalStorage } from 'utils/persistence/storage';
 
 const getInitialTheme = () => {
   if (typeof window !== 'undefined' && window.localStorage) {
-    const storedPrefs = window.localStorage.getItem(
+    const storedPrefs = getFromLocalStorage(
       localStorageKeys.CurrentTheme
     );
     if (typeof storedPrefs === 'string') {
@@ -34,7 +34,7 @@ export const ThemeProvider = ({ initialTheme, children }) => {
     root.classList.remove(isDark ? themeType.Light : themeType.Dark);
     root.classList.add(theme);
 
-    localStorage.setItem(localStorageKeys.CurrentTheme, theme);
+    setLocalStorage(localStorageKeys.CurrentTheme, theme);
   };
 
   if (initialTheme) {
