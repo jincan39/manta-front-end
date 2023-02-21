@@ -1,6 +1,5 @@
 // @ts-nocheck
 import { localStorageKeys } from 'constants/LocalStorageConstants';
-import store from 'store';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import Chain from 'types/Chain';
@@ -153,7 +152,7 @@ const setBridge = (state, { bridge }) => {
 };
 
 const setSelectedAssetType = (state, action) => {
-  store.set(localStorageKeys.CurrentToken, action.selectedAssetType.baseTicker);
+  localStorage.setItem(localStorageKeys.CurrentToken,action.selectedAssetType.baseTicker);
   const senderAssetType = action.selectedAssetType;
   let senderAssetTargetBalance = null;
   if (state.senderAssetTargetBalance) {

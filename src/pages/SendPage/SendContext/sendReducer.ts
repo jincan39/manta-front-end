@@ -1,26 +1,34 @@
 // @ts-nocheck
 import { localStorageKeys } from 'constants/LocalStorageConstants';
-import store from 'store';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import SEND_ACTIONS from './sendActions';
 
 const getInitialToken = (config, isPrivate) => {
-  return AssetType.AllCurrencies(config, isPrivate).find(currency => currency.baseTicker === store.get(localStorageKeys.CurrentToken)) ?? AssetType.AllCurrencies(config, isPrivate)[0];
+  const localCurrentToken = localStorage.getItem(localStorageKeys.CurrentToken);
+  return AssetType.AllCurrencies(config, isPrivate).find(currency => currency.baseTicker === localCurrentToken) ?? AssetType.AllCurrencies(config, isPrivate)[0];
 };
 
 
 export const buildInitState = (config) => {
   const initSenderAssetType = getInitialToken(
-    config, store.get(localStorageKeys.IsPrivateSender, false)
+    config,
+    localStorage.getItem(localStorageKeys.IsPrivateSender) === null
+      ? false
+      : localStorage.getItem(localStorageKeys.IsPrivateSender)
   );
   const initSenderAssetTypeOptions = AssetType.AllCurrencies(
-    config, store.get(localStorageKeys.IsPrivateSender, false)
+    config,
+    localStorage.getItem(localStorageKeys.IsPrivateSender) === null
+      ? false
+      : localStorage.getItem(localStorageKeys.IsPrivateSender)
   );
   const initReceiverAssetType = getInitialToken(
-    config, store.get(localStorageKeys.IsPrivateReceiver, true)
+    config,
+    localStorage.getItem(localStorageKeys.IsPrivateReceiver) === null
+      ? true
+      : localStorage.getItem(localStorageKeys.IsPrivateReceiver)
   );
-
   return {
     config,
     senderPublicAccount: null,
@@ -115,8 +123,8 @@ const toggleSenderIsPrivate = (state) => {
     state.receiverAssetType.isPrivate
   );
 
-  store.set(localStorageKeys.IsPrivateSender, senderAssetType.isPrivate);
-  store.set(localStorageKeys.CurrentToken, senderAssetType.baseTicker);
+  localStorage.setItem(localStorageKeys.IsPrivateSender, senderAssetType.isPrivate);
+  localStorage.setItem(localStorageKeys.CurrentToken, senderAssetType.baseTicker);
 
   return {
     ...state,
@@ -136,8 +144,8 @@ const toggleReceiverIsPrivate = (state) => {
     receiverAssetType.isPrivate
   );
 
-  store.set(localStorageKeys.IsPrivateReceiver, receiverAssetType.isPrivate);
-  store.set(localStorageKeys.CurrentToken, receiverAssetType.baseTicker);
+  localStorage.setItem(localStorageKeys.IsPrivateReceiver, receiverAssetType.isPrivate);
+  localStorage.setItem(localStorageKeys.CurrentToken, receiverAssetType.baseTicker);
 
   return {
     ...state,
@@ -156,7 +164,7 @@ const swapSenderAndReceiverAccountsArePrivate = (state) => {
 };
 
 const setSelectedAssetType = (state, action) => {
-  store.set(localStorageKeys.CurrentToken, action.selectedAssetType.baseTicker);
+  localStorage.setItem(localStorageKeys.CurrentToken, action.selectedAssetType.baseTicker);
   const senderAssetType = action.selectedAssetType;
   let receiverAssetType = senderAssetType;
   if (state.senderAssetType?.isPrivate !== state.receiverAssetType?.isPrivate) {

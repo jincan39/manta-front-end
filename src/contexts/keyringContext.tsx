@@ -10,15 +10,14 @@ import React, {
   useRef
 } from 'react';
 import {
-  setHasAuthToConnectWalletStorage,
-  getHasAuthToConnectWalletStorage
+  HAS_AUTH_TO_CONNECT_WALLET_KEY
 } from 'utils/persistence/connectAuthorizationStorage';
 import {
-  getLastAccessedWallet,
-  setLastAccessedWallet
+  LAST_WALLET_STORAGE_KEY,
 } from 'utils/persistence/walletStorage';
 import keyring from '@polkadot/ui-keyring';
 import { getWallets } from '@talismn/connect-wallets';
+import { useLocalStorage } from 'hooks';
 
 const KeyringContext = createContext();
 const MAX_WAIT_COUNT = 5;
@@ -29,8 +28,13 @@ export const KeyringContextProvider = (props) => {
   const [keyringAddresses, setKeyringAddresses] = useState([]);
   const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState([]);
   const [selectedWallet, setSelectedWallet] = useState(null);
-  const [hasAuthToConnectWallet, setHasAuthToConnectWallet] = useState(
-    getHasAuthToConnectWalletStorage()
+  const [hasAuthToConnectWallet, setHasAuthToConnectWalletStorage] = useLocalStorage(
+    HAS_AUTH_TO_CONNECT_WALLET_KEY,
+    []
+  );
+  const [lastAccessedWallet, setLastAccessedWallet] = useLocalStorage(
+    LAST_WALLET_STORAGE_KEY,
+    {}
   );
   const keyringIsBusy = useRef(false);
 
@@ -49,7 +53,6 @@ export const KeyringContextProvider = (props) => {
   const connectWalletExtension = (extensionName) => {
     const walletNames = addWalletName(extensionName, hasAuthToConnectWallet);
     setHasAuthToConnectWalletStorage(walletNames);
-    setHasAuthToConnectWallet(walletNames);
   };
 
   const subscribeWalletAccounts = async (wallet, saveToStorage = true) => {
@@ -163,7 +166,6 @@ export const KeyringContextProvider = (props) => {
           hasAuthToConnectWallet
         );
         setHasAuthToConnectWalletStorage(walletNames);
-        setHasAuthToConnectWallet(walletNames);
         return false;
       }
     }
@@ -175,7 +177,7 @@ export const KeyringContextProvider = (props) => {
     }
 
     const withoutLastAccessedWallet = removeWalletName(
-      getLastAccessedWallet()?.extensionName,
+      lastAccessedWallet.extensionName,
       hasAuthToConnectWallet
     );
 
@@ -184,7 +186,7 @@ export const KeyringContextProvider = (props) => {
     });
 
     setTimeout(() => {
-      connectWallet(getLastAccessedWallet()?.extensionName);
+      connectWallet(lastAccessedWallet.extensionName);
     }, 200);
   }, [isKeyringInit]);
 

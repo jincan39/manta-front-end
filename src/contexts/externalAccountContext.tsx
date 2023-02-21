@@ -9,17 +9,16 @@ import React, {
 import PropTypes from 'prop-types';
 import { getWallets } from '@talismn/connect-wallets';
 import {
+  LAST_ACCOUNT_STORAGE_KEY,
   getLastAccessedExternalAccount,
-  setLastAccessedExternalAccountAddress
 } from 'utils/persistence/externalAccountStorage';
+import { useLocalStorage } from 'hooks';
 import { useSubstrate } from './substrateContext';
 import { useKeyring } from './keyringContext';
-import { useConfig } from './configContext';
 
 const ExternalAccountContext = createContext();
 
 export const ExternalAccountContextProvider = (props) => {
-  const config = useConfig();
   const { api } = useSubstrate();
   const { keyring, isKeyringInit, keyringAddresses } = useKeyring();
   const externalAccountRef = useRef(null);
@@ -28,7 +27,7 @@ export const ExternalAccountContextProvider = (props) => {
   const [extensionSigner, setExtensionSigner] = useState(null);
   const [externalAccountOptions, setExternalAccountOptions] = useState([]);
   const [isInitialAccountSet, setIsInitialAccountSet] = useState(false);
-
+  const [lastAccountAddress,setLastAccessedExternalAccountAddress] = useLocalStorage(LAST_ACCOUNT_STORAGE_KEY,'')
 
   const setApiSigner = (api) => {
     api?.setSigner(null);
@@ -90,7 +89,7 @@ export const ExternalAccountContextProvider = (props) => {
         // The user's default account is either their last accessed polkadot.js account,
         // or, as a fallback, the first account in their polkadot.js wallet
         const initialAccount =
-          getLastAccessedExternalAccount(config, keyring) ||
+          getLastAccessedExternalAccount(lastAccountAddress, keyring) ||
           keyringExternalAccountOptions[0];
         changeExternalAccountOptions(
           initialAccount,
@@ -144,7 +143,7 @@ export const ExternalAccountContextProvider = (props) => {
 
   const changeExternalAccount = async (account) => {
     changeExternalAccountOptions(account, externalAccountOptions);
-    setLastAccessedExternalAccountAddress(config, account?.address);
+    setLastAccessedExternalAccountAddress(account?.address);
   };
 
   const changeExternalAccountOptions = async (account, newExternalAccounts) => {

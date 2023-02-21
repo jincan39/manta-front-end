@@ -3,10 +3,8 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import detectEthereumProvider from '@metamask/detect-provider';
 import Chain from 'types/Chain';
-import {
-  getHasAuthToConnectMetamaskStorage,
-  setHasAuthToConnectMetamaskStorage
-} from 'utils/persistence/connectAuthorizationStorage';
+import { HAS_AUTH_TO_CONNECT_METAMASK_KEY } from 'utils/persistence/connectAuthorizationStorage';
+import { useLocalStorage } from 'hooks';
 import { useConfig } from './configContext';
 
 const MetamaskContext = createContext();
@@ -16,9 +14,8 @@ export const MetamaskContextProvider = (props) => {
   const [provider, setProvider] = useState(null);
   const [ethAddress, setEthAddress] = useState(null);
   const [chainId, setChainId] = useState(null);
-  const [hasAuthConnectMetamask, setHasAuthConnectMetamask] = useState(
-    getHasAuthToConnectMetamaskStorage()
-  );
+  const [hasAuthConnectMetamask, setHasAuthToConnectMetamaskStorage] =
+    useLocalStorage(HAS_AUTH_TO_CONNECT_METAMASK_KEY, false);
 
   const metamaskIsInstalled =
     window.ethereum?.isMetaMask &&
@@ -37,12 +34,10 @@ export const MetamaskContextProvider = (props) => {
           params: [Chain.Moonriver(config).ethMetadata]
         });
       }
-      setHasAuthConnectMetamask(true);
       setHasAuthToConnectMetamaskStorage(true);
       return true;
     } catch (e) {
       console.error(e);
-      setHasAuthConnectMetamask(false);
       setHasAuthToConnectMetamaskStorage(false);
       return false;
     }
@@ -105,8 +100,7 @@ export const MetamaskContextProvider = (props) => {
     chainId,
     setProvider,
     ethAddress,
-    configureMoonRiver,
-    setHasAuthConnectMetamask
+    configureMoonRiver
   };
 
   return (
