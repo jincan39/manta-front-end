@@ -28,9 +28,16 @@ module.exports = {
     extend: {
       spacing: {
         '128':'32rem',
+        '120':'30rem',
         '108':'27rem',
         '113.5':'28.375rem',
-        '21':'5.375rem'
+        '21':'5.25rem',
+        '22':'5.5rem',
+        '34':'8.5rem',
+        '38':'9.5rem',
+        '50':'12.5rem',
+        '67':'16.75rem',
+        '70':'17.5rem',
       },
       width: {
         '68': '272px'
@@ -53,7 +60,9 @@ module.exports = {
         'connect-signer-button':'#2B49EA',
         'connect-wallet-button':'#00AFA5',
         'gradient-button':'var(--gradient-button-secondary)',
-        'light-warning': '#FF8A0020'
+        'light-warning': '#FF8A0020',
+        'dropdown-hover': '#00AFA580',
+        'private-public-toggle': '#0E50FC80',
       },
       textColor: {
         accent: 'var(--color-text-accent)',
@@ -65,7 +74,8 @@ module.exports = {
         'gray-light': 'var(--color-text-gray)',
         'manta-gray': 'var(--color-bg-manta-gray)',
         'manta-blue': 'var(--color-manta-blue)',
-        warning: '#FF8A00'
+        warning: '#FF8A00',
+        'green-light': '#29CCB9',
       },
       fill: {
         current: 'var(--color-text-secondary)',
@@ -75,11 +85,18 @@ module.exports = {
       },
       borderColor: {
         'manta-gray': 'var(--color-bg-manta-gray)',
-        'manta-blue-secondary': '#3A4DAE',
         primary: 'var(--color-border-primary)',
         secondary: 'var(--color-bg-button-primary)',
-        warning: '#FF8A00'
-      }
+        warning: '#FF8A00',
+        'white-light': '#FFFFFF1A',
+        'public-private-toggle': '#2B49EA'
+      },
+      colors: {
+        'manta-gray-secondary': '#4A516B',
+      },
+      divideColor: {
+        'white-light': '#FFFFFF1A'
+      },
     }
   },
   variants: {

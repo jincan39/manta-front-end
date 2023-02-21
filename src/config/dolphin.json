@@ -1,6 +1,7 @@
 {
     "NETWORK_NAME": "Dolphin",
     "SS58_FORMAT": 42,
+    "SUBSCAN_API_ENDPOINT": "https://dolphin.api.subscan.io/api/scan",
     "SUBSCAN_URL": "https://dolphin.subscan.io",
     "DOLPHIN_SUBSCAN_URL": "https://dolphin.subscan.io",
     "ROCOCO_SUBSCAN_URL": null,

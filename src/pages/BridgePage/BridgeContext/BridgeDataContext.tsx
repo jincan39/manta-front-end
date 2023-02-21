@@ -10,6 +10,7 @@ import { Bridge } from 'manta-polkawallet-bridge/build';
 import { useConfig } from 'contexts/configContext';
 import { firstValueFrom } from 'rxjs';
 import { useTxStatus } from 'contexts/txStatusContext';
+import TxStatus from 'types/TxStatus';
 import BRIDGE_ACTIONS from './bridgeActions';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
 
@@ -19,7 +20,7 @@ export const BridgeDataContextProvider = (props) => {
   const { ethAddress } = useMetamask();
   const config = useConfig();
   const { externalAccount } = useExternalAccount();
-  const { txStatus } = useTxStatus();
+  const { txStatus, txStatusRef, setTxStatus } = useTxStatus();
 
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
 
@@ -76,6 +77,9 @@ export const BridgeDataContextProvider = (props) => {
       isApiDisconnected: true,
       chain
     });
+    if (txStatusRef.current?.isProcessing()) {
+      setTxStatus(TxStatus.disconnected());
+    }
   };
 
   const handleApiConnect = (chain) => {
@@ -84,6 +88,9 @@ export const BridgeDataContextProvider = (props) => {
       isApiDisconnected: false,
       chain
     });
+    if (txStatusRef.current?.isProcessing()) {
+      setTxStatus(TxStatus.disconnected());
+    }
   };
 
   useEffect(() => {

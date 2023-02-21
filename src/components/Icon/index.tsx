@@ -1,7 +1,7 @@
 import React, { SVGAttributes } from 'react';
 import icons from 'resources/icons';
 
-type IconName = keyof typeof icons;
+export type IconName = keyof typeof icons;
 
 export type IconProps = {
   name: IconName;

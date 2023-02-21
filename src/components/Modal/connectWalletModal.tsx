@@ -12,7 +12,7 @@ const WalletNotInstalledBlock = ({
   walletInstallLink
 }) => {
   return (
-    <div className="mt-6 py-3 px-4 h-16 text-sm flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
+    <div className="mt-6 py-3 px-4 h-16 text-sm flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -38,7 +38,7 @@ const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
   return (
     <button
       onClick={connectHandler}
-      className="mt-5 py-3 px-4 h-16 flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
+      className="mt-5 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -60,7 +60,7 @@ const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
 
 const WalletEnabledBlock = ({ walletName, walletLogo }) => {
   return (
-    <div className="mt-6 py-3 px-4 h-16 flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
+    <div className="mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -127,7 +127,7 @@ const MetamaskConnectWalletBlock = ({hideModal}) => {
   return (
     <ConnectWalletBlock
       key={'metamask'}
-      walletName={'Metamask (for Moonriver)'}
+      walletName={'MetaMask (for Moonriver)'}
       isWalletInstalled={metamaskIsInstalled}
       walletInstallLink={'https://metamask.io/'}
       walletLogo="metamask"

@@ -120,3 +120,24 @@
     border: 0.25em solid;
     border-right-color: transparent;
 }
+
+.zkAddressTooltipWrapper{
+    max-width: 150px;
+    .el-tooltip__popper{
+        background: unset !important;
+        color: unset !important;
+    }
+}
+.zkAddressTooltip{
+    position: absolute;
+    top: 20px;
+    left: -10px;
+    color: rgba(255, 255, 255, 0.6) !important;
+    background: rgba(0, 6, 32, 0.8) !important;
+    border-radius: 4px !important;
+    border: unset !important;
+    font-size: 10px !important;
+    padding: 2px 5px !important;
+    line-height: 16px !important;
+    width: unset !important;
+}

@@ -56,6 +56,14 @@ input[type='number']::-webkit-outer-spin-button {
     animation: jump 1.6s linear infinite;
 }
 
+.font-red-hat-text {
+    font-family: 'Red Hat Text' !important;
+}
+
+.font-red-hat-mono {
+    font-family: 'Red Hat Mono' !important;
+}
+
 @keyframes jump {
     0%,
     80%,

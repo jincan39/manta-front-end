@@ -1,9 +1,9 @@
 {
-    "VERSION": "4.0.3",
+    "VERSION": "4.0.4",
     "DOWNTIME": false,
     "BASE_STORAGE_KEY": "mantaWebApp",
     "PAGE_TITLE": "Manta dApp",
-    "MIN_REQUIRED_SIGNER_VERSION": "1.1.0",
+    "MIN_REQUIRED_SIGNER_VERSION": "1.1.1",
     "SIGNER_URL": "http://localhost:29987/",
     "SUBSCAN_API_KEY": "35770f43091fd396d35192f5b6c499db",
     "RPC": {

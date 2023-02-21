@@ -2,8 +2,10 @@
 import React, { useReducer, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import TxStatus from 'types/TxStatus';
 import types from '../config/types.json';
 import { useConfig } from './configContext';
+import { useTxStatus } from './txStatusContext';
 
 export enum API_STATE {
   CONNECT_INIT,
@@ -55,39 +57,11 @@ const reducer = (state, action) => {
 ///
 // Connecting to the Substrate node
 
-const connect = async (state, dispatch) => {
-  const { socket, types, rpc } = state;
-
-  dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_INIT });
-
-  const provider = new WsProvider(socket);
-  const _api = new ApiPromise({
-    provider,
-    types,
-    rpc
-  });
-
-  // Set listeners for disconnection and reconnection event.
-  _api.on('connected', () => {
-    console.log('polkadot.js api connected');
-    // `ready` event is not emitted upon reconnection and is checked explicitly here.
-    _api.isReady.then(async () => {
-      dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_SUCCESS, payload: _api });
-      await _api.rpc.chain.subscribeNewHeads((header) => {
-        dispatch({ type: SUBSTRATE_ACTIONS.UPDATE_BLOCK, payload: header.number.toHuman() });
-      });
-    });
-  });
-  _api.on('ready', () => dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_SUCCESS, payload: _api }));
-  _api.on('error', (err) => dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_ERROR, payload: err }));
-  _api.on('disconnected', () =>
-    dispatch({ type: SUBSTRATE_ACTIONS.DISCONNECTED, payload: provider })
-  );
-};
 
 const SubstrateContext = React.createContext();
 
 const SubstrateContextProvider = ({children}) => {
+  const { txStatusRef, setTxStatus } = useTxStatus();
   const config = useConfig();
   const initState = {
     ...INIT_STATE,
@@ -95,9 +69,50 @@ const SubstrateContextProvider = ({children}) => {
     rpc: config.RPC
   };
   const [state, dispatch] = useReducer(reducer, initState);
+  const { socket, types, rpc } = state;
 
   useEffect(() => {
-    connect(state, dispatch);
+    const handleConnected = (api) => {
+      console.log('polkadot.js api connected');
+      // `ready` event is not emitted upon reconnection and is checked explicitly here.
+      api.isReady.then(async () => {
+        dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_SUCCESS, payload: api });
+        await api.rpc.chain.subscribeNewHeads((header) => {
+          dispatch({ type: SUBSTRATE_ACTIONS.UPDATE_BLOCK, payload: header.number.toHuman() });
+        });
+      });
+    };
+
+    const handleError = (err) => {
+      console.error(err);
+      dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_ERROR, payload: err });
+      if (txStatusRef.current?.isProcessing()) {
+        setTxStatus(TxStatus.disconnected());
+      }
+    };
+
+    const handleDisconnected = (provider) => {
+      dispatch({ type: SUBSTRATE_ACTIONS.DISCONNECTED, payload: provider });
+      if (txStatusRef.current?.isProcessing()) {
+        setTxStatus(TxStatus.disconnected());
+      }
+    };
+
+    const connect = async () => {
+      dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_INIT });
+      const provider = new WsProvider(socket);
+      const api = new ApiPromise({
+        provider,
+        types,
+        rpc
+      });
+      // Set listeners for disconnection and reconnection event.
+      api.on('connected', () => handleConnected(api));
+      api.on('ready', () => dispatch({ type: SUBSTRATE_ACTIONS.CONNECT_SUCCESS, payload: api }));
+      api.on('error', (err) => handleError(err));
+      api.on('disconnected', () => handleDisconnected(provider));
+    };
+    connect();
   }, []);
 
   return (

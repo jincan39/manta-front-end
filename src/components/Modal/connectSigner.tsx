@@ -10,7 +10,7 @@ import Icon from 'components/Icon';
 
 const ConnectSignerModal = () => {
   return (
-    <div className="py-2 w-128 h-81.5 flex flex-col justify-center text-sm">
+    <div className="py-2 w-120 h-81.5 flex flex-col justify-center text-sm">
       <h1 className="text-white text-xl font-bold mb-4">Log in</h1>
       <Icon className="w-12 h-12" name="manta" />
       <p className="tracking-tighter mt-4 mb-1 text-white text-opacity-70 text-xss">
@@ -33,7 +33,7 @@ const ConnectSignerModal = () => {
         <a
           href="https://signer.manta.network/"
           target="_blank"
-          className="my-1 text-white hover:cursor-pointer flex flex-row items-center gap-3"
+          className="my-1 text-white hover:cursor-pointer flex flex-row items-center gap-3 hover:text-green-light"
           rel="noreferrer">
           Download Now
           <FontAwesomeIcon className="w-2.5 h-2.5" icon={faChevronRight} />

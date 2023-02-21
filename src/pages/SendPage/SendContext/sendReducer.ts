@@ -173,6 +173,7 @@ const setSelectedAssetType = (state, action) => {
     receiverAssetType = senderAssetType.toggleIsPrivate();
   }
   let senderAssetTargetBalance = null;
+
   if (state.senderAssetTargetBalance) {
     senderAssetTargetBalance = Balance.fromBaseUnits(
       senderAssetType, state.senderAssetTargetBalance.valueBaseUnits()

@@ -1,16 +1,15 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Balance from 'types/Balance';
-import Decimal from 'decimal.js';
-import BN from 'bn.js';
 import { useBridgeData } from 'pages/BridgePage/BridgeContext/BridgeDataContext';
+import handleChangeBalanceInput from 'utils/validation/handleChangeBalanceInput';
 import BalanceInput from '../../components/Balance/BalanceInput';
 
 const BridgeBalanceInput = () => {
   const {
     isApiDisconnected,
     senderAssetCurrentBalance,
+    senderAssetTargetBalance,
     setSenderAssetTargetBalance,
     senderAssetType,
     maxInput,
@@ -23,27 +22,22 @@ const BridgeBalanceInput = () => {
 
   const [inputValue, setInputValue] = useState('');
 
-  const onChangeSendAmountInput = (value) => {
-    if (value === '') {
-      setSenderAssetTargetBalance(null);
-      setInputValue('');
-    } else {
-      try {
-        const targetBalance = Balance.fromBaseUnits(
-          senderAssetType,
-          new Decimal(value)
-        );
-        setInputValue(value);
-        if (targetBalance.valueAtomicUnits.gt(new BN(0))) {
-          setSenderAssetTargetBalance(targetBalance);
-        } else {
-          setSenderAssetTargetBalance(null);
-        }
-      } catch (error) {
-        return;
-      }
-    }
+  const onChangeSendAmountInput = (newInputValue) => {
+    handleChangeBalanceInput({
+      newInputString: newInputValue,
+      prevInputString: inputValue,
+      setInputString: setInputValue,
+      setBalance: setSenderAssetTargetBalance,
+      assetType: senderAssetType
+    });
   };
+
+  useEffect(() => {
+    const truncateDecimalsOnChangeAssetType = () => {
+      senderAssetTargetBalance && onChangeSendAmountInput(senderAssetTargetBalance.toStringUnrounded());
+    };
+    truncateDecimalsOnChangeAssetType();
+  }, [senderAssetType]);
 
   const onClickMax = () => {
     if (maxInput) {

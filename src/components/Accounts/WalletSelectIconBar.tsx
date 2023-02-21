@@ -10,12 +10,11 @@ import Icon from 'components/Icon';
 const SubstrateWallets = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-  const { subscribeWalletAccounts, selectedWallet, keyringIsBusy } =
-    useKeyring();
+  const { refreshWalletAccounts, selectedWallet, keyringIsBusy } = useKeyring();
   const enabledWallet = getWallets().filter((wallet) => wallet.extension);
   const onClickWalletIconHandler = (wallet) => () => {
     if (keyringIsBusy.current === false && !disabled) {
-      subscribeWalletAccounts(wallet);
+      refreshWalletAccounts(wallet);
       setIsMetamaskSelected(false);
     }
   };

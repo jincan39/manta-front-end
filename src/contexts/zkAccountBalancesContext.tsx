@@ -14,10 +14,18 @@ import { useConfig } from './configContext';
 
 const ZkAccountBalancesContext = createContext();
 
+export type ZkAccountBalance = {
+  assetType: AssetType;
+  usdBalance: Usd;
+  usdBalanceString: string;
+  privateBalance: Balance;
+};
+
 export const ZkAccountBalancesContextProvider = (props) => {
   const config = useConfig();
   const { txStatus } = useTxStatus();
-  const { privateAddress, getSpendableBalance, isReady, balancesAreStale } = usePrivateWallet();
+  const { privateAddress, getSpendableBalance, isReady, balancesAreStale } =
+    usePrivateWallet();
   const {
     senderAssetCurrentBalance,
     senderAssetType,
@@ -87,6 +95,16 @@ export const ZkAccountBalancesContextProvider = (props) => {
     receiverCurrentBalance,
     balancesAreStale
   ]);
+
+  useEffect(() => {
+    const clearBalancesOnDeleteZkAccount = () => {
+      if (!privateAddress) {
+        setBalances([]);
+        setTotalBalanceString('$0.00');
+      }
+    };
+    clearBalancesOnDeleteZkAccount();
+  }, [privateAddress]);
 
   const value = {
     balances,
