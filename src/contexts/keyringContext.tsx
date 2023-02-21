@@ -48,7 +48,7 @@ export const KeyringContextProvider = (props) => {
     setHasAuthToConnectWallet(walletNames);
   };
 
-  const refreshWalletAccounts = async (wallet, reselected = false) => {
+  const refreshWalletAccounts = async (wallet) => {
     await wallet.enable(APP_NAME);
     keyringIsBusy.current = true;
     let currentKeyringAddresses = keyring
@@ -75,16 +75,15 @@ export const KeyringContextProvider = (props) => {
     }
 
     keyringIsBusy.current = false;
+  };
 
-    if (reselected) {
-      const pairs = keyring.getPairs();
-      const {
-        meta: { source }
-      } = pairs[0] || { meta: {} };
-      const account =
-        getLastAccessedExternalAccount(keyring, source) || pairs[0];
-      return { account, pairs };
-    }
+  const getLatestAccountAndPairs = () => {
+    const pairs = keyring.getPairs();
+    const {
+      meta: { source }
+    } = pairs[0] || { meta: {} };
+    const account = getLastAccessedExternalAccount(keyring, source) || pairs[0];
+    return { account, pairs };
   };
 
   useEffect(() => {
@@ -199,7 +198,8 @@ export const KeyringContextProvider = (props) => {
     keyringIsBusy,
     connectWallet,
     connectWalletExtension,
-    refreshWalletAccounts
+    refreshWalletAccounts,
+    getLatestAccountAndPairs
   };
 
   return (

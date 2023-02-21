@@ -6,21 +6,25 @@ import { useExternalAccount } from 'contexts/externalAccountContext';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { useTxStatus } from 'contexts/txStatusContext';
-import {
-  setLastAccessedWallet
-} from 'utils/persistence/walletStorage';
+import { setLastAccessedWallet } from 'utils/persistence/walletStorage';
 
 const SubstrateWallets = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
   const { changeExternalAccountOptions } = useExternalAccount();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-  const { refreshWalletAccounts, selectedWallet, keyringIsBusy } = useKeyring();
+  const {
+    refreshWalletAccounts,
+    getLatestAccountAndPairs,
+    selectedWallet,
+    keyringIsBusy
+  } = useKeyring();
   const enabledWallet = getWallets().filter((wallet) => wallet.extension);
   const onClickWalletIconHandler = (wallet) => async () => {
     if (keyringIsBusy.current === false && !disabled) {
-      const { account, pairs } = await refreshWalletAccounts(wallet, true);
+      await refreshWalletAccounts(wallet);
+      const { account, pairs } = getLatestAccountAndPairs();
       changeExternalAccountOptions(account, pairs);
-      setLastAccessedWallet(wallet)
+      setLastAccessedWallet(wallet);
       setIsMetamaskSelected(false);
     }
   };

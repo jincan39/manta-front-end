@@ -112,7 +112,6 @@ export const ExternalAccountContextProvider = (props) => {
       if (!isInitialAccountSet) {
         return;
       }
-      // ensure newly added account after removing all accounts can be updated
       const accounts = keyring.getPairs();
       const {
         meta: { source }
