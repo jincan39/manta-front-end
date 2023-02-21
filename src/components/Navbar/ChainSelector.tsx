@@ -1,15 +1,9 @@
 // @ts-nocheck
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCheck,
-  faTimes,
-  faAngleDown,
-  faAngleUp,
-  faLink
-} from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { useSubstrate } from 'contexts/substrateContext';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
@@ -18,25 +12,7 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import Icon from 'components/Icon';
 
 const ChainDropdownItem = ({ node, activeNode }) => {
-  const { apiState } = useSubstrate();
-  const nodeIsDisconnected =
-    apiState === 'ERROR' || apiState === 'DISCONNECTED';
-  const [disconnectedIndicator, setDisconnectedIndicator] =
-    useState(nodeIsDisconnected);
-
-  useEffect(() => {
-    let timeout;
-    if (nodeIsDisconnected) {
-      timeout = setTimeout(() => {
-        if (nodeIsDisconnected) {
-          setDisconnectedIndicator(true);
-        }
-      }, 1000);
-    } else {
-      timeout && clearTimeout(timeout);
-      setDisconnectedIndicator(false);
-    }
-  }, [apiState]);
+  const selectedNetwork = activeNode.name === node.name;
 
   ChainDropdownItem.propTypes = {
     node: PropTypes.object,
@@ -46,51 +22,25 @@ const ChainDropdownItem = ({ node, activeNode }) => {
   return (
     <Link to={node.path}>
       <div
-        className={`px-8 py-4 font-bold text-lg text-white cursor-pointer hover:bg-thirdry ${
-          activeNode.name === node.name ? 'bg-thirdry' : ''
-        }`}
+        className="border border-white-light bg-white bg-opacity-5 rounded-lg py-3 pl-3.5"
         key={node.name}>
-        <div className="flex items-center gap-2 w-full">
+        <div className="flex items-center gap-5 w-full">
           <Icon
             name={(node.name as string).toLowerCase()}
-            className={classNames('w-8 h-8', {
-              'rounded-full': node.name === 'Calamari',
-              'bg-primary': node.name === 'Calamari'
-            })}
+            className="w-6 h-6"
           />
-          <div>
+          <div className="text-white w-32">
             {node.name}&nbsp;
-            {node.testnet ? 'testnet' : ''}
+            {node.testnet ? 'Testnet' : 'Network'}
           </div>
-          {activeNode.name === node.name ? (
-            <div className="ml-auto">
-              {disconnectedIndicator ? (
-                <FontAwesomeIcon icon={faTimes} color="#FA4D56" />
-              ) : apiState === 'READY' ? (
-                <FontAwesomeIcon icon={faCheck} color="#24A148" />
-              ) : (
-                <div className="flex items-center justify-center space-x-2">
-                  <div
-                    className="spinner-border animate-spin inline-block w-4 h-4 border-1 rounded-full"
-                    role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : null}
+          <div className="ml-1">
+            {selectedNetwork ? (
+              <Icon name={'greenCheck'} className="w-4 h-4" />
+            ) : (
+              <Icon name={'unfilledCircle'} className="w-4 h-4" />
+            )}
+          </div>
         </div>
-        {activeNode.name === node.name ? (
-          <div className="mt-2 ml-2 flex items-center justify-between text-white font-normal text-base">
-            {node.explorer}
-            <a
-              href={`https://${node.explorer}`}
-              target="_blank"
-              rel="noreferrer">
-              <FontAwesomeIcon icon={faLink} />
-            </a>
-          </div>
-        ) : null}
       </div>
     </Link>
   );
@@ -110,34 +60,34 @@ const ChainSelector = () => {
 
   return (
     <OutsideClickHandler onOutsideClick={() => setShowNetworkList(false)}>
-      <div className="relative" onClick={onClickChainSelector}>
+      <div
+        className="relative font-red-hat-mono text-sm"
+        onClick={onClickChainSelector}>
         <div
           className={classNames(
-            'logo-content flex items-center lg:flex relative cursor-pointer',
+            'logo-content flex items-center lg:flex relative cursor-pointer w-56',
             { disabled: disabled }
-          )}>
-          <div className="logo border-white w-14 h-14 flex items-center justify-center">
+          )}
+        >
+          <div className="logo">
             <Icon
-              className={classNames({
-                'rounded-full': activeNode.name === 'Calamari'
-              })}
               name={(activeNode.name as string).toLowerCase()}
+              className="w-7 h-7"
             />
           </div>
           <div>
-            <h1 className="text-3xl mb-0 pl-2 font-semibold text-accent">
-              {activeNode.name}&nbsp;{activeNode.testnet ? 'testnet' : ''}
-            </h1>
+            <div className="mb-0 pl-5 text-white">
+              {activeNode.name}&nbsp;
+              {activeNode.testnet ? 'Testnet' : 'Network'}
+            </div>
           </div>
-          <div className="text-white text-lg ml-4">
+          <div className="text-white ml-4">
             <FontAwesomeIcon icon={showNetworkList ? faAngleUp : faAngleDown} />
           </div>
         </div>
         {showNetworkList && (
-          <div className="absolute border border-secondary rounded-2xl bg-fifth top-full z-50 w-72 mt-4 overflow-hidden">
-            <div className="px-8 py-4 font-bold text-lg text-secondary">
-              Select Network
-            </div>
+          <div className="flex flex-col w-68 gap-4 bg-fifth rounded-lg p-4 absolute left-0 top-16 z-50 border border-white-light font-light text-secondary">
+            <div>Select a network</div>
             {nodes.map((node) => (
               <ChainDropdownItem
                 key={node.name}

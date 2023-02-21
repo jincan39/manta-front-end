@@ -2,7 +2,8 @@
 import NETWORK from 'constants/NetworkConstants';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ConfigContextProvider } from 'contexts/configContext';
+import initAxios from 'utils/api/initAxios';
+import { ConfigContextProvider, useConfig } from 'contexts/configContext';
 import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
 import { SubstrateContextProvider } from 'contexts/substrateContext';
 import { MetamaskContextProvider } from 'contexts/metamaskContext';
@@ -35,6 +36,10 @@ const TxStatusHandler = () => {
 };
 
 const BasePage = ({ children }) => {
+  const config = useConfig();
+  useEffect(() => {
+    initAxios(config);
+  }, []);
   return (
     <TxStatusContextProvider>
       <SubstrateContextProvider>

@@ -1,10 +1,11 @@
 // @ts-nocheck
 import { useKeyring } from 'contexts/keyringContext';
+import Icon from 'components/Icon';
 
 const ConnectedWalletSignerBlock = () => {
   const { selectedWallet } = useKeyring();
   return (
-    <div className="mt-6 py-3 px-4 h-16 flex items-center justify-between border border-manta-blue-secondary text-white rounded-lg w-full block">
+    <div className="mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         <img
           src={selectedWallet?.logo.src}

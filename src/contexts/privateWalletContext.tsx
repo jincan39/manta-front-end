@@ -13,6 +13,9 @@ import Version from 'types/Version';
 import TxStatus from 'types/TxStatus';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import { MantaPrivateWallet, MantaUtilities, Environment, Network } from 'manta.js';
+import {
+  removePendingTxHistoryEvent,
+} from 'utils/persistence/privateTransactionHistory';
 import { useExternalAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
@@ -24,7 +27,8 @@ export const PrivateWalletContextProvider = (props) => {
   // external contexts
   const config = useConfig();
   const { api, socket } = useSubstrate();
-  const { externalAccountSigner, externalAccount, extensionSigner } = useExternalAccount();
+  const { externalAccountSigner, externalAccount, extensionSigner } =
+    useExternalAccount();
   const { setTxStatus, txStatusRef } = useTxStatus();
 
   // private wallet
@@ -36,6 +40,13 @@ export const PrivateWalletContextProvider = (props) => {
   const [signerVersion, setSignerVersion] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const isInitialSync = useRef(false);
+
+  const setDisconnectedState = () => {
+    setSignerIsConnected(false);
+    setSignerVersion(null);
+    setPrivateAddress(null);
+    setPrivateWallet(null);
+  };
 
   // transaction state
   const txQueue = useRef([]);
@@ -57,6 +68,7 @@ export const PrivateWalletContextProvider = (props) => {
   useEffect(() => {
     setIsReady(false);
   }, [socket]);
+
 
   useEffect(() => {
     const canInitWallet = () => {
@@ -99,17 +111,11 @@ export const PrivateWalletContextProvider = (props) => {
           setSignerVersion(new Version(updatedSignerVersion));
         }
       } else {
-        setSignerIsConnected(false);
-        setSignerVersion(null);
-        setPrivateAddress(null);
-        setPrivateWallet(null);
+        setDisconnectedState();
       }
     } catch (err) {
       console.error(err);
-      setSignerIsConnected(false);
-      setSignerVersion(null);
-      setPrivateAddress(null);
-      setPrivateWallet(null);
+      setDisconnectedState();
     }
   };
 
@@ -119,6 +125,26 @@ export const PrivateWalletContextProvider = (props) => {
     }, 1000);
     return () => interval && clearInterval(interval);
   }, [api, privateWallet]);
+
+  const fetchZkAddress = async () => {
+    try {
+      const currentPrivateAddress = await privateWallet.getZkAddress();
+      if (currentPrivateAddress !== privateAddress) {
+        setPrivateAddress(currentPrivateAddress);
+      }
+    } catch (err) {
+      setDisconnectedState();
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (isReady) {
+        fetchZkAddress();
+      }
+    }, 1000);
+    return () => interval && clearInterval(interval);
+  }, [isReady]);
 
   const sync = async () => {
     // Don't refresh during a transaction to prevent stale balance updates
@@ -143,7 +169,9 @@ export const PrivateWalletContextProvider = (props) => {
     if (!isReady || balancesAreStaleRef.current) {
       return null;
     }
-    const balanceRaw = await privateWallet.getPrivateBalance(new BN(assetType.assetId));
+    const balanceRaw = await privateWallet.getPrivateBalance(
+      new BN(assetType.assetId)
+    );
     return new Balance(assetType, balanceRaw);
   };
 
@@ -170,9 +198,11 @@ export const PrivateWalletContextProvider = (props) => {
           externalAccountSigner,
           finalTxResHandler.current
         );
+        setTxStatus(TxStatus.processing(null, lastTx.hash.toString()));
       } catch (e) {
         console.error('Error publishing private transaction batch', e);
         setTxStatus(TxStatus.failed('Transaction declined'));
+        removePendingTxHistoryEvent();
         txQueue.current = [];
       }
     };

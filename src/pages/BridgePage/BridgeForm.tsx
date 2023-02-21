@@ -47,8 +47,8 @@ const BridgeForm = () => {
   return (
     <div className="2xl:inset-x-0 justify-center min-h-full flex flex-col gap-6 items-center pb-2">
       <Navs />
-      <div className="flex flex-col px-3 py-4 sm:p-8 bg-secondary rounded-lg gap-6">
-        <div className="flex gap-5 flex-row items-end">
+      <div className="flex flex-col px-3 py-4 sm:p-8 bg-secondary rounded-lg">
+        <div className="flex gap-5 flex-row items-end mb-6">
           <ChainSelect
             chain={originChain}
             chainOptions={originChainOptions}

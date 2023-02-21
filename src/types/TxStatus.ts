@@ -15,7 +15,7 @@ export default class TxStatus {
     this.totalBatches = null;
   }
 
-  static processing(message, extrinsic = null) {
+  static processing(message = null, extrinsic = null) {
     return new TxStatus(PROCESSING, extrinsic, null, message);
   }
 

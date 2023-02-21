@@ -1,6 +1,7 @@
 {
     "NETWORK_NAME": "Calamari",
     "SS58_FORMAT": 78,
+    "SUBSCAN_API_ENDPOINT": "https://calamari.api.subscan.io/api/scan",
     "SUBSCAN_URL": "https://calamari.subscan.io",
     "CALAMARI_SUBSCAN_URL": "https://calamari.subscan.io",
     "ROCOCO_SUBSCAN_URL": "https://rococo.subscan.io",

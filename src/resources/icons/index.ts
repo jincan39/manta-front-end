@@ -46,6 +46,10 @@ import { ReactComponent as right } from 'resources/icons/right.svg';
 import { ReactComponent as search } from 'resources/icons/search.svg';
 import { ReactComponent as greenCheck } from 'resources/icons/green-check-solid.svg';
 import { ReactComponent as information } from 'resources/icons/information-solid.svg';
+import { ReactComponent as threeRightArrow } from 'resources/icons/three-right-arrow.svg';
+import { ReactComponent as grayThinLine } from 'resources/icons/gray-thin-line.svg';
+import { ReactComponent as blueSolidLine } from 'resources/icons/blue-solid-line.svg';
+import { ReactComponent as unfilledCircle } from 'resources/icons/unfilled-circle.svg';
 
 // chain data icons
 import { ReactComponent as Blocks } from 'resources/icons/chain/blocks.svg';
@@ -73,6 +77,9 @@ import { ReactComponent as arrowRight } from 'resources/icons/arrow-right.svg';
 import { ReactComponent as cancel } from 'resources/icons/cancel.svg';
 import { ReactComponent as heart } from 'resources/icons/heart.svg';
 import { ReactComponent as upDownArrow } from 'resources/icons/up-down-arrow.svg';
+import { ReactComponent as txSuccess } from 'resources/icons/tx-success.svg';
+import { ReactComponent as txFailed } from 'resources/icons/tx-failed.svg';
+import { ReactComponent as txPending } from 'resources/icons/tx-pending.svg';
 
 const icons = {
   dolphin,
@@ -118,6 +125,7 @@ const icons = {
   search,
   greenCheck,
   information,
+  unfilledCircle,
   Blocks,
   Sign,
   transfer,
@@ -140,6 +148,12 @@ const icons = {
   arrowRight,
   cancel,
   heart,
-  upDownArrow
+  upDownArrow,
+  txSuccess,
+  txFailed,
+  txPending,
+  grayThinLine,
+  blueSolidLine,
+  threeRightArrow
 };
 export default icons;

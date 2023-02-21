@@ -84,17 +84,47 @@ const Menu = () => {
   };
 
   const DotMenuContent = () => (
-    <div className="w-48 h-68 flex-column flex-grow mt-3 bg-fifth rounded-3xl gap-y-4 p-5 absolute right-0 top-full z-50 border border-white border-opacity-20">
+    <div className="w-48 h-68 flex-column flex-grow mt-3 bg-fifth rounded-3xl gap-y-4 p-5 absolute right-0 top-full z-50 border border-white-light">
       {/* {theme === themeType.Dark ? <ChangeThemeMenuItem theme={themeType.Light} setTheme={setTheme} name={'Light Mode'} icon={faSun} /> : <ChangeThemeMenuItem theme={themeType.Dark} setTheme={setTheme} name={'Dark Mode'} icon={faMoon} />} */}
-      <MenuItem link={config.TWITTER_URL} name={'Twitter'} icon={faTwitter}/>
-      <MenuItem link={links.DISCORD_URL} name={'Discord'} icon={faDiscord}/>
-      <MenuItem link={links.TELEGRAM_URL} name={'Telegram'} icon={faTelegram}/>
-      <MenuItem link={links.MEDIUM_URL} name={'Medium'} icon={faMedium}/>
-      {config.NETWORK_NAME === 'Dolphin' ? <MenuItem link={links.DOLPHIN_GUIDE_URL} name={'How to Guide'} icon={faBook}/> : null}
-      {config.NETWORK_NAME === 'Dolphin' ? <MenuItem link={links.DOLPHIN_FAUCET_URL} name={'Faucet'} icon={faFaucetDrip}/> : null}
-      {config.NETWORK_NAME === 'Dolphin' ? <MenuItem link={links.DOLPHIN_BUG_REPORT} name={'Bug Report'} icon={faCircleQuestion}/> : null}
-      {config.NETWORK_NAME === 'Calamari' ? <MenuItem link={links.CALAMARI_GUIDE_URL} name={'How to Guide'} icon={faBook}/> : null}
-      {config.NETWORK_NAME === 'Calamari' ? <MenuItem link={links.CALAMARI_BUG_REPORT} name={'Bug Report'} icon={faCircleQuestion}/> : null}
+      <MenuItem link={config.TWITTER_URL} name={'Twitter'} icon={faTwitter} />
+      <MenuItem link={links.DISCORD_URL} name={'Discord'} icon={faDiscord} />
+      <MenuItem link={links.TELEGRAM_URL} name={'Telegram'} icon={faTelegram} />
+      <MenuItem link={links.MEDIUM_URL} name={'Medium'} icon={faMedium} />
+      {config.NETWORK_NAME === 'Dolphin' ? (
+        <MenuItem
+          link={links.DOLPHIN_GUIDE_URL}
+          name={'How to Guide'}
+          icon={faBook}
+        />
+      ) : null}
+      {config.NETWORK_NAME === 'Dolphin' ? (
+        <MenuItem
+          link={links.DOLPHIN_FAUCET_URL}
+          name={'Faucet'}
+          icon={faFaucetDrip}
+        />
+      ) : null}
+      {config.NETWORK_NAME === 'Dolphin' ? (
+        <MenuItem
+          link={links.DOLPHIN_BUG_REPORT}
+          name={'Bug Report'}
+          icon={faCircleQuestion}
+        />
+      ) : null}
+      {config.NETWORK_NAME === 'Calamari' ? (
+        <MenuItem
+          link={links.CALAMARI_GUIDE_URL}
+          name={'How to Guide'}
+          icon={faBook}
+        />
+      ) : null}
+      {config.NETWORK_NAME === 'Calamari' ? (
+        <MenuItem
+          link={links.CALAMARI_BUG_REPORT}
+          name={'Bug Report'}
+          icon={faCircleQuestion}
+        />
+      ) : null}
     </div>
   );
 
@@ -102,11 +132,10 @@ const Menu = () => {
     <div className="relative">
       <OutsideClickHandler onOutsideClick={() => setIsOpen(false)}>
         <div
-          className="bg-fifth flex gap-3 px-4 p-3 font-black border border-white border-opacity-20 cursor-pointer rounded-xl"
+          className="bg-fifth flex gap-3 px-4 py-2.5 font-black border border-white-light cursor-pointer rounded-xl"
           onClick={() => {
             isOpen ? setIsOpen(false) : setIsOpen(true);
-          }}
-        >
+          }}>
           <FontAwesomeIcon icon={faEllipsis} className="text-xl text-white" />
         </div>
         {isOpen && <DotMenuContent />}

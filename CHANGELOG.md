@@ -127,7 +127,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#355](https://github.com/Manta-Network/manta-front-end/pull/355) Refactored icons
 
 
-## [4.0.2] - 2023-2-02
+## [4.0.3] - 2023-2-14
 
 ### Fixed
 - [\#369](https://github.com/Manta-Network/manta-front-end/pull/369) Fix bridge page balance not refreshing

@@ -11,8 +11,8 @@ import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
 import classNames from 'classnames';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import Icon from 'components/Icon';
-import ZkAccountInfoModal from '../Accounts/ZkAccountInfoModal';
-import ZkAccountModal from '../Accounts/ZkAccountModal';
+import ZkAccountInstallGuideModal from '../ZkAccount/ZkAccountInstallGuideModal';
+import ZkAccountModal from '../ZkAccount/ZkAccountModal';
 
 const ZkAccountDisplay = () => {
   const [showZkModal, setShowZkModal] = useState(false);
@@ -30,7 +30,7 @@ const ZkAccountDisplay = () => {
           />
         )}
         <div
-          className="flex flex-row justify-center items-center gap-3 h-12 w-36 text-white font-medium cursor-pointer bg-fifth border border-white border-opacity-20 rounded-lg"
+          className="flex flex-row justify-center items-center gap-3 h-10 w-36 text-white font-red-hat-mono text-sm cursor-pointer bg-fifth border border-white-light rounded-lg"
           onClick={() => setShowZkModal(!showZkModal)}>
           <Icon className="w-6 h-6" name="manta" />
           zkAddress
@@ -59,13 +59,13 @@ const ZkAccountWarning = ({
           />
         )}
         <div
-          className="flex gap-3 py-3 px-4 text-white font-medium cursor-pointer bg-fifth border border-white border-opacity-20 rounded-lg"
+          className="flex gap-3 py-3 px-4 text-white font-medium cursor-pointer bg-fifth border border-white-light rounded-lg"
           onClick={() => setShowZkModal(!showZkModal)}>
           <Icon className="w-6 h-6" name="manta" />
           zkAddress
         </div>
         {showZkModal && (
-          <ZkAccountInfoModal
+          <ZkAccountInstallGuideModal
             title={title}
             text={text}
             showInstallButton={showInstallButton}
@@ -111,7 +111,7 @@ const ZkAccountButton = () => {
     return (
       <ZkAccountConnect
         className={
-          'bg-connect-signer-button text-white h-12 w-36 font-medium cursor-pointer rounded-lg'
+          'bg-connect-signer-button text-white font-red-hat-mono text-sm h-10 w-36 cursor-pointer rounded-lg'
         }
       />
     );
