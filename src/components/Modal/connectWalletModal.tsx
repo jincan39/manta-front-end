@@ -1,4 +1,5 @@
 // @ts-nocheck
+import WALLET_NAME from 'constants/WalletConstants';
 import React from 'react';
 import { getWallets } from '@talismn/connect-wallets';
 import { useKeyring } from 'contexts/keyringContext';
@@ -35,10 +36,11 @@ const WalletNotInstalledBlock = ({
 };
 
 const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
-  return (
+  const { isTalismanExtConfigured } = useKeyring();
+  return ( 
     <button
       onClick={connectHandler}
-      className="mt-5 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
+      className="relative mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -54,6 +56,14 @@ const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
       <div className="rounded-lg bg-button-fourth text-white py-2 px-4 text-xs">
         Connect
       </div>
+
+      {walletName === 'Talisman' && !isTalismanExtConfigured && (
+        <p className="absolute left-0 -bottom-5 flex flex-row gap-2 b-0 text-warning text-xsss">
+          <Icon name="information" />
+          You have no account in Talisman. Please create one first.
+        </p>
+      )}
+      
     </button>
   );
 };
@@ -149,21 +159,23 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }
     }
   };
 
-  return getWallets().map((wallet) => {
-    // wallet.extension would not be defined if enabled not called
-    const isWalletEnabled = wallet.extension ? true : false;
-    return (
-      <ConnectWalletBlock
-        key={wallet.extensionName}
-        walletName={getWalletDisplayName(wallet.extensionName)}
-        isWalletInstalled={wallet.installed}
-        walletInstallLink={wallet.installUrl}
-        walletLogo={wallet.logo}
-        isWalletEnabled={isWalletEnabled}
-        connectHandler={handleConnectWallet(wallet.extensionName)}
-      />
-    );
-  });
+  return getWallets()
+    .filter(wallet => Object.values(WALLET_NAME).includes(wallet.extensionName))
+    .map((wallet) => {
+      // wallet.extension would not be defined if enabled not called
+      const isWalletEnabled = wallet.extension ? true : false;
+      return (
+        <ConnectWalletBlock
+          key={wallet.extensionName}
+          walletName={getWalletDisplayName(wallet.extensionName)}
+          isWalletInstalled={wallet.installed}
+          walletInstallLink={wallet.installUrl}
+          walletLogo={wallet.logo}
+          isWalletEnabled={isWalletEnabled}
+          connectHandler={handleConnectWallet(wallet.extensionName)}
+        />
+      );
+    });
 };
 
 const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {

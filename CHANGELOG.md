@@ -136,3 +136,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 - [\#367](https://github.com/Manta-Network/manta-front-end/pull/367) Change Dolphin home page to zkTransact
+
+## [4.0.4] - 2023-2-22
+
+### Fixed
+- [\#416](https://github.com/Manta-Network/manta-front-end/pull/416) Prevent loader from showing indefinitely if the node becomes disconnected during a transaction
+- [\#417](https://github.com/Manta-Network/manta-front-end/pull/417) Fix capitalization of "MetaMask"; tweak fee warning text
+- [\#431](https://github.com/Manta-Network/manta-front-end/pull/431) Allow users to close the chain select dropdown by clicking it again
+- [\#439](https://github.com/Manta-Network/manta-front-end/pull/439) Prevent failed transactions from showing both "Transaction failed" and "Transaction succeeded" notifications
+- [\#441](https://github.com/Manta-Network/manta-front-end/pull/441) Prevent zkAddress from displaying in zkAccount modal after the account is deleted in Manta Signer
+
+### Removed
+- [\#430](https://github.com/Manta-Network/manta-front-end/pull/430) Removed autocomplete from form inputs
+
+### Changed
+- [\#360](https://github.com/Manta-Network/manta-front-end/pull/360) Restyle UI, particularly chain selector and fonts
+
+### Added
+- [\#432](https://github.com/Manta-Network/manta-front-end/pull/432) Added fee depletion warning for public transfers of DOL
+- [\#487](https://github.com/Manta-Network/manta-front-end/pull/487) Show private transaction history in zkAccount modal

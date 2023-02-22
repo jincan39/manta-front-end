@@ -58,8 +58,8 @@ export const StakeModal = ({ hideModal }) => {
   const minStakeAmountString = selectedCollator.minStake.toDisplayString(0);
   const delegationAmountText = selectedCollatorDelegation
     ? `Staked: ${selectedCollatorDelegation.delegatedBalance.toDisplayString(
-        0
-      )}`
+      0
+    )}`
     : 'Staked: 0 KMA';
 
   const minimumStakeText = ` Minimum stake: ${minStakeAmountString}`;
@@ -163,7 +163,7 @@ export const StakeModal = ({ hideModal }) => {
           className={`mt-2 px-4 pt-6 h-24 flex flex-wrap items-center rounded-lg border border-gray ${
             errorMessage ? 'border-red-500' : ''
           }`}>
-          <Icon className="rounded-full mr-3 w-10 bg-primary" name="calamari" />
+          <Icon className="mr-3 w-7" name="calamari" />
           <input
             className="bg-fifth pl-1 flex-grow h-10 outline-none dark:text-white"
             placeholder="Amount"
@@ -175,7 +175,7 @@ export const StakeModal = ({ hideModal }) => {
               <GradientText className="text-link text-base" text="MAX" />
             </span>
           </div>
-          <div className="w-full mb-2 text-xss pl-14 text-secondary">
+          <div className="w-full mb-2 text-xss pl-11 text-secondary">
             {usdValueText}
           </div>
           <br />

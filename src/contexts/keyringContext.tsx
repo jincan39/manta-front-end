@@ -1,23 +1,20 @@
 // @ts-nocheck
 import APP_NAME from 'constants/AppConstants';
 import { SS58 } from 'constants/NetworkConstants';
-import PropTypes from 'prop-types';
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useRef
-} from 'react';
-import {
-  HAS_AUTH_TO_CONNECT_WALLET_KEY
-} from 'utils/persistence/connectAuthorizationStorage';
-import {
-  LAST_WALLET_STORAGE_KEY,
-} from 'utils/persistence/walletStorage';
 import keyring from '@polkadot/ui-keyring';
 import { getWallets } from '@talismn/connect-wallets';
-import { useLocalStorage } from 'hooks';
+import { useExternalAccount } from 'contexts/externalAccountContext';
+import PropTypes from 'prop-types';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import {
+  getHasAuthToConnectWalletStorage,
+  setHasAuthToConnectWalletStorage
+} from 'utils/persistence/connectAuthorizationStorage';
+import { getLastAccessedExternalAccount } from 'utils/persistence/externalAccountStorage';
+import {
+  getLastAccessedWallet,
+  setLastAccessedWallet
+} from 'utils/persistence/walletStorage';
 
 const KeyringContext = createContext();
 const MAX_WAIT_COUNT = 5;
@@ -28,13 +25,9 @@ export const KeyringContextProvider = (props) => {
   const [keyringAddresses, setKeyringAddresses] = useState([]);
   const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState([]);
   const [selectedWallet, setSelectedWallet] = useState(null);
-  const [hasAuthToConnectWallet, setHasAuthToConnectWalletStorage] = useLocalStorage(
-    HAS_AUTH_TO_CONNECT_WALLET_KEY,
-    []
-  );
-  const [lastAccessedWallet, setLastAccessedWallet] = useLocalStorage(
-    LAST_WALLET_STORAGE_KEY,
-    {}
+  const [isTalismanExtConfigured, setIsTalismanExtConfigured] = useState(true);
+  const [hasAuthToConnectWallet, setHasAuthToConnectWallet] = useState(
+    getHasAuthToConnectWalletStorage()
   );
   const keyringIsBusy = useRef(false);
 
@@ -53,17 +46,18 @@ export const KeyringContextProvider = (props) => {
   const connectWalletExtension = (extensionName) => {
     const walletNames = addWalletName(extensionName, hasAuthToConnectWallet);
     setHasAuthToConnectWalletStorage(walletNames);
+    setHasAuthToConnectWallet(walletNames);
   };
 
   const refreshWalletAccounts = async (wallet) => {
     await wallet.enable(APP_NAME);
     keyringIsBusy.current = true;
-    let currentKeyringAddresses = keyring.getAccounts().map((account) => account.address);
+    let currentKeyringAddresses = keyring
+      .getAccounts()
+      .map((account) => account.address);
 
     const updatedAccounts = await wallet.getAccounts();
-    const updatedAddresses = updatedAccounts.map(
-      (account) => account.address
-    );
+    const updatedAddresses = updatedAccounts.map((account) => account.address);
     currentKeyringAddresses.forEach((address) => {
       keyring.forgetAccount(address);
     });
@@ -80,7 +74,17 @@ export const KeyringContextProvider = (props) => {
       setSelectedWallet(wallet);
       setKeyringAddresses(updatedAddresses);
     }
+
     keyringIsBusy.current = false;
+  };
+
+  const getLatestAccountAndPairs = () => {
+    const pairs = keyring.getPairs();
+    const {
+      meta: { source }
+    } = pairs[0] || { meta: {} };
+    const account = getLastAccessedExternalAccount(keyring, source) || pairs[0];
+    return { account, pairs };
   };
 
   useEffect(() => {
@@ -152,16 +156,25 @@ export const KeyringContextProvider = (props) => {
     );
     if (!selectedWallet?.extension) {
       try {
+        if (extensionName.toLowerCase() === 'talisman' && !isTalismanExtConfigured) {
+          // hide tips
+          setIsTalismanExtConfigured(true);
+        }
         await selectedWallet.enable(APP_NAME);
         await refreshWalletAccounts(selectedWallet);
         saveToStorage && setLastAccessedWallet(selectedWallet);
         return true;
       } catch (e) {
+        if (e.message === 'Talisman extension has not been configured yet. Please continue with onboarding.') {
+          // show tips
+          setIsTalismanExtConfigured(false);
+        }
         const walletNames = removeWalletName(
           extensionName,
           hasAuthToConnectWallet
         );
         setHasAuthToConnectWalletStorage(walletNames);
+        setHasAuthToConnectWallet(walletNames);
         return false;
       }
     }
@@ -172,7 +185,7 @@ export const KeyringContextProvider = (props) => {
       return;
     }
     const withoutLastAccessedWallet = removeWalletName(
-      lastAccessedWallet.extensionName,
+      getLastAccessedWallet()?.extensionName,
       hasAuthToConnectWallet
     );
 
@@ -181,7 +194,7 @@ export const KeyringContextProvider = (props) => {
     });
 
     setTimeout(() => {
-      connectWallet(lastAccessedWallet.extensionName);
+      connectWallet(getLastAccessedWallet()?.extensionName);
     }, 200);
   }, [isKeyringInit]);
 
@@ -194,7 +207,9 @@ export const KeyringContextProvider = (props) => {
     keyringIsBusy,
     connectWallet,
     connectWalletExtension,
-    refreshWalletAccounts
+    refreshWalletAccounts,
+    isTalismanExtConfigured,
+    getLatestAccountAndPairs
   };
 
   return (
