@@ -80,11 +80,7 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T>] {
     [key, readValue]
   );
 
-  // this only works for other documents, not the current one
   useEventListener('storage', handleStorageChange);
-
-  // this is a custom event, triggered in writeValueToLocalStorage
-  // See: useLocalStorage()
   useEventListener('local-storage', handleStorageChange);
 
   return [storedValue, setValue];

@@ -1,3 +1,5 @@
+type EntryObjProps = { value: object; expires: number };
+
 /*
  * expires - millisecond timestamp, e.g. Date.now(), or (new Date).getTime()
  */
@@ -25,27 +27,28 @@ export function removeLocalStorage(key: string) {
 
 export function getFromLocalStorage(key: string) {
   if (typeof window !== 'undefined' && window.localStorage) {
-    let entry: any;
+    let entry: string;
+    let entryObj: EntryObjProps;
+
     try {
-      entry = window.localStorage.getItem(key);
+      entry = window.localStorage.getItem(key) || '';
     } catch (error) {
       console.error('getFromLocalStorage', error);
       return undefined;
     }
 
     try {
-      entry = JSON.parse(entry);
+      entryObj = JSON.parse(entry);
+      if (entryObj && entryObj.expires && Date.now() > entryObj.expires) {
+        removeLocalStorage(key);
+        return null;
+      } else {
+        const storedValue =
+          entryObj && entryObj.value !== undefined ? entryObj.value : entryObj;
+        return storedValue;
+      }
     } catch (e) {
-      // Just use raw value
-    }
-
-    if (entry && entry.expires && Date.now() > entry.expires) {
-      removeLocalStorage(key);
-      return null;
-    } else {
-      const storedValue =
-        entry && entry.value !== undefined ? entry.value : entry;
-      return storedValue;
+      console.log(`JSON.parese error:${e}`);
     }
   }
   return undefined;
