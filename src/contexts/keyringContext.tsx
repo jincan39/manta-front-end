@@ -3,18 +3,15 @@ import APP_NAME from 'constants/AppConstants';
 import { SS58 } from 'constants/NetworkConstants';
 import keyring from '@polkadot/ui-keyring';
 import { getWallets } from '@talismn/connect-wallets';
-import { useExternalAccount } from 'contexts/externalAccountContext';
 import PropTypes from 'prop-types';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import {
-  getHasAuthToConnectWalletStorage,
-  setHasAuthToConnectWalletStorage
-} from 'utils/persistence/connectAuthorizationStorage';
+import { HAS_AUTH_TO_CONNECT_WALLET_KEY } from 'utils/persistence/connectAuthorizationStorage';
 import { getLastAccessedExternalAccount } from 'utils/persistence/externalAccountStorage';
 import {
   getLastAccessedWallet,
   setLastAccessedWallet
 } from 'utils/persistence/walletStorage';
+import { useLocalStorage } from 'hooks';
 
 const KeyringContext = createContext();
 const MAX_WAIT_COUNT = 5;
@@ -26,8 +23,9 @@ export const KeyringContextProvider = (props) => {
   const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState([]);
   const [selectedWallet, setSelectedWallet] = useState(null);
   const [isTalismanExtConfigured, setIsTalismanExtConfigured] = useState(true);
-  const [hasAuthToConnectWallet, setHasAuthToConnectWallet] = useState(
-    getHasAuthToConnectWalletStorage()
+  const [hasAuthToConnectWallet, setHasAuthToConnectWallet] = useLocalStorage(
+    HAS_AUTH_TO_CONNECT_WALLET_KEY,
+    []
   );
   const keyringIsBusy = useRef(false);
 
@@ -156,7 +154,10 @@ export const KeyringContextProvider = (props) => {
     );
     if (!selectedWallet?.extension) {
       try {
-        if (extensionName.toLowerCase() === 'talisman' && !isTalismanExtConfigured) {
+        if (
+          extensionName.toLowerCase() === 'talisman' &&
+          !isTalismanExtConfigured
+        ) {
           // hide tips
           setIsTalismanExtConfigured(true);
         }
@@ -165,7 +166,10 @@ export const KeyringContextProvider = (props) => {
         saveToStorage && setLastAccessedWallet(selectedWallet);
         return true;
       } catch (e) {
-        if (e.message === 'Talisman extension has not been configured yet. Please continue with onboarding.') {
+        if (
+          e.message ===
+          'Talisman extension has not been configured yet. Please continue with onboarding.'
+        ) {
           // show tips
           setIsTalismanExtConfigured(false);
         }

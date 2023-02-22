@@ -1,11 +1,14 @@
 // @ts-nocheck
-import store from 'store';
+import {
+  getFromLocalStorage,
+  setLocalStorage
+} from 'utils/persistence/storage';
 
 const LAST_ACCOUNT_STORAGE_KEY = 'lastAccessedExternalAccountAddress';
 
-export const getLastAccessedExternalAccount = ( keyring, walletType) => {
+export const getLastAccessedExternalAccount = (keyring, walletType) => {
   const STORAGE_KEY = `${LAST_ACCOUNT_STORAGE_KEY}`;
-  const lastStore = store.get(STORAGE_KEY) || {};
+  const lastStore = getFromLocalStorage(STORAGE_KEY) || {};
   const lastAccountAddress = lastStore[walletType];
   if (!lastAccountAddress) {
     return null;
@@ -24,6 +27,6 @@ export const setLastAccessedExternalAccountAddress = (lastAccount) => {
     meta: { source: key },
     address
   } = lastAccount;
-  const lastStore = store.get(STORAGE_KEY);
-  store.set(STORAGE_KEY, { ...lastStore, [key]: address });
+  const lastStore = getFromLocalStorage(STORAGE_KEY);
+  setLocalStorage(STORAGE_KEY, { ...lastStore, [key]: address });
 };

@@ -1,18 +1,22 @@
-import store from 'store';
 import TxHistoryEvent, { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
+import {
+  getFromLocalStorage,
+  setLocalStorage
+} from 'utils/persistence/storage';
 
 const PRIVATE_TRANSACTION_STORAGE_KEY = 'privateTransactionHistory';
 
 export const getPrivateTransactionHistory = (): TxHistoryEvent[] => {
-  const jsonPrivateTransactionHistory = [
-    ...store.get(PRIVATE_TRANSACTION_STORAGE_KEY, [])
-  ];
+  const privateTransaction = getFromLocalStorage(
+    PRIVATE_TRANSACTION_STORAGE_KEY
+  );
+  const jsonPrivateTransactionHistory = Array.isArray(privateTransaction)
+    ? privateTransaction
+    : [];
   const privateTransactionHistory = jsonPrivateTransactionHistory
-    .map(
-      (jsonTxHistoryEvent) => {
-        return TxHistoryEvent.fromJson(jsonTxHistoryEvent);
-      }
-    )
+    .map((jsonTxHistoryEvent) => {
+      return TxHistoryEvent.fromJson(jsonTxHistoryEvent);
+    })
     .filter((event) => {
       const sixMonthsAgo = new Date();
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -29,16 +33,25 @@ export const setPrivateTransactionHistory = (
       return txHistoryEvent.toJson();
     }
   );
-  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, jsonPrivateTransactionHistory);
+  setLocalStorage(
+    PRIVATE_TRANSACTION_STORAGE_KEY,
+    jsonPrivateTransactionHistory
+  );
 };
 
 // add pending private transaction to the history
 export const appendTxHistoryEvent = (txHistoryEvent: TxHistoryEvent) => {
-  const jsonPrivateTransactionHistory = [
-    ...store.get(PRIVATE_TRANSACTION_STORAGE_KEY, [])
-  ];
+  const privateTransaction = getFromLocalStorage(
+    PRIVATE_TRANSACTION_STORAGE_KEY
+  );
+  const jsonPrivateTransactionHistory = Array.isArray(privateTransaction)
+    ? privateTransaction
+    : [];
   jsonPrivateTransactionHistory.push(txHistoryEvent.toJson());
-  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, jsonPrivateTransactionHistory);
+  setLocalStorage(
+    PRIVATE_TRANSACTION_STORAGE_KEY,
+    jsonPrivateTransactionHistory
+  );
 };
 
 // update pending transaction to finalized transaction status
@@ -60,7 +73,10 @@ export const updateTxHistoryEventStatus = (
       return txHistoryEvent.toJson();
     }
   );
-  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, jsonPrivateTransactionHistory);
+  setLocalStorage(
+    PRIVATE_TRANSACTION_STORAGE_KEY,
+    jsonPrivateTransactionHistory
+  );
 };
 
 // remove pending history event (usually the last one) from the history
@@ -93,5 +109,5 @@ export const removePendingTxHistoryEvent = (extrinsicHash: string) => {
 
     privateTransactionHistory.pop();
   }
-  store.set(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
+  setLocalStorage(PRIVATE_TRANSACTION_STORAGE_KEY, privateTransactionHistory);
 };

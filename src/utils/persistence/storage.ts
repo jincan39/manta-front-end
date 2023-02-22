@@ -3,7 +3,11 @@ type EntryObjProps = { value: object; expires: number };
 /*
  * expires - millisecond timestamp, e.g. Date.now(), or (new Date).getTime()
  */
-export function setLocalStorage(key: string, value: object, expires: number) {
+export function setLocalStorage(
+  key: string,
+  value: string | object,
+  expires?: number
+) {
   if (typeof window !== 'undefined' && window.localStorage) {
     const entry = {
       value,
@@ -37,18 +41,22 @@ export function getFromLocalStorage(key: string) {
       return undefined;
     }
 
-    try {
-      entryObj = JSON.parse(entry);
-      if (entryObj && entryObj.expires && Date.now() > entryObj.expires) {
-        removeLocalStorage(key);
-        return null;
-      } else {
-        const storedValue =
-          entryObj && entryObj.value !== undefined ? entryObj.value : entryObj;
-        return storedValue;
+    if (entry) {
+      try {
+        entryObj = JSON.parse(entry);
+        if (entryObj && entryObj.expires && Date.now() > entryObj.expires) {
+          removeLocalStorage(key);
+          return null;
+        } else {
+          const storedValue =
+            entryObj && entryObj.value !== undefined
+              ? entryObj.value
+              : entryObj;
+          return storedValue;
+        }
+      } catch (e) {
+        console.log(`JSON.parse error:${e}`);
       }
-    } catch (e) {
-      console.log(`JSON.parese error:${e}`);
     }
   }
   return undefined;
