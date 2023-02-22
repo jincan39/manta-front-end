@@ -1,4 +1,5 @@
 // @ts-nocheck
+import WALLET_NAME from 'constants/WalletConstants';
 import React from 'react';
 import { getWallets } from '@talismn/connect-wallets';
 import { useKeyring } from 'contexts/keyringContext';
@@ -149,21 +150,23 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }
     }
   };
 
-  return getWallets().map((wallet) => {
-    // wallet.extension would not be defined if enabled not called
-    const isWalletEnabled = wallet.extension ? true : false;
-    return (
-      <ConnectWalletBlock
-        key={wallet.extensionName}
-        walletName={getWalletDisplayName(wallet.extensionName)}
-        isWalletInstalled={wallet.installed}
-        walletInstallLink={wallet.installUrl}
-        walletLogo={wallet.logo}
-        isWalletEnabled={isWalletEnabled}
-        connectHandler={handleConnectWallet(wallet.extensionName)}
-      />
-    );
-  });
+  return getWallets()
+    .filter(wallet => Object.values(WALLET_NAME).includes(wallet.extensionName))
+    .map((wallet) => {
+      // wallet.extension would not be defined if enabled not called
+      const isWalletEnabled = wallet.extension ? true : false;
+      return (
+        <ConnectWalletBlock
+          key={wallet.extensionName}
+          walletName={getWalletDisplayName(wallet.extensionName)}
+          isWalletInstalled={wallet.installed}
+          walletInstallLink={wallet.installUrl}
+          walletLogo={wallet.logo}
+          isWalletEnabled={isWalletEnabled}
+          connectHandler={handleConnectWallet(wallet.extensionName)}
+        />
+      );
+    });
 };
 
 const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {

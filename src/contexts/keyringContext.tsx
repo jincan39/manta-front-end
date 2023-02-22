@@ -1,24 +1,20 @@
 // @ts-nocheck
+import keyring from '@polkadot/ui-keyring';
+import { getWallets } from '@talismn/connect-wallets';
 import APP_NAME from 'constants/AppConstants';
 import { SS58 } from 'constants/NetworkConstants';
+import { useExternalAccount } from 'contexts/externalAccountContext';
 import PropTypes from 'prop-types';
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useRef
-} from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
-  setHasAuthToConnectWalletStorage,
-  getHasAuthToConnectWalletStorage
+  getHasAuthToConnectWalletStorage,
+  setHasAuthToConnectWalletStorage
 } from 'utils/persistence/connectAuthorizationStorage';
+import { getLastAccessedExternalAccount } from 'utils/persistence/externalAccountStorage';
 import {
   getLastAccessedWallet,
   setLastAccessedWallet
 } from 'utils/persistence/walletStorage';
-import keyring from '@polkadot/ui-keyring';
-import { getWallets } from '@talismn/connect-wallets';
 
 const KeyringContext = createContext();
 const MAX_WAIT_COUNT = 5;
@@ -55,7 +51,9 @@ export const KeyringContextProvider = (props) => {
   const refreshWalletAccounts = async (wallet) => {
     await wallet.enable(APP_NAME);
     keyringIsBusy.current = true;
-    let currentKeyringAddresses = keyring.getAccounts().map((account) => account.address);
+    let currentKeyringAddresses = keyring
+      .getAccounts()
+      .map((account) => account.address);
 
     const originUpdatedAccounts = await wallet.getAccounts();
     const updatedAccounts = originUpdatedAccounts.filter((a) =>
@@ -78,7 +76,17 @@ export const KeyringContextProvider = (props) => {
       setSelectedWallet(wallet);
       setKeyringAddresses(substrateAddresses);
     }
+
     keyringIsBusy.current = false;
+  };
+
+  const getLatestAccountAndPairs = () => {
+    const pairs = keyring.getPairs();
+    const {
+      meta: { source }
+    } = pairs[0] || { meta: {} };
+    const account = getLastAccessedExternalAccount(keyring, source) || pairs[0];
+    return { account, pairs };
   };
 
   useEffect(() => {
@@ -193,7 +201,8 @@ export const KeyringContextProvider = (props) => {
     keyringIsBusy,
     connectWallet,
     connectWalletExtension,
-    refreshWalletAccounts
+    refreshWalletAccounts,
+    getLatestAccountAndPairs
   };
 
   return (

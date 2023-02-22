@@ -7,11 +7,17 @@ export const getPrivateTransactionHistory = (): TxHistoryEvent[] => {
   const jsonPrivateTransactionHistory = [
     ...store.get(PRIVATE_TRANSACTION_STORAGE_KEY, [])
   ];
-  const privateTransactionHistory = jsonPrivateTransactionHistory.map(
-    (jsonTxHistoryEvent): TxHistoryEvent => {
-      return TxHistoryEvent.fromJson(jsonTxHistoryEvent);
-    }
-  );
+  const privateTransactionHistory = jsonPrivateTransactionHistory
+    .map(
+      (jsonTxHistoryEvent) => {
+        return TxHistoryEvent.fromJson(jsonTxHistoryEvent);
+      }
+    )
+    .filter((event) => {
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+      return sixMonthsAgo < event.date;
+    });
   return privateTransactionHistory;
 };
 
