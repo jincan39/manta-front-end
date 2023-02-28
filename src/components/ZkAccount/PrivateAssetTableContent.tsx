@@ -7,7 +7,7 @@ import PrivateAssetItem from './PrivateAssetItem';
 
 const PrivateAssetTableContent = () => {
   const { balances } = useZkAccountBalances();
-  const privateWallet = usePrivateWallet();
+  const { balancesAreStaleRef, isInitialSync } = usePrivateWallet();
   if (balances?.length) {
     return (
       <div className="divide-y divide-dashed divide-manta-gray-secondary">
@@ -16,7 +16,7 @@ const PrivateAssetTableContent = () => {
         ))}
       </div>
     );
-  } else if (privateWallet?.balancesAreStaleRef.current) {
+  } else if (balancesAreStaleRef.current || isInitialSync.current) {
     return <div className="whitespace-nowrap text-center mt-6">Syncing...</div>;
   } else {
     return (
