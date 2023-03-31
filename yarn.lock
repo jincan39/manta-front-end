@@ -11903,6 +11903,11 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
+manta-extension-connect@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/manta-extension-connect/-/manta-extension-connect-1.2.3.tgz#c6662ddc3a2ac34d104cd609e64d0bbe8b0cdc42"
+  integrity sha512-YbxPSkGxImq5SR+morZHo12sVlZWRJeOzibyBXbstVrQITe0Um3Hesi+dNT24yd/+pfh14U/QPJssirAZUydJA==
+
 manta-polkawallet-bridge@0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/manta-polkawallet-bridge/-/manta-polkawallet-bridge-0.1.0.tgz#bd4daae4f6aabe19c8f97f7d06f368b28248a853"
