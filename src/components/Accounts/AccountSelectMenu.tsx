@@ -1,6 +1,6 @@
 // @ts-nocheck
 import classNames from 'classnames';
-import { useExternalAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/externalAccountContext';
 import { useKeyring } from 'contexts/keyringContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
@@ -14,7 +14,7 @@ import AccountSelectDropdown from './AccountSelectDropdown';
 const DisplayAccountsButton = () => {
   const { ethAddress } = useMetamask();
   const { selectedWallet } = useKeyring();
-  const { externalAccount } = useExternalAccount();
+  const { externalAccount } = usePublicAccount();
   const [showAccountList, setShowAccountList] = useState(false);
   const [isMetamaskSelected, setIsMetamaskSelected] = useState(false);
 
@@ -81,7 +81,7 @@ const DisplayAccountsButton = () => {
 };
 
 const AccountSelectMenu = () => {
-  const { externalAccount } = useExternalAccount();
+  const { externalAccount } = usePublicAccount();
 
   return externalAccount ? (
     <DisplayAccountsButton />

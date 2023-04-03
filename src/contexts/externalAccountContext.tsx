@@ -178,6 +178,6 @@ ExternalAccountContextProvider.propTypes = {
   children: PropTypes.any
 };
 
-export const useExternalAccount = () => ({
+export const usePublicAccount = () => ({
   ...useContext(ExternalAccountContext)
 });

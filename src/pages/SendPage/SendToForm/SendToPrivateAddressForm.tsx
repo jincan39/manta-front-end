@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React from 'react';
-import { useWallet } from 'hooks';
+import { usePrivateWallet } from 'hooks';
 import SendToAddressForm from './SendToAddressForm';
 
 const INTERNAL_ACCOUNT_LABEL = 'Private';
@@ -13,7 +13,7 @@ const toReactSelectOption = (address) => {
 };
 
 const SendToPrivateAddressForm = () => {
-  const { privateAddress } = useWallet();
+  const { privateAddress } = usePrivateWallet();
   const options = privateAddress ? [privateAddress] : [];
 
   return (

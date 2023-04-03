@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useConfig } from 'contexts/configContext';
 import OutsideClickHandler from 'react-outside-click-handler';
-import { useWallet } from 'hooks';
+import { usePrivateWallet } from 'hooks';
 import { useModal } from 'hooks';
 import ConnectSignerModal from 'components/Modal/connectSigner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -99,7 +99,7 @@ export const ZkAccountConnect = ({ className = '' }) => {
 };
 
 const ZkAccountButton = () => {
-  const { privateAddress, signerVersion } = useWallet();
+  const { privateAddress, signerVersion } = usePrivateWallet();
   const config = useConfig();
 
   if (privateAddress) {

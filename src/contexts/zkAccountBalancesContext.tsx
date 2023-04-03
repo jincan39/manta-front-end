@@ -5,7 +5,7 @@ import Decimal from 'decimal.js';
 import { useUsdPrices } from 'contexts/usdPricesContext';
 import { useSend } from 'pages/SendPage/SendContext';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { useWallet } from 'hooks';
+import { usePrivateWallet } from 'hooks';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import Usd from 'types/Usd';
@@ -25,7 +25,7 @@ export const ZkAccountBalancesContextProvider = (props) => {
   const config = useConfig();
   const { txStatus } = useTxStatus();
   const { privateAddress, getSpendableBalance, isReady, balancesAreStale } =
-    useWallet();
+    usePrivateWallet();
   const {
     senderAssetCurrentBalance,
     senderAssetType,

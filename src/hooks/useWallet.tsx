@@ -8,6 +8,6 @@ export enum WalletModeEnum {
 
 export type WalletModeType = keyof typeof WalletModeEnum;
 
-export const useWallet = (mode?: WalletModeType) => {
+export const usePrivateWallet = (mode?: WalletModeType) => {
   return mode === WalletModeEnum.manta ? useMantaWallet() : useMantaSignerWallet();
 };

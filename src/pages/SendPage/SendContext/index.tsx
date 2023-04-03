@@ -3,9 +3,9 @@ import NETWORK from 'constants/NetworkConstants';
 import React, { useReducer, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSubstrate } from 'contexts/substrateContext';
-import { useExternalAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/externalAccountContext';
 import Balance from 'types/Balance';
-import { useWallet } from 'hooks';
+import { usePrivateWallet } from 'hooks';
 import BN from 'bn.js';
 import { bnToU8a } from '@polkadot/util';
 import { useTxStatus } from 'contexts/txStatusContext';
@@ -24,8 +24,8 @@ export const SendContextProvider = (props) => {
   const config = useConfig();
   const { api } = useSubstrate();
   const { setTxStatus, txStatus, txStatusRef } = useTxStatus();
-  const { externalAccount, externalAccountSigner } = useExternalAccount();
-  const privateWallet = useWallet();
+  const { externalAccount, externalAccountSigner } = usePublicAccount();
+  const privateWallet = usePrivateWallet();
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
   const [state, dispatch] = useReducer(sendReducer, buildInitState(config));
   const {

@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, createContext, useContext } from 'react';
 import { default as axios, AxiosResponse, AxiosError } from 'axios';
-import { useWallet } from 'hooks';
+import { usePrivateWallet } from 'hooks';
 import {
   appendTxHistoryEvent,
   removePendingTxHistoryEvent,
@@ -32,7 +32,7 @@ export const PrivateTxHistoryContextProvider = (
 ) => {
   const config = useConfig();
   const { txStatus, txStatusRef } = useTxStatus();
-  const { privateAddress } = useWallet();
+  const { privateAddress } = usePrivateWallet();
   const {
     isToPublic,
     isToPrivate,

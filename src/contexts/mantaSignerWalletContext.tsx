@@ -16,7 +16,7 @@ import { MantaPrivateWallet, MantaUtilities, Environment } from 'manta.js';
 import {
   removePendingTxHistoryEvent,
 } from 'utils/persistence/privateTransactionHistory';
-import { useExternalAccount } from './externalAccountContext';
+import { usePublicAccount } from './externalAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 import { useConfig } from './configContext';
@@ -28,7 +28,7 @@ export const MantaSignerWalletContextProvider = (props) => {
   const config = useConfig();
   const { api, socket } = useSubstrate();
   const { externalAccountSigner, externalAccount, extensionSigner } =
-    useExternalAccount();
+    usePublicAccount();
   const { setTxStatus, txStatusRef } = useTxStatus();
 
   // private wallet

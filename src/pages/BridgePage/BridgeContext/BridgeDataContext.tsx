@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useReducer, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useExternalAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/externalAccountContext';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Decimal from 'decimal.js';
@@ -19,7 +19,7 @@ const BridgeDataContext = React.createContext();
 export const BridgeDataContextProvider = (props) => {
   const { ethAddress } = useMetamask();
   const config = useConfig();
-  const { externalAccount } = useExternalAccount();
+  const { externalAccount } = usePublicAccount();
   const { txStatus, txStatusRef, setTxStatus } = useTxStatus();
 
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));

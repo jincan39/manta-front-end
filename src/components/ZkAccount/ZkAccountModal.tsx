@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import { useWallet } from 'hooks';
+import { usePrivateWallet } from 'hooks';
 import CopyPasteIcon from 'components/CopyPasteIcon';
 import Icon from 'components/Icon';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
@@ -49,7 +49,7 @@ const TableContentSelector = ({
 };
 
 const ZkAddressDisplay = () => {
-  const { privateAddress } = useWallet();
+  const { privateAddress } = usePrivateWallet();
   const privateAddressDisplayString = `zkAddress ${getAbbreviatedName(
     privateAddress,
     5,
@@ -151,7 +151,7 @@ const NoZkAccountModal = () => {
 };
 
 const ZkAccountModal = () => {
-  const { privateAddress } = useWallet();
+  const { privateAddress } = usePrivateWallet();
   return privateAddress ? <ZkAccountModalContent /> : <NoZkAccountModal />;
 };
 

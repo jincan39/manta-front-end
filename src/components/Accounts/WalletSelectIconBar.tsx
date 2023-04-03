@@ -1,7 +1,7 @@
 // @ts-nocheck
 import classNames from 'classnames';
 import Icon from 'components/Icon';
-import { useExternalAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/externalAccountContext';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { useTxStatus } from 'contexts/txStatusContext';
@@ -9,7 +9,7 @@ import { getSubstrateWallets } from 'utils';
 import { setLastAccessedWallet } from 'utils/persistence/walletStorage';
 
 const SubstrateWallets = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
-  const { changeExternalAccountOptions } = useExternalAccount();
+  const { changeExternalAccountOptions } = usePublicAccount();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const {
