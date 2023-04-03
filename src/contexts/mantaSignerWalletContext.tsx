@@ -21,9 +21,9 @@ import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 import { useConfig } from './configContext';
 
-const PrivateWalletContext = createContext();
+const MantaSignerWalletContext = createContext();
 
-export const PrivateWalletContextProvider = (props) => {
+export const MantaSignerWalletContextProvider = (props) => {
   // external contexts
   const config = useConfig();
   const { api, socket } = useSubstrate();
@@ -311,14 +311,14 @@ export const PrivateWalletContextProvider = (props) => {
   };
 
   return (
-    <PrivateWalletContext.Provider value={value}>
+    <MantaSignerWalletContext.Provider value={value}>
       {props.children}
-    </PrivateWalletContext.Provider>
+    </MantaSignerWalletContext.Provider>
   );
 };
 
-PrivateWalletContextProvider.propTypes = {
+MantaSignerWalletContextProvider.propTypes = {
   children: PropTypes.any
 };
 
-export const usePrivateWallet = () => ({ ...useContext(PrivateWalletContext) });
+export const useMantaSignerWallet = () => ({ ...useContext(MantaSignerWalletContext) });

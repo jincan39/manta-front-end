@@ -1,6 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 
+import { BN } from 'bn.js';
+import Balance from 'types/Balance';
 import { getSubstrateWallets } from 'utils';
 import {
   createContext,
@@ -9,7 +11,8 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState
+  useState,
+  useRef
 } from 'react';
 import {
   getLastAccessedExternalAccount,
@@ -19,6 +22,7 @@ import {
 import { useKeyring } from './keyringContext';
 import { useSubstrate } from './substrateContext';
 import { PrivateWallet } from './mantaWalletType';
+import { useConfig } from 'contexts/configContext';
 
 type MantaWalletContext = {
   extensionSigner: any;
@@ -47,10 +51,12 @@ export const MantaWalletContextProvider = ({
   const [externalAccountOptions, setExternalAccountOptions] = useState<
     KeyringPair[]
   >([]);
-  const [isInitialAccountSet, setIsInitialAccountSet] = useState(false);
+  const isInitialSync = useRef(false);
   const [privateWallet, setPrivateWallet] = useState<PrivateWallet>(
     {} as PrivateWallet
   );
+  const { NETWORK_NAME } = useConfig();
+  const network = NETWORK_NAME.toLowerCase();
 
   const setApiSigner = useCallback(
     (api: ApiPromise | null | undefined) => {
@@ -132,10 +138,25 @@ export const MantaWalletContextProvider = ({
     [changeExternalAccountOptions, keyring, keyringAddresses.length]
   );
 
+  const getSpendableBalance = useCallback(
+    async (assetType: any) => {
+      if (!isInitialSync.current || !privateWallet?.getZkBalance) {
+        return null;
+      }
+      const balanceRaw = await privateWallet.getZkBalance({
+        network,
+        assetId: assetType.assetId
+      });
+      const balance = new BN(balanceRaw || '0');
+      return new Balance(assetType, balance);
+    },
+    [privateWallet]
+  );
+
   useEffect(() => {
     const setInitialExternalAccount = async () => {
       if (
-        !isInitialAccountSet &&
+        !isInitialSync.current &&
         isKeyringInit &&
         keyringAddresses.length > 0
       ) {
@@ -156,10 +177,10 @@ export const MantaWalletContextProvider = ({
           initialAccount,
           keyringExternalAccountOptions
         );
-        setIsInitialAccountSet(true);
+        isInitialSync.current = true;
       }
     };
-    if (!isInitialAccountSet) {
+    if (!isInitialSync.current) {
       const interval = setInterval(async () => {
         setInitialExternalAccount();
       }, 1000);
@@ -167,7 +188,7 @@ export const MantaWalletContextProvider = ({
     }
   }, [
     changeExternalAccountOptions,
-    isInitialAccountSet,
+    isInitialSync,
     isKeyringInit,
     keyring,
     keyringAddresses
@@ -175,7 +196,7 @@ export const MantaWalletContextProvider = ({
 
   useEffect(() => {
     const handleKeyringAddressesChange = () => {
-      if (!isInitialAccountSet) {
+      if (!isInitialSync.current) {
         return;
       }
       const accounts = keyring.getPairs() as KeyringPair[];
@@ -200,7 +221,7 @@ export const MantaWalletContextProvider = ({
   }, [
     changeExternalAccountOptions,
     externalAccount,
-    isInitialAccountSet,
+    isInitialSync,
     keyring,
     keyringAddresses,
     setStateWhenRemoveActiveExternalAccount
@@ -216,19 +237,23 @@ export const MantaWalletContextProvider = ({
 
   const value = useMemo(
     () => ({
+      isInitialSync,
       extensionSigner,
       externalAccount,
       externalAccountOptions,
       changeExternalAccount,
       changeExternalAccountOptions,
+      getSpendableBalance,
       privateWallet
     }),
     [
+      isInitialSync,
       changeExternalAccount,
       changeExternalAccountOptions,
       extensionSigner,
       externalAccount,
       externalAccountOptions,
+      getSpendableBalance,
       privateWallet
     ]
   );

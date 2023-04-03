@@ -17,7 +17,8 @@ import {
   showWarning
 } from 'utils/ui/Notifications';
 import { UsdPricesContextProvider } from 'contexts/usdPricesContext';
-import { PrivateWalletContextProvider } from 'contexts/privateWalletContext';
+import { MantaWalletContextProvider } from 'contexts/mantaWalletContext';
+import { MantaSignerWalletContextProvider } from 'contexts/mantaSignerWalletContext';
 import { ZkAccountBalancesContextProvider } from 'contexts/zkAccountBalancesContext';
 
 const TxStatusHandler = () => {
@@ -49,11 +50,13 @@ const BasePage = ({ children }) => {
   return (
     <TxStatusContextProvider>
       <SubstrateContextProvider>
-        <ExternalAccountContextProvider>
-          <DeveloperConsole />
-          <TxStatusHandler />
-          {children}
-        </ExternalAccountContextProvider>
+        <MantaWalletContextProvider>
+          <ExternalAccountContextProvider>
+            <DeveloperConsole />
+            <TxStatusHandler />
+            {children}
+          </ExternalAccountContextProvider>
+        </MantaWalletContextProvider>
       </SubstrateContextProvider>
     </TxStatusContextProvider>
   );
@@ -69,11 +72,11 @@ export const CalamariBasePage = ({ children }) => {
       <BasePage>
         <UsdPricesContextProvider>
           <MetamaskContextProvider>
-            <PrivateWalletContextProvider>
+            <MantaSignerWalletContextProvider>
               <ZkAccountBalancesContextProvider>
                 {children}
               </ZkAccountBalancesContextProvider>
-            </PrivateWalletContextProvider>
+            </MantaSignerWalletContextProvider>
           </MetamaskContextProvider>
         </UsdPricesContextProvider>
       </BasePage>
@@ -91,11 +94,11 @@ export const DolphinBasePage = ({ children }) => {
       <BasePage>
         <UsdPricesContextProvider>
           <MetamaskContextProvider>
-            <PrivateWalletContextProvider>
+            <MantaSignerWalletContextProvider>
               <ZkAccountBalancesContextProvider>
                 {children}
               </ZkAccountBalancesContextProvider>
-            </PrivateWalletContextProvider>
+            </MantaSignerWalletContextProvider>
           </MetamaskContextProvider>
         </UsdPricesContextProvider>
       </BasePage>

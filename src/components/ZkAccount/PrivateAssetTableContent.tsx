@@ -1,4 +1,4 @@
-import { usePrivateWallet } from 'contexts/privateWalletContext';
+import { useWallet } from 'hooks';
 import {
   useZkAccountBalances,
   ZkAccountBalance
@@ -7,7 +7,7 @@ import PrivateAssetItem from './PrivateAssetItem';
 
 const PrivateAssetTableContent = () => {
   const { balances } = useZkAccountBalances();
-  const { balancesAreStaleRef, isInitialSync } = usePrivateWallet();
+  const { balancesAreStaleRef, isInitialSync } = useWallet();
   if (balances?.length) {
     return (
       <div className="divide-y divide-dashed divide-manta-gray-secondary">

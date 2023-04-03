@@ -6,7 +6,7 @@ import MantaLoading from 'components/Loading';
 import { ZkAccountConnect } from 'components/Navbar/ZkAccountButton';
 import { useConfig } from 'contexts/configContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
+import { useWallet } from 'hooks';
 import { useTxStatus } from 'contexts/txStatusContext';
 import Balance from 'types/Balance';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
@@ -72,7 +72,7 @@ const ValidationSendButton = ({ showModal }) => {
     senderAssetTargetBalance,
     senderNativeTokenPublicBalance
   } = useSend();
-  const { signerIsConnected, signerVersion } = usePrivateWallet();
+  const { signerIsConnected, signerVersion } = useWallet();
   const { externalAccount } = useExternalAccount();
   const apiIsDisconnected = apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
   const { shouldShowLoader: receiverLoading } = useReceiverBalanceText();

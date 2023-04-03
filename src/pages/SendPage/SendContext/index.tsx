@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import Balance from 'types/Balance';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
+import { useWallet } from 'hooks';
 import BN from 'bn.js';
 import { bnToU8a } from '@polkadot/util';
 import { useTxStatus } from 'contexts/txStatusContext';
@@ -13,7 +13,6 @@ import TxStatus from 'types/TxStatus';
 import AssetType from 'types/AssetType';
 import getExtrinsicGivenBlockHash from 'utils/api/getExtrinsicGivenBlockHash';
 import { useConfig } from 'contexts/configContext';
-import { MantaUtilities } from 'manta.js';
 import { updateTxHistoryEventStatus } from 'utils/persistence/privateTransactionHistory';
 import { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
 import SEND_ACTIONS from './sendActions';
@@ -26,7 +25,7 @@ export const SendContextProvider = (props) => {
   const { api } = useSubstrate();
   const { setTxStatus, txStatus, txStatusRef } = useTxStatus();
   const { externalAccount, externalAccountSigner } = useExternalAccount();
-  const privateWallet = usePrivateWallet();
+  const privateWallet = useWallet();
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
   const [state, dispatch] = useReducer(sendReducer, buildInitState(config));
   const {
