@@ -1,9 +1,11 @@
 // @ts-nocheck
+import React from 'react';
 import Icon from 'components/Icon';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { getSubstrateWallets } from 'utils';
 import getWalletDisplayName from 'utils/display/getWalletDisplayName';
+import { useGlobal } from 'contexts/globalContexts';
 
 const WalletNotInstalledBlock = ({
   walletName,
@@ -11,7 +13,7 @@ const WalletNotInstalledBlock = ({
   walletInstallLink
 }) => {
   return (
-    <div className="mt-6 py-3 px-4 h-16 text-sm flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
+    <div className="mt-4 py-3 px-4 h-16 text-sm flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -38,7 +40,7 @@ const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
   return (
     <button
       onClick={connectHandler}
-      className="relative mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
+      className="relative mt-4 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -68,7 +70,7 @@ const WalletInstalledBlock = ({ walletName, walletLogo, connectHandler }) => {
 
 const WalletEnabledBlock = ({ walletName, walletLogo }) => {
   return (
-    <div className="mt-6 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
+    <div className="mt-4 py-3 px-4 h-16 flex items-center justify-between border border-white-light text-white rounded-lg w-full block">
       <div className="flex flex-row items-center gap-4">
         {walletLogo && typeof walletLogo === 'object' ? (
           <img
@@ -145,6 +147,50 @@ const MetamaskConnectWalletBlock = ({hideModal}) => {
   );
 };
 
+const MantaConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
+  // TODO
+  // get manta wallet meta data
+  // { extensionName, installed, installUrl, logo, isWalletEnabled }
+
+  const handleConnectWallet = (walletName) => async () => {
+    connectWalletExtension(walletName);
+    const isConnected = await connectWallet(walletName);
+    if (isConnected) {
+      setIsMetamaskSelected && setIsMetamaskSelected(false);
+      hideModal();
+    }
+  };
+  return (
+    <div className="mt-6 text-white bg-white bg-opacity-5 p-4 rounded-lg">
+      <div className="font-semibold text-sm">Recommended Wallet</div>
+      <div className="text-sm mt-2">
+        Have both public addresses and zkAddress.
+        <br />
+        You can explore all the products of Manta with it.
+      </div>
+      <ConnectWalletBlock
+        key={'manta'}
+        walletName={'Manta Wallet'}
+        isWalletInstalled={false}
+        walletInstallLink={'dd'}
+        walletLogo={'manta'}
+        isWalletEnabled={false}
+        connectHandler={handleConnectWallet('mantawallet')}
+      />
+      <div className="mt-4 text-sm">
+        <div>Manta Signer user? </div>
+        <a className="flex items-center mb-6 text-white hover:text-white" 
+          href="https://forum.manta.network/" // TODO: replace the url
+          target="_blank"
+          rel="noopener noreferrer">
+          <span>Learn how to migrate from Manta Signer to Manta Wallet</span>
+          <Icon className="w-4 h-4 ml-2 cursor-pointer" name="activityRightArrow" />
+        </a>
+      </div>
+    </div>
+  );
+};
+
 export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
   const { connectWallet, connectWalletExtension } = useKeyring();
   const substrateWallets = getSubstrateWallets();
@@ -177,6 +223,33 @@ export const SubstrateConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }
 
 const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {
   const isBridgePage = window?.location?.pathname?.includes('bridge');
+  const { usingMantaWallet } = useGlobal();
+  if (usingMantaWallet) {
+    return (
+      <div className="w-108">
+        <h1 className="text-xl text-white">Connect Wallet</h1>
+        <MantaConnectWalletBlock 
+          setIsMetamaskSelected={setIsMetamaskSelected}
+          hideModal={hideModal}
+        />
+        <div className="mt-4 text-white bg-white bg-opacity-5 p-4 rounded-lg">
+          <div className="font-semibold text-sm">Other Wallets</div>
+          <div className="text-sm mt-2">Have public addresses only. If you want to privatize your assets, Manta Wallet is still needed.</div>
+          <SubstrateConnectWalletBlock
+            setIsMetamaskSelected={setIsMetamaskSelected}
+            hideModal={hideModal}
+          />
+          {isBridgePage && <MetamaskConnectWalletBlock hideModal={hideModal} />}
+        </div>
+        <p className="flex flex-row gap-2 mt-5 text-secondary text-xsss">
+          <Icon name="information" />
+          Already installed? Try refreshing this page
+        </p>
+      </div>
+    );
+  }
+  // we will remove manta signer one day, so this return statement will be removed too.
+  // here, considering the different UI modal, for the sake of brevity, we just use two returns.
   return (
     <div className="w-96">
       <h1 className="text-xl text-white">Connect Wallet</h1>

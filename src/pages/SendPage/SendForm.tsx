@@ -8,12 +8,14 @@ import { useKeyring } from 'contexts/keyringContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
 import Icon from 'components/Icon';
+import { useGlobal } from 'contexts/globalContexts';
 import SendFromForm from './SendFromForm';
 import SendToForm from './SendToForm';
 import { useSend } from './SendContext';
 
 const SendForm = () => {
   const config = useConfig();
+  const { usingMantaWallet, setUsingMantaWallet } = useGlobal();
   const { keyring } = useKeyring();
   const {
     swapSenderAndReceiverArePrivate,
@@ -29,6 +31,12 @@ const SendForm = () => {
       keyring.setSS58Format(config.SS58_FORMAT);
     }
   }, [keyring]);
+
+  const toggleUsingMantaWalletState = () => {
+    // toggle global status
+    const newState = !usingMantaWallet;
+    setUsingMantaWallet(newState);
+  };
 
   const onClickSwapSenderReceiver = () => {
     if (!disabled) {
@@ -64,6 +72,21 @@ const SendForm = () => {
             />
           </div>
           <SendToForm />
+        </div>
+        <div className="flex flex-col items-center">
+          <button onClick={toggleUsingMantaWalletState} className="px-6 rounded-3xl border border-solid border-white h-9 flex items-center cursor-hover text-white text-sm cursor-pointer">
+            {
+              usingMantaWallet ? <span>Manta Signer user? And still want to use it? </span> : <span>Manta Wallet is live! Try MantaPay with Manta Wallet</span>
+            }
+            <Icon className="w-4 h-4 ml-2 cursor-pointer" name="activityRightArrow" />
+          </button>
+          <a className="mt-6 flex items-center mb-6 text-white hover:text-white" 
+            href="https://forum.manta.network/" // TODO: replace the url
+            target="_blank"
+            rel="noopener noreferrer">
+            <span>Learn how to migrate from Manta Signer to Manta Wallet</span>
+            <Icon className="w-4 h-4 ml-2 cursor-pointer" name="activityRightArrow" />
+          </a>
         </div>
       </div>
     </div>

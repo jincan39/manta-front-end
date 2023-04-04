@@ -2,6 +2,7 @@ import React from 'react';
 import PageContent from 'components/PageContent';
 import Navbar from 'components/Navbar';
 import IPBlockingModal from 'components/Modal/IPBlockingModal';
+import MantaWalletIntroModal from 'components/Modal/MantaWalletIntroModal';
 import { useConfig } from 'contexts/configContext';
 import { dolphinConfig } from 'config';
 import DowntimeModal from 'components/Modal/downtimeModal';
@@ -19,6 +20,7 @@ const SendPage = () => {
         <PageContent>
           <SendForm />
         </PageContent>
+        <MantaWalletIntroModal />
         <IPBlockingModal />
         { isDolphinPage && <DowntimeModal />}
       </PrivateTxHistoryContextProvider>
