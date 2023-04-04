@@ -2,37 +2,30 @@ import { ApiPromise } from '@polkadot/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 
 import { BN } from 'bn.js';
-import Balance from 'types/Balance';
-import { getSubstrateWallets } from 'utils';
 import {
-  createContext,
   ReactNode,
+  createContext,
   useCallback,
   useContext,
   useEffect,
   useMemo,
-  useState,
-  useRef
+  useRef,
+  useState
 } from 'react';
+import { getSubstrateWallets } from 'utils';
 import {
   getLastAccessedExternalAccount,
   setLastAccessedExternalAccountAddress
 } from 'utils/persistence/externalAccountStorage';
 
+import AssetType from 'types/AssetType';
 import { useKeyring } from './keyringContext';
 import { useSubstrate } from './substrateContext';
-import { PrivateWallet } from './mantaWalletType';
-import { useConfig } from 'contexts/configContext';
 
 type MantaWalletContext = {
   extensionSigner: any;
   externalAccount: KeyringPair | null;
   externalAccountOptions: KeyringPair[];
-  changeExternalAccount: (account: KeyringPair) => void;
-  changeExternalAccountOptions: (
-    account: KeyringPair | null,
-    newExternalAccounts: KeyringPair[]
-  ) => void;
 };
 
 const MantaWalletContext = createContext<MantaWalletContext | null>(null);
@@ -43,7 +36,8 @@ export const MantaWalletContextProvider = ({
   children: ReactNode;
 }) => {
   const { api } = useSubstrate();
-  const { keyring, isKeyringInit, keyringAddresses } = useKeyring();
+  const { keyring, isKeyringInit, keyringAddresses, selectedWallet } =
+    useKeyring();
   const [externalAccount, setExternalAccount] = useState<KeyringPair | null>(
     null
   );
@@ -52,11 +46,7 @@ export const MantaWalletContextProvider = ({
     KeyringPair[]
   >([]);
   const isInitialSync = useRef(false);
-  const [privateWallet, setPrivateWallet] = useState<PrivateWallet>(
-    {} as PrivateWallet
-  );
-  const { NETWORK_NAME } = useConfig();
-  const network = NETWORK_NAME.toLowerCase();
+  const privateWallet = selectedWallet?.extension?.privateWallet;
 
   const setApiSigner = useCallback(
     (api: ApiPromise | null | undefined) => {
@@ -77,7 +67,7 @@ export const MantaWalletContextProvider = ({
         const selectedWallet = walletWithExtensionList.find(
           (wallet) => wallet.extensionName === source
         );
-        setPrivateWallet(selectedWallet?.extension?.privateWallet);
+        // setPrivateWallet(selectedWallet?.extension?.privateWallet);
 
         setExtensionSigner(selectedWallet?.signer);
         api.setSigner(selectedWallet?.signer);
@@ -139,16 +129,27 @@ export const MantaWalletContextProvider = ({
   );
 
   const getSpendableBalance = useCallback(
-    async (assetType: any) => {
-      if (!isInitialSync.current || !privateWallet?.getZkBalance) {
+    async (assetType: AssetType) => {
+      if (!privateWallet?.getZkBalance) {
         return null;
       }
-      const balanceRaw = await privateWallet.getZkBalance({
-        network,
-        assetId: assetType.assetId
-      });
-      const balance = new BN(balanceRaw || '0');
-      return new Balance(assetType, balance);
+
+      // TODO
+      const decimals = '12';
+      const network = 'Calamari';
+      let balanceRaw = '0';
+      try {
+        balanceRaw = await privateWallet.getZkBalance({
+          network,
+          assetId: assetType.assetId
+        });
+      } catch (error) {
+        return new BN(balanceRaw);
+      }
+      const pow = new BN(decimals);
+      const balance = new BN(balanceRaw).div(new BN(10).pow(pow));
+
+      return balance;
     },
     [privateWallet]
   );
@@ -241,20 +242,11 @@ export const MantaWalletContextProvider = ({
       extensionSigner,
       externalAccount,
       externalAccountOptions,
-      changeExternalAccount,
-      changeExternalAccountOptions,
-      getSpendableBalance,
-      privateWallet
+      getSpendableBalance
     }),
     [
       isInitialSync,
-      changeExternalAccount,
-      changeExternalAccountOptions,
-      extensionSigner,
-      externalAccount,
-      externalAccountOptions,
-      getSpendableBalance,
-      privateWallet
+      getSpendableBalance
     ]
   );
 
