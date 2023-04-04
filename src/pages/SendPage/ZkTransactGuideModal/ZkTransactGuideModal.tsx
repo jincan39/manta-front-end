@@ -1,12 +1,14 @@
-import { usePrivateWallet } from 'hooks';
 import { usePublicAccount } from 'contexts/externalAccountContext';
+import { useGlobal } from 'contexts/globalContexts';
+import { usePrivateWallet } from 'hooks';
 import ZkTransactConnectSignerModal from './ZkTransactConnectSignerModal';
 import ZkTransactConnectWalletModal from './ZkTransactConnectWalletModal';
 import ZkTransactConnectedModal from './ZkTransactConnectedModal';
 
 const ZkTransactGuideModal = () => {
   const { externalAccount } = usePublicAccount();
-  const { signerIsConnected } = usePrivateWallet();
+  const { usingMantaWallet } = useGlobal();
+  const { signerIsConnected } = usePrivateWallet(usingMantaWallet);
   return (
     <>
       {!externalAccount && !signerIsConnected && (

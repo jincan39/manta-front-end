@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useConfig } from 'contexts/configContext';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { usePrivateWallet } from 'hooks';
+import { useGlobal } from 'contexts/globalContexts';
 import { useModal } from 'hooks';
 import ConnectSignerModal from 'components/Modal/connectSigner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,7 +18,8 @@ import ZkAccountModal from '../ZkAccount/ZkAccountModal';
 const ZkAccountDisplay = () => {
   const [showZkModal, setShowZkModal] = useState(false);
   const { apiState } = useSubstrate();
-  const isDisconnected = apiState === API_STATE.DISCONNECTED  || apiState === API_STATE.ERROR;
+  const isDisconnected =
+    apiState === API_STATE.DISCONNECTED || apiState === API_STATE.ERROR;
 
   return (
     <div className="relative">
@@ -99,7 +101,8 @@ export const ZkAccountConnect = ({ className = '' }) => {
 };
 
 const ZkAccountButton = () => {
-  const { privateAddress, signerVersion } = usePrivateWallet();
+  const { usingMantaWallet } = useGlobal();
+  const { privateAddress, signerVersion } = usePrivateWallet(usingMantaWallet);
   const config = useConfig();
 
   if (privateAddress) {

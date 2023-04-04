@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
 import classNames from 'classnames';
-import { usePrivateWallet } from 'hooks';
 import CopyPasteIcon from 'components/CopyPasteIcon';
 import Icon from 'components/Icon';
+import { useGlobal } from 'contexts/globalContexts';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
-import getAbbreviatedName from 'utils/display/getAbbreviatedName';
 import { useZkAccountBalances } from 'contexts/zkAccountBalancesContext';
-import PrivateAssetTableContent from './PrivateAssetTableContent';
+import { usePrivateWallet } from 'hooks';
+import { useState } from 'react';
+import getAbbreviatedName from 'utils/display/getAbbreviatedName';
 import PrivateActivityTableContent from './PrivateActivityTableContent';
+import PrivateAssetTableContent from './PrivateAssetTableContent';
 
 type TableContentSelectorProp = {
   displayAssets: boolean;
@@ -49,7 +50,8 @@ const TableContentSelector = ({
 };
 
 const ZkAddressDisplay = () => {
-  const { privateAddress } = usePrivateWallet();
+  const { usingMantaWallet } = useGlobal();
+  const { privateAddress } = usePrivateWallet(usingMantaWallet);
   const privateAddressDisplayString = `zkAddress ${getAbbreviatedName(
     privateAddress,
     5,
@@ -151,7 +153,8 @@ const NoZkAccountModal = () => {
 };
 
 const ZkAccountModal = () => {
-  const { privateAddress } = usePrivateWallet();
+  const { usingMantaWallet } = useGlobal();
+  const { privateAddress } = usePrivateWallet(usingMantaWallet);
   return privateAddress ? <ZkAccountModalContent /> : <NoZkAccountModal />;
 };
 

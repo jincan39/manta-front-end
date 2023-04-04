@@ -1,23 +1,24 @@
-import React, { ReactNode, useEffect, createContext, useContext } from 'react';
-import { default as axios, AxiosResponse, AxiosError } from 'axios';
+import { AxiosError, AxiosResponse, default as axios } from 'axios';
+import { useConfig } from 'contexts/configContext';
+import { useGlobal } from 'contexts/globalContexts';
+import { useTxStatus } from 'contexts/txStatusContext';
 import { usePrivateWallet } from 'hooks';
-import {
-  appendTxHistoryEvent,
-  removePendingTxHistoryEvent,
-  setPrivateTransactionHistory,
-  getPrivateTransactionHistory,
-  updateTxHistoryEventStatus
-} from 'utils/persistence/privateTransactionHistory';
-import {
-  getLastSeenPrivateAddress,
-  setLastSeenPrivateAddress
-} from 'utils/persistence/privateAddressHistory';
+import { ReactNode, createContext, useContext, useEffect } from 'react';
 import TxHistoryEvent, {
   HISTORY_EVENT_STATUS,
   PRIVATE_TX_TYPE
 } from 'types/TxHistoryEvent';
-import { useTxStatus } from 'contexts/txStatusContext';
-import { useConfig } from 'contexts/configContext';
+import {
+  getLastSeenPrivateAddress,
+  setLastSeenPrivateAddress
+} from 'utils/persistence/privateAddressHistory';
+import {
+  appendTxHistoryEvent,
+  getPrivateTransactionHistory,
+  removePendingTxHistoryEvent,
+  setPrivateTransactionHistory,
+  updateTxHistoryEventStatus
+} from 'utils/persistence/privateTransactionHistory';
 import { useSend } from '../SendContext';
 
 type PrivateTxHistoryContextProps = {
@@ -32,7 +33,8 @@ export const PrivateTxHistoryContextProvider = (
 ) => {
   const config = useConfig();
   const { txStatus, txStatusRef } = useTxStatus();
-  const { privateAddress } = usePrivateWallet();
+  const { usingMantaWallet } = useGlobal();
+  const { privateAddress } = usePrivateWallet(usingMantaWallet);
   const {
     isToPublic,
     isToPrivate,

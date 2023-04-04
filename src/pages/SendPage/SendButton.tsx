@@ -1,19 +1,19 @@
 // @ts-nocheck
-import React from 'react';
 import classNames from 'classnames';
 import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import MantaLoading from 'components/Loading';
 import { ZkAccountConnect } from 'components/Navbar/ZkAccountButton';
 import { useConfig } from 'contexts/configContext';
 import { usePublicAccount } from 'contexts/externalAccountContext';
-import { usePrivateWallet } from 'hooks';
+import { useGlobal } from 'contexts/globalContexts';
+import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
+import { usePrivateWallet } from 'hooks';
 import Balance from 'types/Balance';
 import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
-import { API_STATE, useSubstrate } from 'contexts/substrateContext';
+import { useSend } from './SendContext';
 import useReceiverBalanceText from './SendToForm/useReceiverBalanceText';
 import useSenderBalanceText from './SendToForm/useSenderBalanceText';
-import { useSend } from './SendContext';
 
 const InnerSendButton = ({ senderLoading, receiverLoading }) => {
   const { send, isToPrivate, isToPublic, isPublicTransfer, isPrivateTransfer } =
@@ -72,9 +72,12 @@ const ValidationSendButton = ({ showModal }) => {
     senderAssetTargetBalance,
     senderNativeTokenPublicBalance
   } = useSend();
-  const { signerIsConnected, signerVersion } = usePrivateWallet();
+  const { usingMantaWallet } = useGlobal();
+  const { signerIsConnected, signerVersion } =
+    usePrivateWallet(usingMantaWallet);
   const { externalAccount } = usePublicAccount();
-  const apiIsDisconnected = apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
+  const apiIsDisconnected =
+    apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
   const { shouldShowLoader: receiverLoading } = useReceiverBalanceText();
   const { shouldShowLoader: senderLoading } = useSenderBalanceText();
 
@@ -167,11 +170,11 @@ const ValidationSendButton = ({ showModal }) => {
         !shouldShowWalletMissingValidation &&
         !shouldShowWalletSignerMissingValidation &&
         !validationMsg && (
-        <InnerSendButton
-          senderLoading={senderLoading}
-          receiverLoading={receiverLoading}
-        />
-      )}
+          <InnerSendButton
+            senderLoading={senderLoading}
+            receiverLoading={receiverLoading}
+          />
+        )}
     </>
   );
 };

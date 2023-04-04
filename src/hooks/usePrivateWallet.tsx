@@ -6,8 +6,9 @@ export enum WalletModeEnum {
   signer = 'signer'
 }
 
-export type WalletModeType = keyof typeof WalletModeEnum;
+export type WalletModeType = keyof typeof WalletModeEnum | boolean;
 
 export const usePrivateWallet = (mode?: WalletModeType) => {
-  return mode === WalletModeEnum.manta ? useMantaWallet() : useMantaSignerWallet();
+  const isManta = mode === true || mode === WalletModeEnum.manta;
+  return isManta ? useMantaWallet() : useMantaSignerWallet();
 };
