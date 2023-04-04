@@ -88,13 +88,11 @@ export const MantaWalletContextProvider = ({
   };
 
   const publishNextBatch = async () => {
+    const { publicAddress } = await getAddress();
     const sendExternal = async () => {
       try {
         const lastTx = txQueue.current.shift();
-        await lastTx.signAndSend(
-          externalAccountSigner,
-          finalTxResHandler.current
-        );
+        await lastTx.signAndSend(publicAddress);
         setTxStatus(TxStatus.processing(null, lastTx.hash.toString()));
       } catch (e) {
         console.error('Error publishing private transaction batch', e);
@@ -117,9 +115,10 @@ export const MantaWalletContextProvider = ({
       }
     };
 
-    if (txQueue.current.length === 0) {
+    // TODO txQueue should be undefined
+    if (txQueue?.current?.length === 0) {
       return;
-    } else if (txQueue.current.length === 1) {
+    } else if (txQueue?.current?.length === 1) {
       sendExternal();
     } else {
       sendInternal();
