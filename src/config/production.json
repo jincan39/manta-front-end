@@ -1,17 +1,17 @@
 {
-    "CALAMARI_SOCKET": "wss://ws.calamari.systems/",
+    "CALAMARI_SOCKET": "wss://zenlink.zqhxuyuan.cloud:444",
     "DEV_CONSOLE": false,
     "NODES": [{
             "name": "Calamari",
             "path": "/calamari",
             "logo": "calamariLogo",
-            "url": "wss://ws.calamari.systems/",
+            "url": "wss://zenlink.zqhxuyuan.cloud:444",
             "explorer": "calamari.subscan.io"
         },
         {
             "name": "Dolphin",
             "path": "/dolphin",
-            "url": "wss://ws.calamari.seabird.systems",
+            "url": "wss://zenlink.zqhxuyuan.cloud:444",
             "testnet": true,
             "explorer": "dolphin.subscan.io"
         }
