@@ -10,7 +10,6 @@ import {
   useRef
 } from 'react';
 
-import { usePublicAccount } from 'contexts/externalAccountContext';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import TxStatus from 'types/TxStatus';
@@ -30,7 +29,6 @@ export const MantaWalletContextProvider = ({
   const { api } = useSubstrate();
   const { NETWORK_NAME: network } = useConfig();
   const { selectedWallet } = useKeyring();
-  const { externalAccount } = usePublicAccount();
 
   const isInitialSync = useRef(false);
   const privateWallet = selectedWallet?.extension?.privateWallet;
@@ -92,7 +90,7 @@ export const MantaWalletContextProvider = ({
     const sendExternal = async () => {
       try {
         const lastTx = txQueue.current.shift();
-        await lastTx.signAndSend(publicAddress);
+        await lastTx.signAndSend(publicAddress, finalTxResHandler.current);
         setTxStatus(TxStatus.processing(null, lastTx.hash.toString()));
       } catch (e) {
         console.error('Error publishing private transaction batch', e);
@@ -105,10 +103,7 @@ export const MantaWalletContextProvider = ({
     const sendInternal = async () => {
       try {
         const internalTx = txQueue.current.shift();
-        await internalTx.signAndSend(
-          externalAccountSigner,
-          handleInternalTxRes
-        );
+        await internalTx.signAndSend(publicAddress, handleInternalTxRes);
       } catch (e) {
         setTxStatus(TxStatus.failed());
         txQueue.current = [];
@@ -138,26 +133,32 @@ export const MantaWalletContextProvider = ({
   };
 
   const toPublic = async (balance, txResHandler) => {
+    const { publicAddress } = await getAddress();
     const signResult = await privateWallet.toPublicBuild({
       assetId: balance.assetType.assetId,
       amount: balance.valueAtomicUnits,
-      polkadotAddress: externalAccount?.meta?.address,
+      polkadotAddress: publicAddress,
       network
     });
     if (signResult === null) {
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
     }
-    const batches = signResult.txs;
+    const batches = [];
+    for (let index = 0; index < signResult.length; index++) {
+      const sign = signResult[index];
+      const tx = api.tx(sign);
+      batches.push(tx);
+    }
     await publishBatchesSequentially(batches, txResHandler);
   };
 
   const privateTransfer = async (balance, receiveZkAddress, txResHandler) => {
-    const { zkAddress } = await getAddress();
+    const { zkAddress, publicAddress } = await getAddress();
     const signResult = await privateWallet.privateTransferBuild({
       assetId: balance.assetType.assetId,
       amount: balance.valueAtomicUnits,
-      polkadotAddress: externalAccount?.meta?.address,
+      polkadotAddress: publicAddress,
       toZkAddress: zkAddress,
       network
     });
@@ -165,22 +166,35 @@ export const MantaWalletContextProvider = ({
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
     }
-    const batches = signResult.txs;
+    const batches = [];
+    for (let index = 0; index < signResult.length; index++) {
+      const sign = signResult[index];
+      const tx = api.tx(sign);
+      batches.push(tx);
+    }
     await publishBatchesSequentially(batches, txResHandler);
   };
 
   const toPrivate = async (balance: Balance, txResHandler) => {
+    const { publicAddress } = await getAddress();
     const signResult = await privateWallet.toPrivateBuild({
       assetId: balance.assetType.assetId,
       amount: balance.valueAtomicUnits,
-      polkadotAddress: externalAccount?.meta?.address,
+      polkadotAddress: publicAddress,
       network
     });
     if (signResult === null) {
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
     }
-    const batches = signResult.txs;
+
+    const batches = [];
+    for (let index = 0; index < signResult.length; index++) {
+      const sign = signResult[index];
+      const tx = api.tx(sign);
+      batches.push(tx);
+    }
+
     await publishBatchesSequentially(batches, txResHandler);
   };
 
@@ -192,7 +206,7 @@ export const MantaWalletContextProvider = ({
       toPublic,
       privateTransfer
     }),
-    [isInitialSync, getSpendableBalance]
+    [isInitialSync, getSpendableBalance, api]
   );
 
   return (
