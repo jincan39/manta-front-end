@@ -1,5 +1,4 @@
-import { ApiPromise } from '@polkadot/api';
-import { KeyringPair } from '@polkadot/keyring/types';
+// @ts-nocheck
 
 import { BN } from 'bn.js';
 import {
@@ -7,28 +6,21 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useRef,
-  useState
+  useRef
 } from 'react';
-import { getSubstrateWallets } from 'utils';
-import {
-  getLastAccessedExternalAccount,
-  setLastAccessedExternalAccountAddress
-} from 'utils/persistence/externalAccountStorage';
 
+import { usePublicAccount } from 'contexts/externalAccountContext';
 import AssetType from 'types/AssetType';
+import Balance from 'types/Balance';
+import TxStatus from 'types/TxStatus';
+import { removePendingTxHistoryEvent } from 'utils/persistence/privateTransactionHistory';
+import { useConfig } from './configContext';
 import { useKeyring } from './keyringContext';
 import { useSubstrate } from './substrateContext';
+import { useTxStatus } from './txStatusContext';
 
-type MantaWalletContext = {
-  extensionSigner: any;
-  externalAccount: KeyringPair | null;
-  externalAccountOptions: KeyringPair[];
-};
-
-const MantaWalletContext = createContext<MantaWalletContext | null>(null);
+const MantaWalletContext = createContext<null>(null);
 
 export const MantaWalletContextProvider = ({
   children
@@ -36,97 +28,17 @@ export const MantaWalletContextProvider = ({
   children: ReactNode;
 }) => {
   const { api } = useSubstrate();
-  const { keyring, isKeyringInit, keyringAddresses, selectedWallet } =
-    useKeyring();
-  const [externalAccount, setExternalAccount] = useState<KeyringPair | null>(
-    null
-  );
-  const [extensionSigner, setExtensionSigner] = useState(null);
-  const [externalAccountOptions, setExternalAccountOptions] = useState<
-    KeyringPair[]
-  >([]);
+  const { NETWORK_NAME: network } = useConfig();
+  const { selectedWallet } = useKeyring();
+  const { externalAccount, extensionSigner } = usePublicAccount();
+
   const isInitialSync = useRef(false);
   const privateWallet = selectedWallet?.extension?.privateWallet;
+  const { setTxStatus } = useTxStatus();
 
-  const setApiSigner = useCallback(
-    (api: ApiPromise | null | undefined) => {
-      if (!externalAccount || !api) {
-        return;
-      }
-      const {
-        meta: { source, isInjected }
-      } = externalAccount;
-      const substrateWallets = getSubstrateWallets();
-      const walletWithExtensionList = substrateWallets.filter(
-        (wallet) => wallet.extension
-      );
-      const extensionNames = walletWithExtensionList.map(
-        (ext) => ext.extensionName
-      );
-      if (isInjected && extensionNames.includes(source as string)) {
-        const selectedWallet = walletWithExtensionList.find(
-          (wallet) => wallet.extensionName === source
-        );
-        // setPrivateWallet(selectedWallet?.extension?.privateWallet);
-
-        setExtensionSigner(selectedWallet?.signer);
-        api.setSigner(selectedWallet?.signer);
-      }
-    },
-    [externalAccount]
-  );
-
-  useEffect(() => {
-    const setSignerOnChangeExternalAccount = async () => {
-      setApiSigner(api);
-    };
-    setSignerOnChangeExternalAccount();
-  }, [api, externalAccount, setApiSigner]);
-
-  // ensure externalAccount is the first item of externalAccountOptions
-  const orderExternalAccountOptions = (
-    selectedAccount: KeyringPair | null,
-    externalAccountOptions: KeyringPair[]
-  ) => {
-    const orderedExternalAccountOptions = [];
-    if (selectedAccount) {
-      orderedExternalAccountOptions.push(selectedAccount);
-    }
-    externalAccountOptions.forEach((account: KeyringPair) => {
-      if (account.address !== selectedAccount?.address) {
-        orderedExternalAccountOptions.push(account);
-      }
-    });
-    return orderedExternalAccountOptions;
-  };
-
-  const changeExternalAccountOptions = useCallback(
-    async (account: KeyringPair | null, newExternalAccounts: KeyringPair[]) => {
-      setExternalAccount(account);
-      setExternalAccountOptions(
-        orderExternalAccountOptions(account, newExternalAccounts)
-      );
-    },
-    []
-  );
-
-  const setStateWhenRemoveActiveExternalAccount = useCallback(
-    (account) => {
-      if (keyringAddresses.length > 0) {
-        // reset state if account(s) exist after disable selected external account
-        const externalAccountOptions = keyring.getPairs() as KeyringPair[];
-        changeExternalAccountOptions(
-          account || externalAccountOptions[0],
-          externalAccountOptions
-        );
-      } else {
-        // reset state if no account exist after disable selected external account
-        changeExternalAccountOptions(null, []);
-        setExternalAccountOptions([]);
-      }
-    },
-    [changeExternalAccountOptions, keyring, keyringAddresses.length]
-  );
+  // transaction state
+  const txQueue = useRef([]);
+  const finalTxResHandler = useRef(null);
 
   const getSpendableBalance = useCallback(
     async (assetType: AssetType) => {
@@ -154,100 +66,130 @@ export const MantaWalletContextProvider = ({
     [privateWallet]
   );
 
-  useEffect(() => {
-    const setInitialExternalAccount = async () => {
-      if (
-        !isInitialSync.current &&
-        isKeyringInit &&
-        keyringAddresses.length > 0
-      ) {
-        const keyringExternalAccountOptions = keyring.getPairs();
-        const {
-          meta: { source }
-        } = keyringExternalAccountOptions[0] || { meta: {} };
-
-        if (keyringExternalAccountOptions.length === 0) {
-          return;
+  const handleInternalTxRes = async ({ status, events }) => {
+    if (status.isInBlock) {
+      for (const event of events) {
+        if (api.events.utility.BatchInterrupted.is(event.event)) {
+          setTxStatus(TxStatus.failed());
+          txQueue.current = [];
+          console.error('Internal transaction failed', event);
         }
-        // The user's default account is either their last accessed polkadot.js account,
-        // or, as a fallback, the first account in their polkadot.js wallet
-        const initialAccount =
-          getLastAccessedExternalAccount(keyring, source as string) ||
-          keyringExternalAccountOptions[0];
-        changeExternalAccountOptions(
-          initialAccount,
-          keyringExternalAccountOptions
+      }
+    } else if (status.isFinalized) {
+      console.log('Internal transaction finalized');
+      await publishNextBatch();
+    }
+  };
+
+  const publishNextBatch = async () => {
+    const sendExternal = async () => {
+      try {
+        const lastTx = txQueue.current.shift();
+        await lastTx.signAndSend(
+          externalAccountSigner,
+          finalTxResHandler.current
         );
-        isInitialSync.current = true;
+        setTxStatus(TxStatus.processing(null, lastTx.hash.toString()));
+      } catch (e) {
+        console.error('Error publishing private transaction batch', e);
+        setTxStatus(TxStatus.failed('Transaction declined'));
+        removePendingTxHistoryEvent();
+        txQueue.current = [];
       }
     };
-    if (!isInitialSync.current) {
-      const interval = setInterval(async () => {
-        setInitialExternalAccount();
-      }, 1000);
-      return () => clearInterval(interval);
-    }
-  }, [
-    changeExternalAccountOptions,
-    isInitialSync,
-    isKeyringInit,
-    keyring,
-    keyringAddresses
-  ]);
 
-  useEffect(() => {
-    const handleKeyringAddressesChange = () => {
-      if (!isInitialSync.current) {
+    const sendInternal = async () => {
+      try {
+        const internalTx = txQueue.current.shift();
+        await internalTx.signAndSend(
+          externalAccountSigner,
+          handleInternalTxRes
+        );
+      } catch (e) {
+        setTxStatus(TxStatus.failed());
+        txQueue.current = [];
+      }
+    };
+
+    if (txQueue.current.length === 0) {
+      return;
+    } else if (txQueue.current.length === 1) {
+      sendExternal();
+    } else {
+      sendInternal();
+    }
+  };
+
+  const publishBatchesSequentially = async (batches, txResHandler) => {
+    txQueue.current = batches;
+    finalTxResHandler.current = txResHandler;
+    try {
+      publishNextBatch();
+      return true;
+    } catch (e) {
+      console.error('Sequential baching failed', e);
+      return false;
+    }
+  };
+
+  const toPublic = useCallback(async (balance, txResHandler) => {
+    const signResult = await privateWallet.toPublicBuild({
+      assetId: balance.assetType.assetId,
+      amount: balance.valueAtomicUnits,
+      polkadotAddress: externalAccount.address,
+      network
+    });
+    if (signResult === null) {
+      setTxStatus(TxStatus.failed('Transaction declined'));
+      return;
+    }
+    const batches = signResult.txs;
+    await publishBatchesSequentially(batches, txResHandler);
+  }, []);
+
+  const privateTransfer = useCallback(
+    async (balance, receiveZkAddress, txResHandler) => {
+      const signResult = await privateWallet.privateTransferBuild({
+        assetId: balance.assetType.assetId,
+        amount: balance.valueAtomicUnits,
+        polkadotAddress: externalAccount?.address,
+        toZkAddress: receiveZkAddress,
+        network
+      });
+      if (signResult === null) {
+        setTxStatus(TxStatus.failed('Transaction declined'));
         return;
       }
-      const accounts = keyring.getPairs() as KeyringPair[];
-      const {
-        meta: { source }
-      } = accounts[0] || { meta: {} };
-      const account: KeyringPair =
-        getLastAccessedExternalAccount(keyring, source as string) ||
-        accounts[0];
-
-      if (!externalAccount) {
-        changeExternalAccountOptions(account, accounts);
-      } else if (!keyring.getAccount(externalAccount.address)) {
-        setStateWhenRemoveActiveExternalAccount(account);
-      } else {
-        setExternalAccountOptions(
-          orderExternalAccountOptions(account, keyring.getPairs() || [])
-        );
-      }
-    };
-    handleKeyringAddressesChange();
-  }, [
-    changeExternalAccountOptions,
-    externalAccount,
-    isInitialSync,
-    keyring,
-    keyringAddresses,
-    setStateWhenRemoveActiveExternalAccount
-  ]);
-
-  const changeExternalAccount = useCallback(
-    async (account: KeyringPair) => {
-      changeExternalAccountOptions(account, externalAccountOptions);
-      setLastAccessedExternalAccountAddress(account);
+      const batches = signResult.txs;
+      await publishBatchesSequentially(batches, txResHandler);
     },
-    [changeExternalAccountOptions, externalAccountOptions]
+    []
   );
+
+  const toPrivate = useCallback(async (balance: Balance, txResHandler) => {
+    const signResult = await privateWallet.toPrivateBuild({
+      assetId: balance.assetType.assetId,
+      amount: balance.valueAtomicUnits,
+      polkadotAddress: externalAccount?.address,
+      network
+    });
+    if (signResult === null) {
+      setTxStatus(TxStatus.failed('Transaction declined'));
+      return;
+    }
+    const batches = signResult.txs;
+    await publishBatchesSequentially(batches, txResHandler);
+  }, []);
 
   const value = useMemo(
     () => ({
       isInitialSync,
-      extensionSigner,
-      externalAccount,
-      externalAccountOptions,
-      getSpendableBalance
+      getSpendableBalance,
+      toPrivate,
+      toPublic,
+      privateTransfer
     }),
-    [
-      isInitialSync,
-      getSpendableBalance
-    ]
+    [isInitialSync, getSpendableBalance, toPrivate, toPublic, privateTransfer]
   );
 
   return (
