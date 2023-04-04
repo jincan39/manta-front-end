@@ -1,25 +1,24 @@
 // @ts-nocheck
+import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import NETWORK from 'constants/NetworkConstants';
-import React from 'react';
-import PropTypes from 'prop-types';
-import initAxios from 'utils/api/initAxios';
 import { ConfigContextProvider, useConfig } from 'contexts/configContext';
 import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
-import { SubstrateContextProvider } from 'contexts/substrateContext';
+import { MantaSignerWalletContextProvider } from 'contexts/mantaSignerWalletContext';
+import { MantaWalletContextProvider } from 'contexts/mantaWalletContext';
 import { MetamaskContextProvider } from 'contexts/metamaskContext';
-import DeveloperConsole from 'components/Developer/DeveloperConsole';
+import { SubstrateContextProvider } from 'contexts/substrateContext';
 import { TxStatusContextProvider, useTxStatus } from 'contexts/txStatusContext';
+import { UsdPricesContextProvider } from 'contexts/usdPricesContext';
+import { ZkAccountBalancesContextProvider } from 'contexts/zkAccountBalancesContext';
+import PropTypes from 'prop-types';
 import { useEffect } from 'react';
+import initAxios from 'utils/api/initAxios';
 import {
   showError,
   showInfo,
   showSuccess,
   showWarning
 } from 'utils/ui/Notifications';
-import { UsdPricesContextProvider } from 'contexts/usdPricesContext';
-import { MantaWalletContextProvider } from 'contexts/mantaWalletContext';
-import { MantaSignerWalletContextProvider } from 'contexts/mantaSignerWalletContext';
-import { ZkAccountBalancesContextProvider } from 'contexts/zkAccountBalancesContext';
 
 const TxStatusHandler = () => {
   const { txStatus, setTxStatus } = useTxStatus();
@@ -50,13 +49,13 @@ const BasePage = ({ children }) => {
   return (
     <TxStatusContextProvider>
       <SubstrateContextProvider>
-        <MantaWalletContextProvider>
-          <ExternalAccountContextProvider>
+        <ExternalAccountContextProvider>
+          <MantaWalletContextProvider>
             <DeveloperConsole />
             <TxStatusHandler />
             {children}
-          </ExternalAccountContextProvider>
-        </MantaWalletContextProvider>
+          </MantaWalletContextProvider>
+        </ExternalAccountContextProvider>
       </SubstrateContextProvider>
     </TxStatusContextProvider>
   );

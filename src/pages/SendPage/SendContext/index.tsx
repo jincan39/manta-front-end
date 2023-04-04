@@ -1,21 +1,21 @@
 // @ts-nocheck
-import NETWORK from 'constants/NetworkConstants';
-import React, { useReducer, useContext, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useSubstrate } from 'contexts/substrateContext';
-import { usePublicAccount } from 'contexts/externalAccountContext';
-import Balance from 'types/Balance';
-import { useGlobal } from 'contexts/globalContexts';
-import { usePrivateWallet } from 'hooks';
-import BN from 'bn.js';
 import { bnToU8a } from '@polkadot/util';
-import { useTxStatus } from 'contexts/txStatusContext';
-import TxStatus from 'types/TxStatus';
-import AssetType from 'types/AssetType';
-import getExtrinsicGivenBlockHash from 'utils/api/getExtrinsicGivenBlockHash';
+import BN from 'bn.js';
+import NETWORK from 'constants/NetworkConstants';
 import { useConfig } from 'contexts/configContext';
-import { updateTxHistoryEventStatus } from 'utils/persistence/privateTransactionHistory';
+import { usePublicAccount } from 'contexts/externalAccountContext';
+import { useGlobal } from 'contexts/globalContexts';
+import { useSubstrate } from 'contexts/substrateContext';
+import { useTxStatus } from 'contexts/txStatusContext';
+import { usePrivateWallet } from 'hooks';
+import PropTypes from 'prop-types';
+import React, { useContext, useEffect, useReducer } from 'react';
+import AssetType from 'types/AssetType';
+import Balance from 'types/Balance';
 import { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
+import TxStatus from 'types/TxStatus';
+import getExtrinsicGivenBlockHash from 'utils/api/getExtrinsicGivenBlockHash';
+import { updateTxHistoryEventStatus } from 'utils/persistence/privateTransactionHistory';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { buildInitState } from './sendReducer';
 
@@ -422,6 +422,7 @@ export const SendContextProvider = (props) => {
 
   // Checks that it is valid to attempt a transaction
   const isValidToSend = () => {
+    if (usingMantaWallet) return true; // TODO
     return (
       (privateWallet.isReady || isPublicTransfer()) &&
       api &&

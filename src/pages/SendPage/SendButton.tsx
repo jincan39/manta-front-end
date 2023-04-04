@@ -138,6 +138,19 @@ const ValidationSendButton = ({ showModal }) => {
     );
   };
 
+  if (usingMantaWallet)
+    return (
+      <>
+        {validationMsg && <ValidationText validationMsg={validationMsg} />}
+        {!validationMsg && (
+          <InnerSendButton
+            senderLoading={senderLoading}
+            receiverLoading={receiverLoading}
+          />
+        )}
+      </>
+    );
+
   return (
     <>
       {shouldShowSignerMissingValidation && (

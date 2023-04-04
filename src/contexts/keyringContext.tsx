@@ -1,7 +1,8 @@
+import { KeyringPair } from '@polkadot/keyring/types';
+import keyring, { Keyring } from '@polkadot/ui-keyring';
 import APP_NAME from 'constants/AppConstants';
 import { SS58 } from 'constants/NetworkConstants';
-import keyring, { Keyring } from '@polkadot/ui-keyring';
-import { getSubstrateWallets } from 'utils';
+import { Wallet } from 'manta-extension-connect';
 import {
   createContext,
   MutableRefObject,
@@ -13,6 +14,7 @@ import {
   useRef,
   useState
 } from 'react';
+import { getSubstrateWallets } from 'utils';
 import {
   getAuthedWalletListStorage,
   setAuthedWalletListStorage
@@ -22,8 +24,6 @@ import {
   getLastAccessedWallet,
   setLastAccessedWallet
 } from 'utils/persistence/walletStorage';
-import { Wallet } from 'manta-extension-connect';
-import { KeyringPair } from '@polkadot/keyring/types';
 
 type KeyringContextValue = {
   keyring: Keyring;

@@ -30,7 +30,7 @@ export const MantaWalletContextProvider = ({
   const { api } = useSubstrate();
   const { NETWORK_NAME: network } = useConfig();
   const { selectedWallet } = useKeyring();
-  const { externalAccount, extensionSigner } = usePublicAccount();
+  const { externalAccount } = usePublicAccount();
 
   const isInitialSync = useRef(false);
   const privateWallet = selectedWallet?.extension?.privateWallet;
@@ -40,15 +40,21 @@ export const MantaWalletContextProvider = ({
   const txQueue = useRef([]);
   const finalTxResHandler = useRef(null);
 
+  const getAddress = async () => {
+    const accounts = await selectedWallet?.getAccounts();
+    if (!accounts || accounts.length <= 0) {
+      return;
+    }
+    const { address: publicAddress, zkAddress } = accounts[0];
+    return { publicAddress, zkAddress };
+  };
+
   const getSpendableBalance = useCallback(
     async (assetType: AssetType) => {
       if (!privateWallet?.getZkBalance) {
         return null;
       }
-
-      // TODO
-      const decimals = '12';
-      const network = 'Calamari';
+      const decimals = '12'; // TODO
       let balanceRaw = '0';
       try {
         balanceRaw = await privateWallet.getZkBalance({
@@ -132,11 +138,11 @@ export const MantaWalletContextProvider = ({
     }
   };
 
-  const toPublic = useCallback(async (balance, txResHandler) => {
+  const toPublic = async (balance, txResHandler) => {
     const signResult = await privateWallet.toPublicBuild({
       assetId: balance.assetType.assetId,
       amount: balance.valueAtomicUnits,
-      polkadotAddress: externalAccount.address,
+      polkadotAddress: externalAccount?.meta?.address,
       network
     });
     if (signResult === null) {
@@ -145,32 +151,30 @@ export const MantaWalletContextProvider = ({
     }
     const batches = signResult.txs;
     await publishBatchesSequentially(batches, txResHandler);
-  }, []);
+  };
 
-  const privateTransfer = useCallback(
-    async (balance, receiveZkAddress, txResHandler) => {
-      const signResult = await privateWallet.privateTransferBuild({
-        assetId: balance.assetType.assetId,
-        amount: balance.valueAtomicUnits,
-        polkadotAddress: externalAccount?.address,
-        toZkAddress: receiveZkAddress,
-        network
-      });
-      if (signResult === null) {
-        setTxStatus(TxStatus.failed('Transaction declined'));
-        return;
-      }
-      const batches = signResult.txs;
-      await publishBatchesSequentially(batches, txResHandler);
-    },
-    []
-  );
+  const privateTransfer = async (balance, receiveZkAddress, txResHandler) => {
+    const { zkAddress } = await getAddress();
+    const signResult = await privateWallet.privateTransferBuild({
+      assetId: balance.assetType.assetId,
+      amount: balance.valueAtomicUnits,
+      polkadotAddress: externalAccount?.meta?.address,
+      toZkAddress: zkAddress,
+      network
+    });
+    if (signResult === null) {
+      setTxStatus(TxStatus.failed('Transaction declined'));
+      return;
+    }
+    const batches = signResult.txs;
+    await publishBatchesSequentially(batches, txResHandler);
+  };
 
-  const toPrivate = useCallback(async (balance: Balance, txResHandler) => {
+  const toPrivate = async (balance: Balance, txResHandler) => {
     const signResult = await privateWallet.toPrivateBuild({
       assetId: balance.assetType.assetId,
       amount: balance.valueAtomicUnits,
-      polkadotAddress: externalAccount?.address,
+      polkadotAddress: externalAccount?.meta?.address,
       network
     });
     if (signResult === null) {
@@ -179,7 +183,7 @@ export const MantaWalletContextProvider = ({
     }
     const batches = signResult.txs;
     await publishBatchesSequentially(batches, txResHandler);
-  }, []);
+  };
 
   const value = useMemo(
     () => ({
@@ -189,7 +193,7 @@ export const MantaWalletContextProvider = ({
       toPublic,
       privateTransfer
     }),
-    [isInitialSync, getSpendableBalance, toPrivate, toPublic, privateTransfer]
+    [isInitialSync, getSpendableBalance]
   );
 
   return (
