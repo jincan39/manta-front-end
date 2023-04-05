@@ -28,7 +28,11 @@ export const SendContextProvider = (props) => {
   const { externalAccount, externalAccountSigner } = usePublicAccount();
   const { usingMantaWallet } = useGlobal();
   const privateWallet = usePrivateWallet(usingMantaWallet);
-  const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
+  const {
+    isReady: privateWalletIsReady,
+    privateAddress,
+    privateWallet: _privateWallet
+  } = privateWallet;
   const [state, dispatch] = useReducer(sendReducer, buildInitState(config));
   const {
     senderAssetType,
@@ -454,6 +458,8 @@ export const SendContextProvider = (props) => {
           handleTxFailure(extrinsic);
         }
       }
+      // TODO currently network can's reponse status.isFinalize, refactor codes below
+      if (usingMantaWallet) _privateWallet.walletSync(); // should sync wallet after tx
     } else if (status.isFinalized) {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {

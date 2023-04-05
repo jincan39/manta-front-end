@@ -4,9 +4,9 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
-  useEffect,
   useState
 } from 'react';
 
@@ -38,8 +38,10 @@ export const MantaWalletContextProvider = ({
   // private wallet
   const [privateWallet, setPrivateWallet] = useState(null);
   const [privateAddress, setPrivateAddress] = useState(null);
-  const [privateWalletIsInitialized, setPrivateWalletIsInitialized] = useState(null);
-  const [privateWalletIsAuthorized, setPrivateWalletIsAuthorized] = useState(null);
+  const [privateWalletIsInitialized, setPrivateWalletIsInitialized] =
+    useState(null);
+  const [privateWalletIsAuthorized, setPrivateWalletIsAuthorized] =
+    useState(null);
   const [privateWalletIsReady, setPrivateWalletIsReady] = useState(null);
   const [privateWalletIsBusy, setPrivateWalletIsBusy] = useState(null);
   const isInitialSync = useRef(false);
@@ -144,7 +146,7 @@ export const MantaWalletContextProvider = ({
       }
     };
 
-    // TODO txQueue should be undefined
+    // TODO txQueue shouldn't be undefined
     if (txQueue?.current?.length === 0) {
       return;
     } else if (txQueue?.current?.length === 1) {
@@ -238,15 +240,16 @@ export const MantaWalletContextProvider = ({
       toPrivate,
       toPublic,
       privateTransfer,
+      privateWallet,
       // sync,
       // signerIsConnected,
       // signerVersion,
-      isInitialSync,
+      isInitialSync
       // setBalancesAreStale,
       // balancesAreStale,
       // balancesAreStaleRef
     }),
-    [isInitialSync, getSpendableBalance, api]
+    [isInitialSync, getSpendableBalance, api, privateWallet]
   );
 
   return (
