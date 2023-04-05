@@ -1,13 +1,13 @@
 // @ts-nocheck
-
-import { BN } from 'bn.js';
 import {
   ReactNode,
   createContext,
   useCallback,
   useContext,
   useMemo,
-  useRef
+  useRef,
+  useEffect,
+  useState
 } from 'react';
 
 import AssetType from 'types/AssetType';
@@ -15,6 +15,7 @@ import Balance from 'types/Balance';
 import TxStatus from 'types/TxStatus';
 import { removePendingTxHistoryEvent } from 'utils/persistence/privateTransactionHistory';
 import { useConfig } from './configContext';
+import { usePublicAccount } from './externalAccountContext';
 import { useKeyring } from './keyringContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
@@ -26,50 +27,82 @@ export const MantaWalletContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const { api } = useSubstrate();
+  // external contexts
   const { NETWORK_NAME: network } = useConfig();
+  const { api } = useSubstrate();
+  const { externalAccount } = usePublicAccount();
+  const publicAddress = externalAccount?.address;
+  const { setTxStatus } = useTxStatus();
   const { selectedWallet } = useKeyring();
 
+  // private wallet
+  const [privateWallet, setPrivateWallet] = useState(null);
+  const [privateAddress, setPrivateAddress] = useState(null);
+  const [privateWalletIsInitialized, setPrivateWalletIsInitialized] = useState(null);
+  const [privateWalletIsAuthorized, setPrivateWalletIsAuthorized] = useState(null);
+  const [privateWalletIsReady, setPrivateWalletIsReady] = useState(null);
+  const [privateWalletIsBusy, setPrivateWalletIsBusy] = useState(null);
   const isInitialSync = useRef(false);
-  const privateWallet = selectedWallet?.extension?.privateWallet;
-  const { setTxStatus } = useTxStatus();
 
   // transaction state
   const txQueue = useRef([]);
   const finalTxResHandler = useRef(null);
+  // todo: not sure if stale state is necessary to track here
+  const [balancesAreStale, _setBalancesAreStale] = useState(false);
+  const balancesAreStaleRef = useRef(false);
 
-  const getAddress = async () => {
-    const accounts = await selectedWallet?.getAccounts();
-    if (!accounts || accounts.length <= 0) {
-      return;
-    }
-    const { address: publicAddress, zkAddress } = accounts[0];
-    return { publicAddress, zkAddress };
+  const setBalancesAreStale = (areBalancesStale) => {
+    balancesAreStaleRef.current = areBalancesStale;
+    _setBalancesAreStale(areBalancesStale);
   };
 
+  useEffect(() => {
+    const getZkAddress = async () => {
+      if (!selectedWallet || !privateWallet) {
+        return;
+      }
+      const accounts = await selectedWallet?.getAccounts();
+      if (!accounts || accounts.length <= 0) {
+        return;
+      }
+      const { zkAddress } = accounts[0];
+      setPrivateAddress(zkAddress);
+      console.log('zkAddress', zkAddress);
+    };
+    getZkAddress();
+  }, [privateWallet, selectedWallet]);
+
+  useEffect(() => {
+    console.log('selectedWallet', selectedWallet);
+    if (selectedWallet?.extension?.privateWallet) {
+      setPrivateWallet(selectedWallet.extension.privateWallet);
+    }
+  }, [selectedWallet]);
+
+  // todo: refresh this on a loop or subscribe or something
   const getSpendableBalance = useCallback(
     async (assetType: AssetType) => {
+      console.log('getSpendableBalance', assetType);
       if (!privateWallet?.getZkBalance) {
         return null;
       }
-      const decimals = '12'; // TODO
-      let balanceRaw = '0';
       try {
-        balanceRaw = await privateWallet.getZkBalance({
+        const balanceRaw = await privateWallet.getZkBalance({
           network,
           assetId: assetType.assetId
         });
+        const res = new Balance(assetType, balanceRaw);
+        console.log('res', res);
+        return res;
       } catch (error) {
-        return new BN(balanceRaw);
+        console.error('error getting zkBalance', error);
+        return null;
       }
-      const pow = new BN(decimals);
-      const balance = new BN(balanceRaw).div(new BN(10).pow(pow));
-
-      return balance;
     },
     [privateWallet]
   );
 
+  // todo: deduplicate logic shared between this and the signer wallet context
   const handleInternalTxRes = async ({ status, events }) => {
     if (status.isInBlock) {
       for (const event of events) {
@@ -85,8 +118,8 @@ export const MantaWalletContextProvider = ({
     }
   };
 
+  // todo: deduplicate logic shared between this and the signer wallet context
   const publishNextBatch = async () => {
-    const { publicAddress } = await getAddress();
     const sendExternal = async () => {
       try {
         const lastTx = txQueue.current.shift();
@@ -100,6 +133,7 @@ export const MantaWalletContextProvider = ({
       }
     };
 
+    // todo: deduplicate logic shared between this and the signer wallet context
     const sendInternal = async () => {
       try {
         const internalTx = txQueue.current.shift();
@@ -120,6 +154,7 @@ export const MantaWalletContextProvider = ({
     }
   };
 
+  // todo: deduplicate logic shared between this and the signer wallet context
   const publishBatchesSequentially = async (batches, txResHandler) => {
     txQueue.current = batches;
     finalTxResHandler.current = txResHandler;
@@ -133,7 +168,6 @@ export const MantaWalletContextProvider = ({
   };
 
   const toPublic = async (balance, txResHandler) => {
-    const { publicAddress } = await getAddress();
     const signResult = await privateWallet.toPublicBuild({
       assetId: balance.assetType.assetId,
       amount: balance.valueAtomicUnits,
@@ -154,12 +188,11 @@ export const MantaWalletContextProvider = ({
   };
 
   const privateTransfer = async (balance, receiveZkAddress, txResHandler) => {
-    const { zkAddress, publicAddress } = await getAddress();
     const signResult = await privateWallet.privateTransferBuild({
       assetId: balance.assetType.assetId,
       amount: balance.valueAtomicUnits,
       polkadotAddress: publicAddress,
-      toZkAddress: zkAddress,
+      toZkAddress: receiveZkAddress,
       network
     });
     if (signResult === null) {
@@ -176,7 +209,6 @@ export const MantaWalletContextProvider = ({
   };
 
   const toPrivate = async (balance: Balance, txResHandler) => {
-    const { publicAddress } = await getAddress();
     const signResult = await privateWallet.toPrivateBuild({
       assetId: balance.assetType.assetId,
       amount: balance.valueAtomicUnits,
@@ -200,11 +232,19 @@ export const MantaWalletContextProvider = ({
 
   const value = useMemo(
     () => ({
-      isInitialSync,
+      // isReady,
+      // privateAddress,
       getSpendableBalance,
       toPrivate,
       toPublic,
-      privateTransfer
+      privateTransfer,
+      // sync,
+      // signerIsConnected,
+      // signerVersion,
+      isInitialSync,
+      // setBalancesAreStale,
+      // balancesAreStale,
+      // balancesAreStaleRef
     }),
     [isInitialSync, getSpendableBalance, api]
   );

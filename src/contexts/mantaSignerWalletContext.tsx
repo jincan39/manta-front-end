@@ -121,7 +121,6 @@ export const MantaSignerWalletContextProvider = (props) => {
         setDisconnectedState();
       }
     } catch (err) {
-      console.error(err);
       setDisconnectedState();
     }
   };
