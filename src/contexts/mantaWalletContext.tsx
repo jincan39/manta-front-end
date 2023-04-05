@@ -246,7 +246,7 @@ export const MantaWalletContextProvider = ({
       // balancesAreStale,
       // balancesAreStaleRef
     }),
-    [isInitialSync, getSpendableBalance, api, privateWallet]
+    [isInitialSync, getSpendableBalance, api, privateWallet, externalAccount]
   );
 
   return (
