@@ -37,26 +37,24 @@ export const MantaWalletContextProvider = ({
 
   // private wallet
   const [privateWallet, setPrivateWallet] = useState(null);
+  const signerIsConnected = !!privateWallet;
   const [privateAddress, setPrivateAddress] = useState(null);
-  const [privateWalletIsInitialized, setPrivateWalletIsInitialized] =
-    useState(null);
-  const [privateWalletIsAuthorized, setPrivateWalletIsAuthorized] =
-    useState(null);
-  const [privateWalletIsReady, setPrivateWalletIsReady] = useState(null);
-  const [privateWalletIsBusy, setPrivateWalletIsBusy] = useState(null);
-  const isInitialSync = useRef(false);
+  const [isReady, setIsReady] = useState(null);
 
   // transaction state
   const txQueue = useRef([]);
   const finalTxResHandler = useRef(null);
-  // todo: not sure if stale state is necessary to track here
-  const [balancesAreStale, _setBalancesAreStale] = useState(false);
-  const balancesAreStaleRef = useRef(false);
 
-  const setBalancesAreStale = (areBalancesStale) => {
-    balancesAreStaleRef.current = areBalancesStale;
-    _setBalancesAreStale(areBalancesStale);
-  };
+  useEffect(() => {
+    let unsub;
+    if (privateWallet) {
+      unsub = privateWallet.subscribeWalletState((state) => {
+        const { isWalletReady } = state;
+        setIsReady(isWalletReady);
+      });
+    }
+    return unsub && unsub();
+  }, [privateWallet]);
 
   useEffect(() => {
     const getZkAddress = async () => {
@@ -231,22 +229,28 @@ export const MantaWalletContextProvider = ({
 
   const value = useMemo(
     () => ({
-      // isReady,
-      // privateAddress,
+      isReady,
+      privateAddress,
       getSpendableBalance,
       toPrivate,
       toPublic,
       privateTransfer,
       privateWallet,
-      // sync,
-      // signerIsConnected,
-      // signerVersion,
-      isInitialSync
-      // setBalancesAreStale,
-      // balancesAreStale,
-      // balancesAreStaleRef
+      sync: privateWallet?.walletSync,
+      isInitialSync,
+      signerIsConnected
     }),
-    [isInitialSync, getSpendableBalance, api, privateWallet]
+    [
+      isReady,
+      privateAddress,
+      getSpendableBalance,
+      toPrivate,
+      toPublic,
+      privateTransfer,
+      privateWallet,
+      isInitialSync,
+      signerIsConnected
+    ]
   );
 
   return (

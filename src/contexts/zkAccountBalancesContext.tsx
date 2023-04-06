@@ -1,11 +1,9 @@
 //@ts-nocheck
 import BN from 'bn.js';
 import { useGlobal } from 'contexts/globalContexts';
-import { useTxStatus } from 'contexts/txStatusContext';
 import { useUsdPrices } from 'contexts/usdPricesContext';
 import Decimal from 'decimal.js';
 import { usePrivateWallet } from 'hooks';
-import { useSend } from 'pages/SendPage/SendContext';
 import PropTypes from 'prop-types';
 import { createContext, useContext, useEffect, useState } from 'react';
 import AssetType from 'types/AssetType';
@@ -24,16 +22,9 @@ export type ZkAccountBalance = {
 
 export const ZkAccountBalancesContextProvider = (props) => {
   const config = useConfig();
-  const { txStatus } = useTxStatus();
   const { usingMantaWallet } = useGlobal();
-  const { privateAddress, getSpendableBalance, isReady, balancesAreStale } =
+  const { privateAddress, getSpendableBalance, isReady } =
     usePrivateWallet(usingMantaWallet);
-  const {
-    senderAssetCurrentBalance,
-    senderAssetType,
-    receiverAssetType,
-    receiverCurrentBalance
-  } = useSend();
   const { usdPrices } = useUsdPrices();
 
   const assets = AssetType.AllCurrencies(config, true);
