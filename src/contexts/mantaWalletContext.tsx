@@ -77,7 +77,6 @@ export const MantaWalletContextProvider = ({
     }
   }, [selectedWallet]);
 
-  // todo: refresh this on a loop or subscribe or something
   const getSpendableBalance = useCallback(
     async (assetType: AssetType) => {
       if (!privateWallet?.getZkBalance) {
@@ -89,7 +88,6 @@ export const MantaWalletContextProvider = ({
           assetId: assetType.assetId
         });
         const res = new Balance(assetType, new BN(balanceRaw));
-        console.log('res', res);
         return res;
       } catch (error) {
         console.error('error getting zkBalance', error);
