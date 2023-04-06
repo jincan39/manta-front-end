@@ -241,6 +241,8 @@ export const MantaWalletContextProvider = ({
       signerIsConnected
     }),
     [
+      api,
+      externalAccount,
       isReady,
       privateAddress,
       getSpendableBalance,
