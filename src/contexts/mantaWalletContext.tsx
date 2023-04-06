@@ -9,7 +9,7 @@ import {
   useRef,
   useState
 } from 'react';
-
+import { BN } from 'bn.js';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import TxStatus from 'types/TxStatus';
@@ -69,13 +69,11 @@ export const MantaWalletContextProvider = ({
       }
       const { zkAddress } = accounts[0];
       setPrivateAddress(zkAddress);
-      console.log('zkAddress', zkAddress);
     };
     getZkAddress();
   }, [privateWallet, selectedWallet]);
 
   useEffect(() => {
-    console.log('selectedWallet', selectedWallet);
     if (selectedWallet?.extension?.privateWallet) {
       setPrivateWallet(selectedWallet.extension.privateWallet);
     }
@@ -84,7 +82,6 @@ export const MantaWalletContextProvider = ({
   // todo: refresh this on a loop or subscribe or something
   const getSpendableBalance = useCallback(
     async (assetType: AssetType) => {
-      console.log('getSpendableBalance', assetType);
       if (!privateWallet?.getZkBalance) {
         return null;
       }
@@ -93,7 +90,7 @@ export const MantaWalletContextProvider = ({
           network,
           assetId: assetType.assetId
         });
-        const res = new Balance(assetType, balanceRaw);
+        const res = new Balance(assetType, new BN(balanceRaw));
         console.log('res', res);
         return res;
       } catch (error) {
@@ -172,7 +169,7 @@ export const MantaWalletContextProvider = ({
   const toPublic = async (balance, txResHandler) => {
     const signResult = await privateWallet.toPublicBuild({
       assetId: balance.assetType.assetId,
-      amount: balance.valueAtomicUnits,
+      amount: balance.valueAtomicUnits.toString(),
       polkadotAddress: publicAddress,
       network
     });
@@ -192,7 +189,7 @@ export const MantaWalletContextProvider = ({
   const privateTransfer = async (balance, receiveZkAddress, txResHandler) => {
     const signResult = await privateWallet.privateTransferBuild({
       assetId: balance.assetType.assetId,
-      amount: balance.valueAtomicUnits,
+      amount: balance.valueAtomicUnits.toString(),
       polkadotAddress: publicAddress,
       toZkAddress: receiveZkAddress,
       network
@@ -213,7 +210,7 @@ export const MantaWalletContextProvider = ({
   const toPrivate = async (balance: Balance, txResHandler) => {
     const signResult = await privateWallet.toPrivateBuild({
       assetId: balance.assetType.assetId,
-      amount: balance.valueAtomicUnits,
+      amount: balance.valueAtomicUnits.toString(),
       polkadotAddress: publicAddress,
       network
     });
