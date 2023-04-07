@@ -51,7 +51,7 @@ export const KeyringContextProvider = ({
 }) => {
   const [isKeyringInit, setIsKeyringInit] = useState(false);
   const [keyringAddresses, setKeyringAddresses] = useState<string[]>([]);
-  const [isTalismanExtConfigured, setIsTalismanExtConfigured] = useState<boolean[]>(true);
+  const [isTalismanExtConfigured, setIsTalismanExtConfigured] = useState<boolean>(true);
   const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState<string[]>(
     []
   );

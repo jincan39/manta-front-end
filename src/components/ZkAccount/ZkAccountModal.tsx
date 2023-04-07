@@ -50,11 +50,9 @@ const TableContentSelector = ({
 
 const ZkAddressDisplay = () => {
   const { privateAddress } = usePrivateWallet();
-  const privateAddressDisplayString = `zkAddress ${getAbbreviatedName(
-    privateAddress,
-    5,
-    4
-  )}`;
+  const privateAddressDisplayString = privateAddress ?
+    `zkAddress ${getAbbreviatedName(privateAddress, 5, 4)}`
+    : '';
   return (
     <div className="flex justify-between">
       <div className="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg p-2 flex items-center gap-2">
@@ -63,7 +61,7 @@ const ZkAddressDisplay = () => {
           {privateAddressDisplayString}
         </span>
       </div>
-      <CopyPasteIcon btnClassName="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg relative p-2.5 w-10.5 text-0" iconClassName="w-5 h-5" textToCopy={privateAddress} />
+      <CopyPasteIcon btnClassName="border border-white border-opacity-20 bg-white bg-opacity-5 rounded-lg relative p-2.5 w-10.5 text-0" iconClassName="w-5 h-5" textToCopy={privateAddress || ''} />
     </div>
   );
 };

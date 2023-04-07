@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { useMantaSignerWallet } from 'contexts/mantaSignerWalletContext';
 import { useMantaWallet } from 'contexts/mantaWalletContext';
 import Version from 'types/Version';
@@ -45,7 +45,11 @@ type PrivateWalletContextValue = {
 
 const PrivateWalletContext = createContext<PrivateWalletContextValue | null>(null);
 
-export const PrivateWalletContextProvider = ({children}) => {
+export const PrivateWalletContextProvider = ({
+  children
+}: {
+  children: ReactNode;
+}) => {
   const { usingMantaWallet } = useGlobal();
   const value = usingMantaWallet ?
     {...dummyMantaSignerExclusiveProperties, ...useMantaWallet()}
