@@ -39,7 +39,6 @@ const TxStatusHandler = () => {
       setTxStatus(null);
     }
   }, [txStatus]);
-
   return null;
 };
 
@@ -52,13 +51,9 @@ const BasePage = ({ children }) => {
     <TxStatusContextProvider>
       <SubstrateContextProvider>
         <PublicAccountContextProvider>
-          <MantaWalletContextProvider>
-            <PrivateWalletContextProvider>
-              <DeveloperConsole />
-              <TxStatusHandler />
-              {children}
-            </PrivateWalletContextProvider>
-          </MantaWalletContextProvider>
+          <DeveloperConsole />
+          <TxStatusHandler />
+          {children}
         </PublicAccountContextProvider>
       </SubstrateContextProvider>
     </TxStatusContextProvider>
@@ -76,9 +71,13 @@ export const CalamariBasePage = ({ children }) => {
         <UsdPricesContextProvider>
           <MetamaskContextProvider>
             <MantaSignerWalletContextProvider>
-              <ZkAccountBalancesContextProvider>
-                {children}
-              </ZkAccountBalancesContextProvider>
+              <MantaWalletContextProvider>
+                <PrivateWalletContextProvider>
+                  <ZkAccountBalancesContextProvider>
+                    {children}
+                  </ZkAccountBalancesContextProvider>
+                </PrivateWalletContextProvider>
+              </MantaWalletContextProvider>
             </MantaSignerWalletContextProvider>
           </MetamaskContextProvider>
         </UsdPricesContextProvider>
@@ -98,9 +97,13 @@ export const DolphinBasePage = ({ children }) => {
         <UsdPricesContextProvider>
           <MetamaskContextProvider>
             <MantaSignerWalletContextProvider>
-              <ZkAccountBalancesContextProvider>
-                {children}
-              </ZkAccountBalancesContextProvider>
+              <MantaWalletContextProvider>
+                <PrivateWalletContextProvider>
+                  <ZkAccountBalancesContextProvider>
+                    {children}
+                  </ZkAccountBalancesContextProvider>
+                </PrivateWalletContextProvider>
+              </MantaWalletContextProvider>
             </MantaSignerWalletContextProvider>
           </MetamaskContextProvider>
         </UsdPricesContextProvider>

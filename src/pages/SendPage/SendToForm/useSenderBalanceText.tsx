@@ -10,8 +10,6 @@ const useSenderBalanceText = () => {
   const { externalAccount } = usePublicAccount();
   const { privateAddress, isInitialSync } = usePrivateWallet();
 
-  console.log('debug',  usePrivateWallet(), privateAddress, isInitialSync);
-
   const apiIsDisconnected =
     apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
 
