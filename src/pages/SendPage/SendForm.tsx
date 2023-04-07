@@ -33,9 +33,7 @@ const SendForm = () => {
   }, [keyring]);
 
   const toggleUsingMantaWalletState = () => {
-    // toggle global status
-    const newState = !usingMantaWallet;
-    setUsingMantaWallet(newState);
+    setUsingMantaWallet(!usingMantaWallet);
   };
 
   const onClickSwapSenderReceiver = () => {
@@ -52,6 +50,8 @@ const SendForm = () => {
   } else if (userIsMobile()) {
     warningModal = <MobileNotSupportedModal />;
   }
+
+  const toggleWalletStateText = usingMantaWallet ? 'Manta Signer user? And still want to use it?' : 'Manta Wallet is live! Try MantaPay with Manta Wallet';
 
   return (
     <div>
@@ -75,12 +75,10 @@ const SendForm = () => {
         </div>
         <div className="flex flex-col items-center">
           <button onClick={toggleUsingMantaWalletState} className="px-6 rounded-3xl border border-solid border-white h-9 flex items-center cursor-hover text-white text-sm cursor-pointer">
-            {
-              usingMantaWallet ? <span>Manta Signer user? And still want to use it? </span> : <span>Manta Wallet is live! Try MantaPay with Manta Wallet</span>
-            }
+            <span>{ toggleWalletStateText }</span>
             <Icon className="w-4 h-4 ml-2 cursor-pointer" name="activityRightArrow" />
           </button>
-          <a className="mt-6 flex items-center mb-6 text-white hover:text-white" 
+          <a className="mt-6 flex items-center mb-6 text-white hover:text-white"
             href="https://forum.manta.network/" // TODO: replace the url
             target="_blank"
             rel="noopener noreferrer">
