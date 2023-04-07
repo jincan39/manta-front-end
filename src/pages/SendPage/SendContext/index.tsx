@@ -4,10 +4,9 @@ import { bnToU8a } from '@polkadot/util';
 import BN from 'bn.js';
 import { useConfig } from 'contexts/configContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
-import { useGlobal } from 'contexts/globalContexts';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { usePrivateWallet } from 'hooks';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useReducer } from 'react';
 import AssetType from 'types/AssetType';
@@ -26,8 +25,7 @@ export const SendContextProvider = (props) => {
   const { api } = useSubstrate();
   const { setTxStatus, txStatus, txStatusRef } = useTxStatus();
   const { externalAccount, externalAccountSigner } = usePublicAccount();
-  const { usingMantaWallet } = useGlobal();
-  const privateWallet = usePrivateWallet(usingMantaWallet);
+  const privateWallet = usePrivateWallet();
   const {
     isReady: privateWalletIsReady,
     privateAddress,
@@ -93,7 +91,7 @@ export const SendContextProvider = (props) => {
    */
 
   // Synchronizes the user's current 'active' public account in local state
-  // to macth its upstream source of truth in `externalAccountContext`
+  // to macth its upstream source of truth in `publicAccountContext`
   // The active `senderPublicAccount` receivs `toPublic` payments,
   // send `toPrivate` and `publicTransfer` payments, and covers fees for all payments
   useEffect(() => {

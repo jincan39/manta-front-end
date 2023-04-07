@@ -1,6 +1,5 @@
-import { useGlobal } from 'contexts/globalContexts';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
-import { usePrivateWallet } from 'hooks';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import getZkTransactBalanceText from 'utils/display/getZkTransactBalanceText';
 import { useSend } from '../SendContext';
 
@@ -12,8 +11,7 @@ const useReceiverBalanceText = () => {
     isToPrivate,
     isToPublic
   } = useSend();
-  const { usingMantaWallet } = useGlobal();
-  const { isInitialSync } = usePrivateWallet(usingMantaWallet);
+  const { isInitialSync } = usePrivateWallet();
   const { apiState } = useSubstrate();
 
   const apiIsDisconnected =

@@ -1,8 +1,7 @@
 import { AxiosError, AxiosResponse, default as axios } from 'axios';
 import { useConfig } from 'contexts/configContext';
-import { useGlobal } from 'contexts/globalContexts';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { usePrivateWallet } from 'hooks';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { ReactNode, createContext, useContext, useEffect } from 'react';
 import TxHistoryEvent, {
   HISTORY_EVENT_STATUS,
@@ -33,8 +32,7 @@ export const PrivateTxHistoryContextProvider = (
 ) => {
   const config = useConfig();
   const { txStatus, txStatusRef } = useTxStatus();
-  const { usingMantaWallet } = useGlobal();
-  const { privateAddress } = usePrivateWallet(usingMantaWallet);
+  const { privateAddress } = usePrivateWallet();
   const {
     isToPublic,
     isToPrivate,

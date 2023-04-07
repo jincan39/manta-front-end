@@ -11,9 +11,9 @@ import {
 import { useKeyring } from './keyringContext';
 import { useSubstrate } from './substrateContext';
 
-const ExternalAccountContext = createContext();
+const PublicAccountContext = createContext();
 
-export const ExternalAccountContextProvider = (props) => {
+export const PublicAccountContextProvider = (props) => {
   const { api } = useSubstrate();
   const { keyring, isKeyringInit, keyringAddresses } = useKeyring();
   const externalAccountRef = useRef(null);
@@ -168,16 +168,16 @@ export const ExternalAccountContextProvider = (props) => {
   };
 
   return (
-    <ExternalAccountContext.Provider value={value}>
+    <PublicAccountContext.Provider value={value}>
       {props.children}
-    </ExternalAccountContext.Provider>
+    </PublicAccountContext.Provider>
   );
 };
 
-ExternalAccountContextProvider.propTypes = {
+PublicAccountContext.propTypes = {
   children: PropTypes.any
 };
 
 export const usePublicAccount = () => ({
-  ...useContext(ExternalAccountContext)
+  ...useContext(PublicAccountContext)
 });

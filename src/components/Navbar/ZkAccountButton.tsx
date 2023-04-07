@@ -2,8 +2,7 @@
 import React, { useState } from 'react';
 import { useConfig } from 'contexts/configContext';
 import OutsideClickHandler from 'react-outside-click-handler';
-import { usePrivateWallet } from 'hooks';
-import { useGlobal } from 'contexts/globalContexts';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useModal } from 'hooks';
 import ConnectSignerModal from 'components/Modal/connectSigner';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -101,8 +100,7 @@ export const ZkAccountConnect = ({ className = '' }) => {
 };
 
 const ZkAccountButton = () => {
-  const { usingMantaWallet } = useGlobal();
-  const { privateAddress, signerVersion } = usePrivateWallet(usingMantaWallet);
+  const { privateAddress, signerVersion } = usePrivateWallet();
   const config = useConfig();
 
   if (privateAddress) {

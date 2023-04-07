@@ -2,7 +2,7 @@
 import NETWORK from 'constants/NetworkConstants';
 import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import { ConfigContextProvider, useConfig } from 'contexts/configContext';
-import { ExternalAccountContextProvider } from 'contexts/publicAccountContext';
+import { PublicAccountContextProvider } from 'contexts/publicAccountContext';
 import { MantaSignerWalletContextProvider } from 'contexts/mantaSignerWalletContext';
 import { MantaWalletContextProvider } from 'contexts/mantaWalletContext';
 import { MetamaskContextProvider } from 'contexts/metamaskContext';
@@ -10,6 +10,8 @@ import { SubstrateContextProvider } from 'contexts/substrateContext';
 import { TxStatusContextProvider, useTxStatus } from 'contexts/txStatusContext';
 import { UsdPricesContextProvider } from 'contexts/usdPricesContext';
 import { ZkAccountBalancesContextProvider } from 'contexts/zkAccountBalancesContext';
+import { PrivateWalletContextProvider } from 'contexts/privateWalletContext';
+
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import initAxios from 'utils/api/initAxios';
@@ -38,7 +40,7 @@ const TxStatusHandler = () => {
     }
   }, [txStatus]);
 
-  return <div />;
+  return null;
 };
 
 const BasePage = ({ children }) => {
@@ -49,13 +51,15 @@ const BasePage = ({ children }) => {
   return (
     <TxStatusContextProvider>
       <SubstrateContextProvider>
-        <ExternalAccountContextProvider>
+        <PublicAccountContextProvider>
           <MantaWalletContextProvider>
-            <DeveloperConsole />
-            <TxStatusHandler />
-            {children}
+            <PrivateWalletContextProvider>
+              <DeveloperConsole />
+              <TxStatusHandler />
+              {children}
+            </PrivateWalletContextProvider>
           </MantaWalletContextProvider>
-        </ExternalAccountContextProvider>
+        </PublicAccountContextProvider>
       </SubstrateContextProvider>
     </TxStatusContextProvider>
   );

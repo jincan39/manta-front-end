@@ -1,12 +1,8 @@
-import React from 'react';
+import React, { createContext, useContext } from 'react';
 import { useMantaSignerWallet } from 'contexts/mantaSignerWalletContext';
 import { useMantaWallet } from 'contexts/mantaWalletContext';
 import Version from 'types/Version';
-
-export enum WalletModeEnum {
-  manta = 'manta',
-  signer = 'signer'
-}
+import { useGlobal } from './globalContexts';
 
 export type MantaWalletExclusiveProperties = {
   mantaWalletVersion: Version | null;
@@ -30,11 +26,27 @@ const dummyMantaSignerExclusiveProperties: MantaSignerExclusiveProperties = {
   signerVersion: null
 };
 
-export type WalletModeType = keyof typeof WalletModeEnum | boolean;
+const PrivateWalletContext = createContext();
 
-export const usePrivateWallet = (mode?: WalletModeType) => {
-  const isManta = mode === true || mode === WalletModeEnum.manta;
-  return isManta ?
+export const PrivateWalletContextProvider = ({children}) => {
+  const { usingMantaWallet } = useGlobal();
+  const value = usingMantaWallet ?
     {...dummyMantaSignerExclusiveProperties, ...useMantaWallet()}
     : {...dummyMantaWalletExclusiveProperties, ...useMantaSignerWallet()};
+
+  return (
+    <PrivateWalletContext.Provider value={value}>
+      {children}
+    </PrivateWalletContext.Provider>
+  );
+};
+
+export const usePrivateWallet = () => {
+  const data = useContext(PrivateWalletContext);
+  if (!data || !Object.keys(data)?.length) {
+    throw new Error(
+      'usePrivateWallet can only be used inside of <PrivateWalletContext />, please declare it at a higher level.'
+    );
+  }
+  return data;
 };

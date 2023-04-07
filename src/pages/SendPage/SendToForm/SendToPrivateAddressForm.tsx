@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useGlobal } from 'contexts/globalContexts';
-import { usePrivateWallet } from 'hooks';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import SendToAddressForm from './SendToAddressForm';
 
 const INTERNAL_ACCOUNT_LABEL = 'Private';
@@ -13,8 +13,7 @@ const toReactSelectOption = (address) => {
 };
 
 const SendToPrivateAddressForm = () => {
-  const { usingMantaWallet } = useGlobal();
-  const { privateAddress } = usePrivateWallet(usingMantaWallet);
+  const { privateAddress } = usePrivateWallet();
   const options = privateAddress ? [privateAddress] : [];
 
   return (

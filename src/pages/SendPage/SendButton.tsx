@@ -8,7 +8,7 @@ import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useGlobal } from 'contexts/globalContexts';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { usePrivateWallet } from 'hooks';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import Balance from 'types/Balance';
 import versionIsOutOfDate from 'utils/validation/versionIsOutOfDate';
 import { useSend } from './SendContext';

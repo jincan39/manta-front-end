@@ -235,7 +235,7 @@ export const MantaWalletContextProvider = ({
       privateTransfer,
       privateWallet,
       sync: privateWallet?.walletSync,
-      isInitialSync: false, // todo: implement
+      isInitialSync: { current: false }, // todo: implement
       signerIsConnected
     }),
     [

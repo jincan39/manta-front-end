@@ -1,16 +1,13 @@
-import { useGlobal } from 'contexts/globalContexts';
 import {
   useZkAccountBalances,
   ZkAccountBalance
 } from 'contexts/zkAccountBalancesContext';
-import { usePrivateWallet } from 'hooks';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import PrivateAssetItem from './PrivateAssetItem';
 
 const PrivateAssetTableContent = () => {
   const { balances } = useZkAccountBalances();
-  const { usingMantaWallet } = useGlobal();
-  const { balancesAreStaleRef, isInitialSync } =
-    usePrivateWallet(usingMantaWallet);
+  const { balancesAreStaleRef, isInitialSync } = usePrivateWallet();
   if (balances?.length) {
     return (
       <div className="divide-y divide-dashed divide-manta-gray-secondary">
