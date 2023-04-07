@@ -300,7 +300,6 @@ export const MantaSignerWalletContextProvider = (props) => {
     toPrivate,
     toPublic,
     privateTransfer,
-    sync,
     signerIsConnected,
     signerVersion,
     isInitialSync,

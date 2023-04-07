@@ -32,7 +32,7 @@ export const MantaWalletContextProvider = ({
   const { api } = useSubstrate();
   const { externalAccount } = usePublicAccount();
   const publicAddress = externalAccount?.address;
-  const { setTxStatus } = useTxStatus();
+  const { setTxStatus, txStatusRef } = useTxStatus();
   const { selectedWallet } = useKeyring();
 
   // private wallet
@@ -96,6 +96,19 @@ export const MantaWalletContextProvider = ({
     },
     [privateWallet]
   );
+
+  const sync = async () => {
+    await privateWallet.walletSync();
+  };
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (isReady) {
+        sync();
+      }
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [isReady]);
 
   // todo: deduplicate logic shared between this and the signer wallet context
   const handleInternalTxRes = async ({ status, events }) => {
@@ -234,7 +247,7 @@ export const MantaWalletContextProvider = ({
       toPublic,
       privateTransfer,
       privateWallet,
-      sync: privateWallet?.walletSync,
+      sync,
       isInitialSync: { current: false }, // todo: implement
       signerIsConnected
     }),

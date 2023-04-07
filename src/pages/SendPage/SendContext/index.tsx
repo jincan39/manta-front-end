@@ -456,7 +456,6 @@ export const SendContextProvider = (props) => {
         }
       }
       // TODO currently network can's reponse status.isFinalize, refactor codes below
-      if (usingMantaWallet) privateWallet.sync(); // should sync wallet after tx
     } else if (status.isFinalized) {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {

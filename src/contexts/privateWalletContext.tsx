@@ -36,7 +36,6 @@ type PrivateWalletContextValue = {
   toPrivate: (_: Balance, __: any) => Promise<void>;
   toPublic:  (_: Balance, __: any) => Promise<void>;
   privateTransfer:  (_: Balance, __: any) => Promise<void>;
-  sync: () => Promise<void>;
   signerIsConnected: boolean | null,
   isInitialSync: React.MutableRefObject<boolean>,
   setBalancesAreStale: (_: boolean) => void,

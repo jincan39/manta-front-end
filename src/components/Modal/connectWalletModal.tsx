@@ -149,13 +149,8 @@ const MetamaskConnectWalletBlock = ({hideModal}) => {
 
 const MantaConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
   // TODO
-<<<<<<< HEAD
-  // get manta wallet meta data
-  // { extensionName, installed, installUrl, logo, isWalletEnabled }
-=======
   // get manta wallet meta data from logical aspect
   // { installed, installUrl, isWalletEnabled }
->>>>>>> origin/staging-v6.0.0
 
   const handleConnectWallet = (walletName) => async () => {
     connectWalletExtension(walletName);
@@ -184,11 +179,7 @@ const MantaConnectWalletBlock = ({ setIsMetamaskSelected, hideModal }) => {
       />
       <div className="mt-4 text-sm">
         <div>Manta Signer user? </div>
-<<<<<<< HEAD
-        <a className="flex items-center mb-6 text-white hover:text-white" 
-=======
-        <a className="flex items-center text-white hover:text-white" 
->>>>>>> origin/staging-v6.0.0
+        <a className="flex items-center text-white hover:text-white"
           href="https://forum.manta.network/" // TODO: replace the url
           target="_blank"
           rel="noopener noreferrer">
@@ -237,7 +228,7 @@ const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {
     return (
       <div className="w-108">
         <h1 className="text-xl text-white">Connect Wallet</h1>
-        <MantaConnectWalletBlock 
+        <MantaConnectWalletBlock
           setIsMetamaskSelected={setIsMetamaskSelected}
           hideModal={hideModal}
         />
