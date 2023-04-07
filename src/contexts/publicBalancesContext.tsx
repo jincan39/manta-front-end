@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import { BN } from 'bn.js';
 import Balance from 'types/Balance';
 import AssetType from 'types/AssetType';
-import { usePublicAccount } from './externalAccountContext';
+import { usePublicAccount } from './publicAccountContext';
 import { useSubstrate } from './substrateContext';
 
 interface IPublicBalances {

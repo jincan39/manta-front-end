@@ -11,12 +11,12 @@ import { BN } from 'bn.js';
 import Balance from 'types/Balance';
 import Version from 'types/Version';
 import TxStatus from 'types/TxStatus';
-import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
+import versionIsOutOfDate from 'utils/validation/versionIsOutOfDate';
 import { MantaPrivateWallet, MantaUtilities, Environment } from 'manta.js';
 import {
   removePendingTxHistoryEvent,
 } from 'utils/persistence/privateTransactionHistory';
-import { usePublicAccount } from './externalAccountContext';
+import { usePublicAccount } from './publicAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 import { useConfig } from './configContext';
@@ -81,7 +81,7 @@ export const MantaSignerWalletContextProvider = (props) => {
         walletNetworkIsActive.current &&
         signerIsConnected &&
         signerVersion &&
-        !signerIsOutOfDate(config, signerVersion) &&
+        !versionIsOutOfDate(config.MIN_REQUIRED_SIGNER_VERSION, signerVersion) &&
         !isInitialSync.current
       );
     };

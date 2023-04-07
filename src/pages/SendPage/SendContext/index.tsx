@@ -1,9 +1,9 @@
 // @ts-nocheck
+import NETWORK from 'constants/NetworkConstants';
 import { bnToU8a } from '@polkadot/util';
 import BN from 'bn.js';
-import NETWORK from 'constants/NetworkConstants';
 import { useConfig } from 'contexts/configContext';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useGlobal } from 'contexts/globalContexts';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
@@ -31,7 +31,6 @@ export const SendContextProvider = (props) => {
   const {
     isReady: privateWalletIsReady,
     privateAddress,
-    privateWallet: _privateWallet
   } = privateWallet;
   const [state, dispatch] = useReducer(sendReducer, buildInitState(config));
   const {
@@ -459,7 +458,7 @@ export const SendContextProvider = (props) => {
         }
       }
       // TODO currently network can's reponse status.isFinalize, refactor codes below
-      if (usingMantaWallet) _privateWallet.walletSync(); // should sync wallet after tx
+      if (usingMantaWallet) privateWallet.sync(); // should sync wallet after tx
     } else if (status.isFinalized) {
       for (const event of events) {
         if (api.events.utility.BatchInterrupted.is(event.event)) {

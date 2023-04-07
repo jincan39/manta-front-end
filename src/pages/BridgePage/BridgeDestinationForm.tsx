@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { ethers } from 'ethers';
 import { useMetamask } from 'contexts/metamaskContext';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import { validatePublicAddress } from 'utils/validation/validateAddress';
 import { useKeyring } from 'contexts/keyringContext';
 import Icon from 'components/Icon';

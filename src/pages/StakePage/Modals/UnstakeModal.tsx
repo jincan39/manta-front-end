@@ -8,7 +8,7 @@ import Decimal from 'decimal.js';
 import BN from 'bn.js';
 import ErrorText from 'components/Error/ErrorText';
 import WarningText from 'components/Error/WarningText';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useConfig } from 'contexts/configContext';
 import Icon from 'components/Icon';

@@ -1,4 +1,4 @@
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useGlobal } from 'contexts/globalContexts';
 import { usePrivateWallet } from 'hooks';
 import ZkTransactConnectSignerModal from './ZkTransactConnectSignerModal';

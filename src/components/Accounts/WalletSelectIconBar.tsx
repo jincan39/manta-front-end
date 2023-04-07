@@ -1,7 +1,7 @@
 // @ts-nocheck
 import classNames from 'classnames';
 import Icon from 'components/Icon';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { useTxStatus } from 'contexts/txStatusContext';

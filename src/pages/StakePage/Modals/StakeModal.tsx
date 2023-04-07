@@ -7,7 +7,7 @@ import Decimal from 'decimal.js';
 import BN from 'bn.js';
 import Balance from 'types/Balance';
 import ErrorText from 'components/Error/ErrorText';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useConfig } from 'contexts/configContext';
 import DotLoader from 'components/Loaders/DotLoader';

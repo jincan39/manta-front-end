@@ -3,7 +3,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import getAbbreviatedName from 'utils/display/getAbbreviatedName';
 import Identicon from '@polkadot/react-identicon';
 import makeBlockie from 'ethereum-blockies-base64';

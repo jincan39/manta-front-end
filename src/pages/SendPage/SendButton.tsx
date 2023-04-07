@@ -4,13 +4,13 @@ import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import MantaLoading from 'components/Loading';
 import { ZkAccountConnect } from 'components/Navbar/ZkAccountButton';
 import { useConfig } from 'contexts/configContext';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useGlobal } from 'contexts/globalContexts';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { usePrivateWallet } from 'hooks';
 import Balance from 'types/Balance';
-import signerIsOutOfDate from 'utils/validation/signerIsOutOfDate';
+import versionIsOutOfDate from 'utils/validation/versionIsOutOfDate';
 import { useSend } from './SendContext';
 import useReceiverBalanceText from './SendToForm/useReceiverBalanceText';
 import useSenderBalanceText from './SendToForm/useSenderBalanceText';
@@ -90,7 +90,7 @@ const ValidationSendButton = ({ showModal }) => {
     shouldShowWalletSignerMissingValidation = true;
   } else if (!signerIsConnected && !isPublicTransfer()) {
     shouldShowSignerMissingValidation = true;
-  } else if (signerIsOutOfDate(config, signerVersion)) {
+  } else if (versionIsOutOfDate(config.MIN_REQUIRED_SIGNER_VERSION, signerVersion)) {
     validationMsg = 'Signer out of date';
   } else if (!externalAccount) {
     shouldShowWalletMissingValidation = true;
@@ -183,11 +183,11 @@ const ValidationSendButton = ({ showModal }) => {
         !shouldShowWalletMissingValidation &&
         !shouldShowWalletSignerMissingValidation &&
         !validationMsg && (
-          <InnerSendButton
-            senderLoading={senderLoading}
-            receiverLoading={receiverLoading}
-          />
-        )}
+        <InnerSendButton
+          senderLoading={senderLoading}
+          receiverLoading={receiverLoading}
+        />
+      )}
     </>
   );
 };

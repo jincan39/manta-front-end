@@ -10,7 +10,7 @@ import { BN } from 'bn.js';
 import Balance from 'types/Balance';
 import PropTypes from 'prop-types';
 import { useSubstrate } from './substrateContext';
-import { usePublicAccount } from './externalAccountContext';
+import { usePublicAccount } from './publicAccountContext';
 import { useConfig } from './configContext';
 
 const NativeTokenWalletContext = createContext();

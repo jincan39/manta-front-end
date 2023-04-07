@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import MantaLoading from 'components/Loading';
 import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import Chain from 'types/Chain';

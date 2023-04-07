@@ -2,7 +2,7 @@
 import React, { createContext, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { useSubstrate } from 'contexts/substrateContext';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import Balance from 'types/Balance';
 import AssetType from 'types/AssetType';
 import BN from 'bn.js';

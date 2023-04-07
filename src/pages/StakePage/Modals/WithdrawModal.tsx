@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Button from 'components/Button';
 import ErrorText from 'components/Error/ErrorText';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { useStakeTx } from '../StakeContext/StakeTxContext';

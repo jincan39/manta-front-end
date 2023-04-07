@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useReducer, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Decimal from 'decimal.js';

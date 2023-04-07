@@ -1,7 +1,7 @@
-import { KeyringPair } from '@polkadot/keyring/types';
-import keyring, { Keyring } from '@polkadot/ui-keyring';
 import APP_NAME from 'constants/AppConstants';
 import { SS58 } from 'constants/NetworkConstants';
+import { KeyringPair } from '@polkadot/keyring/types';
+import keyring, { Keyring } from '@polkadot/ui-keyring';
 import { Wallet } from 'manta-extension-connect';
 import {
   createContext,
@@ -51,6 +51,7 @@ export const KeyringContextProvider = ({
 }) => {
   const [isKeyringInit, setIsKeyringInit] = useState(false);
   const [keyringAddresses, setKeyringAddresses] = useState<string[]>([]);
+  const [isTalismanExtConfigured, setIsTalismanExtConfigured] = useState<boolean[]>(true);
   const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState<string[]>(
     []
   );
@@ -125,6 +126,13 @@ export const KeyringContextProvider = ({
     return { account, pairs };
   };
 
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      selectedWallet && refreshWalletAccounts(selectedWallet);
+    }, 1000);
+    return () => interval && clearInterval(interval);
+  }, [selectedWallet]);
+
   const initKeyring = useCallback(async () => {
     if (!isKeyringInit && web3ExtensionInjected.length !== 0) {
       const isCalamari = window?.location?.pathname?.includes('calamari');
@@ -166,10 +174,13 @@ export const KeyringContextProvider = ({
       }
       const substrateWallets = getSubstrateWallets();
       const selectedWallet = substrateWallets.find(
-        (wallet) => wallet.extensionName === extensionName
+        (wallet: any) => wallet.extensionName === extensionName
       );
       if (!selectedWallet?.extension) {
         try {
+          if (extensionName.toLowerCase() === 'talisman' && !isTalismanExtConfigured) {
+            setIsTalismanExtConfigured(true);
+          }
           await selectedWallet?.enable(APP_NAME);
           if (selectedWallet) {
             await refreshWalletAccounts(selectedWallet);
@@ -178,7 +189,10 @@ export const KeyringContextProvider = ({
             selectedWallet &&
             setLastAccessedWallet(selectedWallet);
           return true;
-        } catch (e) {
+        } catch (e: any) {
+          if (e.message === 'Talisman extension has not been configured yet. Please continue with onboarding.') {
+            setIsTalismanExtConfigured(false);
+          }
           return false;
         }
       }

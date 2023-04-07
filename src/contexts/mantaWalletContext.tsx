@@ -15,7 +15,7 @@ import Balance from 'types/Balance';
 import TxStatus from 'types/TxStatus';
 import { removePendingTxHistoryEvent } from 'utils/persistence/privateTransactionHistory';
 import { useConfig } from './configContext';
-import { usePublicAccount } from './externalAccountContext';
+import { usePublicAccount } from './publicAccountContext';
 import { useKeyring } from './keyringContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
@@ -235,7 +235,7 @@ export const MantaWalletContextProvider = ({
       privateTransfer,
       privateWallet,
       sync: privateWallet?.walletSync,
-      isInitialSync,
+      isInitialSync: false, // todo: implement
       signerIsConnected
     }),
     [
@@ -248,7 +248,7 @@ export const MantaWalletContextProvider = ({
       toPublic,
       privateTransfer,
       privateWallet,
-      isInitialSync,
+      // isInitialSync,
       signerIsConnected
     ]
   );

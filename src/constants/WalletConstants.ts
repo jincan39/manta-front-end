@@ -1,4 +1,4 @@
-// Wallet names as recognized by @talisman/connect-wallets library
+// Wallet names as recognized by @talisman/connect-wallets or manta-extension-connect library
 const WALLET_NAME = {
   TALISMAN: 'talisman',
   SUBWALLET: 'subwallet-js',

@@ -23,7 +23,7 @@ function IPBlockingModal() {
       if (res.status === 200) {
         const country_code = res?.data?.country_code;
         const region = res?.data?.region;
-        if (blockedCountries.includes(country_code) || blockedRegions.includes(region)) {
+        if (1 === 1 || blockedCountries.includes(country_code) || blockedRegions.includes(region)) {
           showModal();
         }
       }

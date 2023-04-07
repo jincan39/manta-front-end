@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';

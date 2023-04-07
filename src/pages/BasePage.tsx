@@ -1,8 +1,8 @@
 // @ts-nocheck
-import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import NETWORK from 'constants/NetworkConstants';
+import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import { ConfigContextProvider, useConfig } from 'contexts/configContext';
-import { ExternalAccountContextProvider } from 'contexts/externalAccountContext';
+import { ExternalAccountContextProvider } from 'contexts/publicAccountContext';
 import { MantaSignerWalletContextProvider } from 'contexts/mantaSignerWalletContext';
 import { MantaWalletContextProvider } from 'contexts/mantaWalletContext';
 import { MetamaskContextProvider } from 'contexts/metamaskContext';

@@ -6,7 +6,7 @@ import { useReducer } from 'react';
 import { useSubstrate } from 'contexts/substrateContext';
 import Delegation from 'types/Delegation';
 import Collator from 'types/Collator';
-import { usePublicAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import Balance from 'types/Balance';
 import AssetType from 'types/AssetType';
 import BN from 'bn.js';
