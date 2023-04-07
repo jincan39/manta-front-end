@@ -1,12 +1,13 @@
 // @ts-nocheck
-import NETWORK from 'constants/NetworkConstants';
 import { bnToU8a } from '@polkadot/util';
 import BN from 'bn.js';
+import NETWORK from 'constants/NetworkConstants';
 import { useConfig } from 'contexts/configContext';
+import { useGlobal } from 'contexts/globalContexts';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useReducer } from 'react';
 import AssetType from 'types/AssetType';
@@ -21,15 +22,13 @@ import sendReducer, { buildInitState } from './sendReducer';
 const SendContext = React.createContext();
 
 export const SendContextProvider = (props) => {
+  const { usingMantaWallet } = useGlobal();
   const config = useConfig();
   const { api } = useSubstrate();
   const { setTxStatus, txStatus, txStatusRef } = useTxStatus();
   const { externalAccount, externalAccountSigner } = usePublicAccount();
   const privateWallet = usePrivateWallet();
-  const {
-    isReady: privateWalletIsReady,
-    privateAddress,
-  } = privateWallet;
+  const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
   const [state, dispatch] = useReducer(sendReducer, buildInitState(config));
   const {
     senderAssetType,

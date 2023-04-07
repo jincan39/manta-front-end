@@ -1,7 +1,7 @@
-import APP_NAME from 'constants/AppConstants';
-import { SS58 } from 'constants/NetworkConstants';
 import { KeyringPair } from '@polkadot/keyring/types';
 import keyring, { Keyring } from '@polkadot/ui-keyring';
+import APP_NAME from 'constants/AppConstants';
+import { SS58 } from 'constants/NetworkConstants';
 import { Wallet } from 'manta-extension-connect';
 import {
   createContext,
@@ -24,6 +24,7 @@ import {
   getLastAccessedWallet,
   setLastAccessedWallet
 } from 'utils/persistence/walletStorage';
+import isObjectEmpty from 'utils/validation/isEmpty';
 
 type KeyringContextValue = {
   keyring: Keyring;
@@ -51,7 +52,8 @@ export const KeyringContextProvider = ({
 }) => {
   const [isKeyringInit, setIsKeyringInit] = useState(false);
   const [keyringAddresses, setKeyringAddresses] = useState<string[]>([]);
-  const [isTalismanExtConfigured, setIsTalismanExtConfigured] = useState<boolean>(true);
+  const [isTalismanExtConfigured, setIsTalismanExtConfigured] =
+    useState<boolean>(true);
   const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState<string[]>(
     []
   );
@@ -128,7 +130,7 @@ export const KeyringContextProvider = ({
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      selectedWallet && refreshWalletAccounts(selectedWallet);
+      !isObjectEmpty(selectedWallet) && refreshWalletAccounts(selectedWallet);
     }, 1000);
     return () => interval && clearInterval(interval);
   }, [selectedWallet]);
@@ -178,7 +180,10 @@ export const KeyringContextProvider = ({
       );
       if (!selectedWallet?.extension) {
         try {
-          if (extensionName.toLowerCase() === 'talisman' && !isTalismanExtConfigured) {
+          if (
+            extensionName.toLowerCase() === 'talisman' &&
+            !isTalismanExtConfigured
+          ) {
             setIsTalismanExtConfigured(true);
           }
           await selectedWallet?.enable(APP_NAME);
@@ -190,7 +195,10 @@ export const KeyringContextProvider = ({
             setLastAccessedWallet(selectedWallet);
           return true;
         } catch (e: any) {
-          if (e.message === 'Talisman extension has not been configured yet. Please continue with onboarding.') {
+          if (
+            e.message ===
+            'Talisman extension has not been configured yet. Please continue with onboarding.'
+          ) {
             setIsTalismanExtConfigured(false);
           }
           return false;
