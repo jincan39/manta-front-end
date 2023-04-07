@@ -1,11 +1,10 @@
-import { bool } from '@polkadot/types';
 import Balance from 'types/Balance';
 
 const getZkTransactBalanceText = (
   balance: Balance | null,
   apiIsDisconnected: boolean,
   isPrivate: boolean,
-  isInitialSync: bool
+  isInitialSync: boolean
 ) => {
   if (apiIsDisconnected) {
     return 'Connecting to network';
