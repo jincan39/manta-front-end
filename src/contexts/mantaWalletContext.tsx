@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { BN } from 'bn.js';
 import {
   ReactNode,
   createContext,
@@ -9,14 +10,13 @@ import {
   useRef,
   useState
 } from 'react';
-import { BN } from 'bn.js';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import TxStatus from 'types/TxStatus';
 import { removePendingTxHistoryEvent } from 'utils/persistence/privateTransactionHistory';
 import { useConfig } from './configContext';
-import { usePublicAccount } from './publicAccountContext';
 import { useKeyring } from './keyringContext';
+import { usePublicAccount } from './publicAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 
@@ -40,6 +40,7 @@ export const MantaWalletContextProvider = ({
   const signerIsConnected = !!privateWallet;
   const [privateAddress, setPrivateAddress] = useState(null);
   const [isReady, setIsReady] = useState(null);
+  const isInitialSync = useRef(true);
 
   // transaction state
   const txQueue = useRef([]);
@@ -73,6 +74,7 @@ export const MantaWalletContextProvider = ({
 
   useEffect(() => {
     if (selectedWallet?.extension?.privateWallet) {
+      isInitialSync.current = false; // privateWallet handles initialWalletSync
       setPrivateWallet(selectedWallet.extension.privateWallet);
     }
   }, [selectedWallet]);
@@ -175,6 +177,16 @@ export const MantaWalletContextProvider = ({
     }
   };
 
+  const getBatches = async (signResult) => {
+    const batches = [];
+    for (let index = 0; index < signResult.length; index++) {
+      const sign = signResult[index];
+      const tx = api.tx(sign);
+      batches.push(tx);
+    }
+    return batches;
+  };
+
   const toPublic = async (balance, txResHandler) => {
     const signResult = await privateWallet.toPublicBuild({
       assetId: balance.assetType.assetId,
@@ -186,12 +198,8 @@ export const MantaWalletContextProvider = ({
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
     }
-    const batches = [];
-    for (let index = 0; index < signResult.length; index++) {
-      const sign = signResult[index];
-      const tx = api.tx(sign);
-      batches.push(tx);
-    }
+
+    const batches = await getBatches(signResult);
     await publishBatchesSequentially(batches, txResHandler);
   };
 
@@ -207,12 +215,8 @@ export const MantaWalletContextProvider = ({
       setTxStatus(TxStatus.failed('Transaction declined'));
       return;
     }
-    const batches = [];
-    for (let index = 0; index < signResult.length; index++) {
-      const sign = signResult[index];
-      const tx = api.tx(sign);
-      batches.push(tx);
-    }
+
+    const batches = await getBatches(signResult);
     await publishBatchesSequentially(batches, txResHandler);
   };
 
@@ -228,13 +232,7 @@ export const MantaWalletContextProvider = ({
       return;
     }
 
-    const batches = [];
-    for (let index = 0; index < signResult.length; index++) {
-      const sign = signResult[index];
-      const tx = api.tx(sign);
-      batches.push(tx);
-    }
-
+    const batches = await getBatches(signResult);
     await publishBatchesSequentially(batches, txResHandler);
   };
 
@@ -248,7 +246,7 @@ export const MantaWalletContextProvider = ({
       privateTransfer,
       privateWallet,
       sync,
-      isInitialSync: { current: false }, // todo: implement
+      isInitialSync,
       signerIsConnected
     }),
     [
@@ -261,7 +259,7 @@ export const MantaWalletContextProvider = ({
       toPublic,
       privateTransfer,
       privateWallet,
-      // isInitialSync,
+      isInitialSync,
       signerIsConnected
     ]
   );
