@@ -1,4 +1,5 @@
-const isObjectEmpty = (objectName: object) => {
+const isObjectEmpty = (objectName: object | null) => {
+  if (objectName === null) return true;
   return (
     objectName &&
     Object.keys(objectName).length === 0 &&
