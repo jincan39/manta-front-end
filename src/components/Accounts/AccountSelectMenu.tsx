@@ -7,7 +7,6 @@ import { useMetamask } from 'contexts/metamaskContext';
 import React, { useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 import Icon from 'components/Icon';
-import { getLastAccessedWallet } from 'utils/persistence/walletStorage';
 import { useGlobal } from 'contexts/globalContexts';
 import WalletSelectBar from './WalletSelectIconBar';
 import { ConnectWalletIcon, ConnectWalletButton } from './ConnectWallet';
@@ -24,11 +23,10 @@ const DisplayAccountsButton = () => {
   const isMetamaskEnabled =
     !!ethAddress && window?.location?.pathname?.includes('bridge');
 
-  const lastAccessExtensionName = getLastAccessedWallet()?.extensionName;
   // using manta wallet zkAddress combined with other wallets public address
   const isOnlyUsingMantaWalletZKAddress = 
     usingMantaWallet 
-    && lastAccessExtensionName !== WALLET_NAME.MANTA 
+    && selectedWallet?.extensionName !== WALLET_NAME.MANTA 
     && window?.location?.pathname?.includes('transact');
 
   const succinctAccountName =
