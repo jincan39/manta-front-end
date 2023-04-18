@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useConfig } from 'contexts/configContext';
 import DowntimeModal from 'components/Modal/downtimeModal';
 import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
-import userIsMobile from 'utils/ui/userIsMobile';
+import getDeviceType from 'utils/ui/getDeviceType';
 import { useKeyring } from 'contexts/keyringContext';
 import CalamariFooter from 'components/Footer';
 import AccountDisplay from './AccountDisplay';
@@ -13,6 +13,7 @@ import CollatorsTable from './Tables/CollatorsTable';
 const StakePageContent = () => {
   const { keyring } = useKeyring();
   const config = useConfig();
+  const { isMobile } = getDeviceType();
 
   document.title = config.PAGE_TITLE;
 
@@ -25,7 +26,7 @@ const StakePageContent = () => {
   let warningModal = <div />;
   if (config.DOWNTIME) {
     warningModal = <DowntimeModal />;
-  } else if (userIsMobile()) {
+  } else if (isMobile) {
     warningModal = <MobileNotSupportedModal />;
   }
 

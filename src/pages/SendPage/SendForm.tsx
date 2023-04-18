@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react';
-import { useConfig } from 'contexts/configContext';
-import DowntimeModal from 'components/Modal/downtimeModal';
-import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
-import userIsMobile from 'utils/ui/userIsMobile';
-import { useKeyring } from 'contexts/keyringContext';
-import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
 import Icon from 'components/Icon';
+import DowntimeModal from 'components/Modal/downtimeModal';
+import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
+import { useConfig } from 'contexts/configContext';
+import { useKeyring } from 'contexts/keyringContext';
+import { useTxStatus } from 'contexts/txStatusContext';
+import { useEffect } from 'react';
+import getDeviceType from 'utils/ui/getDeviceType';
+import { useSend } from './SendContext';
 import SendFromForm from './SendFromForm';
 import SendToForm from './SendToForm';
-import { useSend } from './SendContext';
 import SwitchMantaWalletAndSigner from './SwitchMantaWalletAndSigner';
 
 const SendForm = () => {
@@ -23,6 +23,7 @@ const SendForm = () => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const disabledSwapSenderReceiver = isPrivateTransfer() || isPublicTransfer();
+  const { isMobile } = getDeviceType();
 
   useEffect(() => {
     if (keyring) {
@@ -41,7 +42,7 @@ const SendForm = () => {
   let warningModal = <div />;
   if (config.DOWNTIME) {
     warningModal = <DowntimeModal />;
-  } else if (userIsMobile()) {
+  } else if (isMobile) {
     warningModal = <MobileNotSupportedModal />;
   }
 
