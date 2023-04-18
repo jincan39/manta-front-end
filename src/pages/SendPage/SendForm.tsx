@@ -1,5 +1,3 @@
-// @ts-nocheck
-import WALLET_NAME from 'constants/WalletConstants';
 import React, { useEffect } from 'react';
 import { useConfig } from 'contexts/configContext';
 import DowntimeModal from 'components/Modal/downtimeModal';
@@ -9,22 +7,14 @@ import { useKeyring } from 'contexts/keyringContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
 import Icon from 'components/Icon';
-import { useGlobal } from 'contexts/globalContexts';
-import { getSubstrateWallets } from 'utils';
-import {
-  getLastAccessedWallet,
-  setLastAccessedWallet
-} from 'utils/persistence/walletStorage';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import SendFromForm from './SendFromForm';
 import SendToForm from './SendToForm';
 import { useSend } from './SendContext';
+import SwitchMantaWalletAndSigner from './SwitchMantaWalletAndSigner';
 
 const SendForm = () => {
   const config = useConfig();
-  const { usingMantaWallet, setUsingMantaWallet } = useGlobal();
-  const { keyring, refreshWalletAccounts,getLatestAccountAndPairs, keyringIsBusy } = useKeyring();
-  const { changeExternalAccountOptions } = usePublicAccount();
+  const { keyring } = useKeyring();
   const {
     swapSenderAndReceiverArePrivate,
     isPrivateTransfer,
@@ -40,33 +30,6 @@ const SendForm = () => {
     }
   }, [keyring]);
 
-  const toggleUsingMantaWalletState = async () => {
-    if (disabled) {
-      return;
-    }
-    const lastAccessExtensionName = getLastAccessedWallet()?.extensionName;
-    if (usingMantaWallet && lastAccessExtensionName === WALLET_NAME.MANTA) {
-      const substrateWallets = getSubstrateWallets();
-      const enabledExtentions = substrateWallets.filter((wallet) => (wallet.extension && wallet.extensionName !== WALLET_NAME.MANTA));
-      if (enabledExtentions.length > 0) {
-        // switch to another wallet as the default wallet
-        if (keyringIsBusy.current === false && !disabled) {
-          const defaultWallet = enabledExtentions[0];
-          await refreshWalletAccounts(defaultWallet);
-          const { account, pairs } = getLatestAccountAndPairs();
-          changeExternalAccountOptions(account, pairs);
-          setLastAccessedWallet(defaultWallet);
-        }
-      } else {
-        // reset state if no wallet exist
-        changeExternalAccountOptions(null, []);
-        setLastAccessedWallet(null);
-      }
-    }
-
-    setUsingMantaWallet(!usingMantaWallet);
-  };
-
   const onClickSwapSenderReceiver = () => {
     if (!disabled) {
       swapSenderAndReceiverArePrivate();
@@ -81,8 +44,6 @@ const SendForm = () => {
   } else if (userIsMobile()) {
     warningModal = <MobileNotSupportedModal />;
   }
-
-  const toggleWalletStateText = usingMantaWallet ? 'Manta Signer user? And still want to use it?' : 'Manta Wallet is live! Try MantaPay with Manta Wallet';
 
   return (
     <div>
@@ -104,23 +65,7 @@ const SendForm = () => {
           </div>
           <SendToForm />
         </div>
-        <div className="flex flex-col items-center">
-          <button onClick={toggleUsingMantaWalletState} className={classNames(
-            'px-6 rounded-3xl border border-solid border-white h-9 flex',
-            'items-center cursor-hover text-white text-sm cursor-pointer',
-            {'disabled': disabled }
-          )}>
-            <span>{ toggleWalletStateText }</span>
-            <Icon className="w-4 h-4 ml-2 cursor-pointer" name="activityRightArrow" />
-          </button>
-          <a className="mt-6 flex items-center mb-6 text-white hover:text-white"
-            href="https://docs.manta.network/docs/guides/MantaWalletMigration"
-            target="_blank"
-            rel="noopener noreferrer">
-            <span>Learn how to migrate from Manta Signer to Manta Wallet</span>
-            <Icon className="w-4 h-4 ml-2 cursor-pointer" name="activityRightArrow" />
-          </a>
-        </div>
+        <SwitchMantaWalletAndSigner />
       </div>
     </div>
   );
