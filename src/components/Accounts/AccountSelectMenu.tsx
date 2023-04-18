@@ -1,12 +1,14 @@
 // @ts-nocheck
+import WALLET_NAME from 'constants/WalletConstants';
 import classNames from 'classnames';
 import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useKeyring } from 'contexts/keyringContext';
-import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import React, { useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 import Icon from 'components/Icon';
+import { getLastAccessedWallet } from 'utils/persistence/walletStorage';
+import { useGlobal } from 'contexts/globalContexts';
 import WalletSelectBar from './WalletSelectIconBar';
 import { ConnectWalletIcon, ConnectWalletButton } from './ConnectWallet';
 import AccountSelectDropdown from './AccountSelectDropdown';
@@ -17,9 +19,17 @@ const DisplayAccountsButton = () => {
   const { externalAccount } = usePublicAccount();
   const [showAccountList, setShowAccountList] = useState(false);
   const [isMetamaskSelected, setIsMetamaskSelected] = useState(false);
+  const { usingMantaWallet } = useGlobal();
 
   const isMetamaskEnabled =
     !!ethAddress && window?.location?.pathname?.includes('bridge');
+
+  const lastAccessExtensionName = getLastAccessedWallet()?.extensionName;
+  // using manta wallet zkAddress combined with other wallets public address
+  const isOnlyUsingMantaWalletZKAddress = 
+    usingMantaWallet 
+    && lastAccessExtensionName !== WALLET_NAME.MANTA 
+    && window?.location?.pathname?.includes('transact');
 
   const succinctAccountName =
     externalAccount?.meta.name.length >11
@@ -34,6 +44,14 @@ const DisplayAccountsButton = () => {
           src={selectedWallet.logo.src}
           alt={selectedWallet.logo.alt}
         />
+        {
+          isOnlyUsingMantaWalletZKAddress && (
+            <Icon
+              className="unselectable-text w-6 h-6 rounded-full"
+              name="manta"
+            />
+          )
+        }
         {isMetamaskEnabled && (
           <Icon
             className="unselectable-text w-6 h-6 rounded-full"
@@ -54,7 +72,7 @@ const DisplayAccountsButton = () => {
           )}
           onClick={() => setShowAccountList(!showAccountList)}>
           <ExternalAccountBlock
-            text={isMetamaskEnabled ? 'Connected' : succinctAccountName}
+            text={(isMetamaskEnabled || isOnlyUsingMantaWalletZKAddress) ? 'Connected' : succinctAccountName}
           />
         </div>
         {showAccountList && (
