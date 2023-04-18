@@ -30,7 +30,7 @@ const SwitchMantaWalletAndSigner = () => {
       const enabledExtentions = substrateWallets.filter((wallet) => (wallet.extension && wallet.extensionName !== WALLET_NAME.MANTA));
       if (enabledExtentions.length > 0) {
         // switch to another wallet as the default wallet
-        if (keyringIsBusy.current === false && !disabled) {
+        if (keyringIsBusy.current === false) {
           const defaultWallet = enabledExtentions[0];
           await refreshWalletAccounts(defaultWallet);
           const { account, pairs } = getLatestAccountAndPairs();
